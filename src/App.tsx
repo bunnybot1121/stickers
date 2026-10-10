@@ -8,7 +8,6 @@ import { PackBuilderModal } from './components/PackBuilderModal';
 import { OrderModal } from './components/OrderModal';
 import { OrderConfirmation } from './components/OrderConfirmation';
 import { BonusCelebrationModal } from './components/BonusCelebrationModal';
-import { AiVibeModal } from './components/AiVibeModal';
 import { Footer } from './components/Footer';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -46,7 +45,6 @@ export function App() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isCelebrationOpen, setIsCelebrationOpen] = useState(false);
   const [hasCelebrated, setHasCelebrated] = useState(false);
-  const [isAiVibeOpen, setIsAiVibeOpen] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<{ orderNumber: string; orderId: string } | null>(null);
 
   // Load initial data
@@ -127,21 +125,6 @@ export function App() {
     }));
   };
 
-  // AI Vibe auto-populate handler
-  const handleApplyVibePack = (suggestedStickers: Sticker[]) => {
-    const baseIds = suggestedStickers.slice(0, packRule.base_quantity).map((s) => s.id);
-    const bonusIds = suggestedStickers
-      .slice(packRule.base_quantity, packRule.base_quantity + packRule.bonus_quantity)
-      .map((s) => s.id);
-
-    setSelection({
-      baseStickerIds: baseIds,
-      bonusStickerIds: bonusIds,
-    });
-    setIsAiVibeOpen(false);
-    setIsPackBuilderOpen(true);
-  };
-
   // Order submission success
   const handleOrderSuccess = (orderNumber: string, orderId: string) => {
     setIsOrderModalOpen(false);
@@ -206,12 +189,7 @@ export function App() {
           selection={selection}
           rule={packRule}
           onOpenPackBuilder={() => setIsPackBuilderOpen(true)}
-          onOpenAdmin={() => {
-            if (adminEmail) setCurrentView('admin');
-            else setCurrentView('admin-login');
-          }}
           onNavigateHome={() => setConfirmedOrder(null)}
-          onOpenAiVibe={() => setIsAiVibeOpen(true)}
           activeNav={activeNav}
           setActiveNav={setActiveNav}
         />
@@ -296,21 +274,6 @@ export function App() {
                 onClose={() => setIsCelebrationOpen(false)}
                 onChooseBonus={() => {
                   setIsCelebrationOpen(false);
-                  setIsPackBuilderOpen(true);
-                }}
-              />
-
-              {/* Customer AI Vibe Stylist Modal Powered by Groq */}
-              <AiVibeModal
-                isOpen={isAiVibeOpen}
-                onClose={() => setIsAiVibeOpen(false)}
-                stickers={stickers}
-                onApplyPack={(baseIds, bonusIds) => {
-                  setSelection({
-                    baseStickerIds: baseIds,
-                    bonusStickerIds: bonusIds,
-                  });
-                  setIsAiVibeOpen(false);
                   setIsPackBuilderOpen(true);
                 }}
               />

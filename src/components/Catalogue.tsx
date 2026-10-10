@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, Sparkles, AlertCircle, Heart, Flame, Code, Coffee, Gamepad2, Cat } from 'lucide-react';
+import { Search, X, Sparkles, AlertCircle, Heart, Flame, Code, Coffee, Gamepad2, Cat, Gift, Star } from 'lucide-react';
 import { Category, Sticker, PackSelectionState } from '../types';
 import { StickerCard } from './StickerCard';
 import { StickerModal } from './StickerModal';
@@ -89,7 +89,15 @@ export const Catalogue: React.FC<CatalogueProps> = ({
   };
 
   return (
-    <section id="catalogue-section" className="py-12 pb-28 sm:pb-32 px-4 sm:px-8 max-w-7xl mx-auto">
+    <section id="catalogue-section" className="py-12 pb-28 sm:pb-36 px-4 sm:px-8 max-w-7xl mx-auto relative">
+      {/* Background scattered stickers on section margins */}
+      <div className="absolute top-24 -right-10 w-28 h-28 hidden 2xl:block opacity-65 transform rotate-12 pointer-events-none">
+        <img src="/stickers/this-is-fine-mug.svg" alt="" className="w-full h-full object-contain filter drop-shadow-md" />
+      </div>
+      <div className="absolute top-1/2 -left-12 w-28 h-28 hidden 2xl:block opacity-65 transform -rotate-12 pointer-events-none">
+        <img src="/stickers/sleepy-ramen-neko.svg" alt="" className="w-full h-full object-contain filter drop-shadow-md" />
+      </div>
+
       {/* Top Search & Filter Bar */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
         {/* Search input with sleek rounded pill style */}
@@ -135,32 +143,35 @@ export const Catalogue: React.FC<CatalogueProps> = ({
         </div>
       </div>
 
-      {/* Horizontal Category Chips Bar */}
+      {/* Horizontal Category Chips Bar with Vector Icons (No emojis) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 scrollbar-none">
         <button
           onClick={() => setSelectedCategorySlug('all')}
-          className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border ${
+          className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border flex items-center gap-1.5 ${
             selectedCategorySlug === 'all'
               ? 'bg-slate-900 text-white border-slate-900 shadow-soft-sm'
               : 'bg-white text-slate-700 border-black/[0.08] hover:bg-slate-50 hover:border-black/20'
           }`}
         >
-          ✨ All Stickers
+          <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+          <span>All Stickers</span>
         </button>
 
         {categories.map((cat) => {
           const isActive = selectedCategorySlug === cat.slug;
+          const Icon = getCategoryIcon(cat.slug);
           return (
             <button
               key={cat.id}
               onClick={() => setSelectedCategorySlug(cat.slug)}
-              className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border ${
+              className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border flex items-center gap-1.5 ${
                 isActive
                   ? 'bg-slate-900 text-white border-slate-900 shadow-soft-sm'
                   : 'bg-white text-slate-700 border-black/[0.08] hover:bg-slate-50 hover:border-black/20'
               }`}
             >
-              {cat.name}
+              <Icon className="w-3.5 h-3.5" />
+              <span>{cat.name}</span>
             </button>
           );
         })}
@@ -184,7 +195,7 @@ export const Catalogue: React.FC<CatalogueProps> = ({
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span>★</span>
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
                   <span>All Stickers</span>
                 </div>
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${selectedCategorySlug === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
@@ -222,9 +233,11 @@ export const Catalogue: React.FC<CatalogueProps> = ({
             </div>
           </div>
 
-          {/* Sticky 10+2 Promotional Promo Box */}
+          {/* Sticky 10+2 Promotional Promo Box with Lucide Gift Icon */}
           <div className="p-5 rounded-3xl bg-gradient-to-br from-amber-50 via-pink-50 to-purple-50 border border-pink-200/60 text-center shadow-soft">
-            <span className="text-3xl block mb-1.5 animate-subtle-float">🎁</span>
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-2 shadow-soft-xs">
+              <Gift className="w-5 h-5" />
+            </div>
             <span className="font-display font-black text-sm text-slate-900 block">
               10 + 2 On Every Pack!
             </span>

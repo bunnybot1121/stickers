@@ -84,12 +84,12 @@ export const BonusCelebrationModal: React.FC<BonusCelebrationModalProps> = ({
         {/* Center Illustration: 2 Mystery Cards */}
         <div className="my-6 flex items-center justify-center gap-3">
           <div className="w-20 h-28 rounded-2xl bg-white/10 border-2 border-dashed border-[#FF6EB4] flex flex-col items-center justify-center transform -rotate-6 hover:rotate-0 transition-transform shadow-soft">
-            <span className="text-2xl animate-bounce">🎁</span>
-            <span className="text-xs font-mono text-yellow-300 font-bold mt-1">#1 FREE</span>
+            <Gift className="w-7 h-7 text-yellow-300 animate-bounce" />
+            <span className="text-xs font-mono text-yellow-300 font-bold mt-1.5">#1 FREE</span>
           </div>
           <div className="w-20 h-28 rounded-2xl bg-white/10 border-2 border-dashed border-amber-400 flex flex-col items-center justify-center transform rotate-6 hover:rotate-0 transition-transform shadow-soft">
-            <span className="text-2xl animate-pulse">✨</span>
-            <span className="text-xs font-mono text-pink-300 font-bold mt-1">#2 FREE</span>
+            <Sparkles className="w-7 h-7 text-pink-300 animate-pulse" />
+            <span className="text-xs font-mono text-pink-300 font-bold mt-1.5">#2 FREE</span>
           </div>
         </div>
 

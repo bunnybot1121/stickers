@@ -26,7 +26,7 @@ export const OfferExplainer: React.FC = () => {
     {
       num: '03',
       title: 'Sealed & Shipped to Doorstep',
-      desc: 'Confirm your phone and delivery address. Your stickers are custom laser-cut and delivered in waterproof protective packaging.',
+      desc: 'Confirm your phone and delivery address. Your stickers are carefully packed and delivered in protective rigid mailers.',
       icon: Truck,
       badge: 'Fast Dispatch',
       color: 'from-amber-400 to-orange-500',

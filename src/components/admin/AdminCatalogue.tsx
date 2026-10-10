@@ -204,7 +204,7 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
       setUploadedFiles([]);
       setSortedBatch([]);
       setAiSummary(null);
-      alert(`🎉 Successfully published ${sortedBatch.length} stickers to the store catalogue!`);
+      alert(`Successfully published ${sortedBatch.length} stickers to the store catalogue!`);
     } catch (err: any) {
       alert(`Error publishing batch: ${err.message}`);
     } finally {

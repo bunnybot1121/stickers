@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart, Plus, Check, Trash2, Sparkles, Eye } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { Sticker } from '../types';
 
 interface StickerCardProps {
@@ -33,6 +34,33 @@ export const StickerCard: React.FC<StickerCardProps> = ({
 }) => {
   const isSelected = isSelectedBase || isSelectedBonus;
   const isOutOfStock = sticker.track_inventory && (sticker.stock_on_hand ?? 0) < 1;
+  const [justAdded, setJustAdded] = useState(false);
+
+  // Trigger joyful micro-particle burst from button on add
+  const handleAddWithAnimation = (e: React.MouseEvent<HTMLButtonElement>, isBonus: boolean) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2) / window.innerWidth;
+    const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+    confetti({
+      particleCount: 16,
+      spread: 45,
+      origin: { x, y },
+      colors: isBonus ? ['#FF6EB4', '#FACC15', '#9B51E0'] : ['#00D4D8', '#FF6EB4', '#FACC15', '#11131A'],
+      scalar: 0.75,
+      ticks: 70,
+      disableForReducedMotion: true,
+    });
+
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 900);
+
+    if (isBonus) {
+      onSelectBonus(sticker);
+    } else {
+      onSelectBase(sticker);
+    }
+  };
 
   // Aesthetic subtle background gradient for the sticker preview stage
   const getStageColor = (style: string) => {
@@ -77,7 +105,7 @@ export const StickerCard: React.FC<StickerCardProps> = ({
           : isSelectedBonus
           ? 'ring-2 ring-[#FF6EB4] border border-[#FF6EB4] shadow-glow-pink/30'
           : 'border border-black/[0.07] shadow-soft hover:shadow-soft-xl hover:-translate-y-1.5 hover:border-black/15'
-      }`}
+      } ${justAdded ? 'scale-[1.02] transition-transform duration-150' : ''}`}
     >
       {/* Top Floating Controls Bar */}
       <div className="absolute top-3.5 left-3.5 right-3.5 z-10 flex items-center justify-between pointer-events-none">
@@ -128,7 +156,9 @@ export const StickerCard: React.FC<StickerCardProps> = ({
           <img
             src={sticker.image_path}
             alt={sticker.name}
-            className="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.12)] drop-shadow-[0_4px_6px_rgba(0,0,0,0.06)] group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-300 ease-out"
+            className={`max-h-full max-w-full object-contain filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.12)] drop-shadow-[0_4px_6px_rgba(0,0,0,0.06)] group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-300 ease-out ${
+              justAdded ? 'scale-110 -rotate-3 transition-transform duration-200' : ''
+            }`}
           />
         </div>
 
@@ -180,15 +210,24 @@ export const StickerCard: React.FC<StickerCardProps> = ({
             </button>
           ) : !isBaseFull ? (
             <button
-              onClick={() => onSelectBase(sticker)}
+              onClick={(e) => handleAddWithAnimation(e, false)}
               className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-display font-bold text-xs flex items-center justify-center gap-1.5 shadow-soft hover:shadow-soft-md transition-all active:scale-95"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add to Pack</span>
+              {justAdded ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Added to Pack</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add to Pack</span>
+                </>
+              )}
             </button>
           ) : bonusUnlocked && !isBonusFull ? (
             <button
-              onClick={() => onSelectBonus(sticker)}
+              onClick={(e) => handleAddWithAnimation(e, true)}
               className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#FF6EB4] to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-display font-bold text-xs flex items-center justify-center gap-1.5 shadow-glow-pink/30 animate-pulse transition-all active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5 text-yellow-300" />

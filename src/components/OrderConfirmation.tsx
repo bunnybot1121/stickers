@@ -126,7 +126,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           Order Submitted!
         </h1>
         <p className="font-body text-xs sm:text-sm text-slate-500 font-normal max-w-xs mx-auto mb-5 leading-relaxed">
-          Thank you! We've received your curated pack request. Your order is queued for laser die-cut production!
+          Thank you! We've received your curated pack request. Your order is queued for print preparation and dispatch!
         </p>
 
         {/* Order ID & Status Box */}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Sparkles, Heart, Droplets, Check, ShieldCheck, Laptop, Smartphone, Coffee, Layers } from 'lucide-react';
+import { X, Plus, Trash2, Sparkles, Heart, Droplets, Check, ShieldCheck, Laptop, Smartphone, Coffee, Layers, Sun } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { Sticker } from '../types';
 
 interface StickerModalProps {
@@ -47,6 +48,28 @@ export const StickerModal: React.FC<StickerModalProps> = ({
   const similarStickers = allStickers
     .filter((s) => s.id !== sticker.id && s.style === sticker.style)
     .slice(0, 4);
+
+  const handleAddWithParticle = (e: React.MouseEvent<HTMLButtonElement>, isBonus: boolean) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2) / window.innerWidth;
+    const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+    confetti({
+      particleCount: 20,
+      spread: 55,
+      origin: { x, y },
+      colors: isBonus ? ['#FF6EB4', '#FACC15', '#9B51E0'] : ['#00D4D8', '#FF6EB4', '#FACC15'],
+      scalar: 0.75,
+      ticks: 75,
+    });
+
+    if (isBonus) {
+      onSelectBonus(sticker);
+    } else {
+      onSelectBase(sticker);
+    }
+    onClose();
+  };
 
   return (
     <div
@@ -99,8 +122,7 @@ export const StickerModal: React.FC<StickerModalProps> = ({
                   <div className="relative w-full h-full bg-gradient-to-tr from-slate-700 via-slate-600 to-slate-500 p-6 flex flex-col items-center justify-center">
                     {/* MacBook lid simulation */}
                     <div className="w-full h-44 rounded-xl bg-gradient-to-b from-slate-600 to-slate-700 border border-slate-500/50 shadow-2xl relative flex items-center justify-center">
-                      {/* Apple logo subtle mark */}
-                      <span className="text-white/20 text-xl absolute top-4"></span>
+                      <div className="w-3.5 h-3.5 rounded-full bg-white/20 absolute top-3.5 blur-[0.5px]" />
                       {/* Placed Sticker */}
                       <div className="w-24 h-24 relative z-10 transform -rotate-3 hover:rotate-0 transition-transform">
                         <img
@@ -118,7 +140,6 @@ export const StickerModal: React.FC<StickerModalProps> = ({
                   <div className="relative w-full h-full bg-slate-200 p-4 flex flex-col items-center justify-center">
                     {/* iPhone back simulation */}
                     <div className="w-28 h-48 rounded-[24px] bg-slate-900 border-2 border-slate-700 shadow-xl relative flex flex-col items-center justify-center p-2">
-                      {/* Camera bump */}
                       <div className="absolute top-2.5 left-2.5 w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center">
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-950 border border-slate-600" />
                       </div>
@@ -139,7 +160,6 @@ export const StickerModal: React.FC<StickerModalProps> = ({
                   <div className="relative w-full h-full bg-gradient-to-b from-teal-50 to-emerald-100 p-4 flex flex-col items-center justify-center">
                     {/* Hydroflask cylinder simulation */}
                     <div className="w-28 h-48 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-500 to-teal-800 border border-teal-600 shadow-xl relative flex items-center justify-center overflow-hidden">
-                      {/* Cylindrical shine highlight */}
                       <div className="absolute top-0 bottom-0 left-6 w-3 bg-white/20 blur-[1px]" />
                       {/* Placed Sticker curved on bottle */}
                       <div className="w-16 h-16 relative z-10">
@@ -155,47 +175,51 @@ export const StickerModal: React.FC<StickerModalProps> = ({
                 )}
               </div>
 
-              {/* Surface Switcher Pills */}
+              {/* Surface Switcher Pills with Vector Icons (No raw emojis) */}
               <div className="flex items-center gap-1.5 mt-3 bg-slate-100 p-1 rounded-full border border-black/[0.05]">
                 <button
                   onClick={() => setActiveSurface('cutout')}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-display font-bold transition-all ${
+                  className={`px-3 py-1 rounded-full text-[11px] font-display font-bold transition-all flex items-center gap-1 ${
                     activeSurface === 'cutout'
                       ? 'bg-white text-slate-900 shadow-soft-xs'
                       : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  Die-Cut
+                  <Sparkles className="w-3 h-3 text-[#FF6EB4]" />
+                  <span>Die-Cut</span>
                 </button>
                 <button
                   onClick={() => setActiveSurface('laptop')}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-display font-bold transition-all ${
+                  className={`px-3 py-1 rounded-full text-[11px] font-display font-bold transition-all flex items-center gap-1 ${
                     activeSurface === 'laptop'
                       ? 'bg-white text-slate-900 shadow-soft-xs'
                       : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  💻 Laptop
+                  <Laptop className="w-3 h-3 text-sky-600" />
+                  <span>Laptop</span>
                 </button>
                 <button
                   onClick={() => setActiveSurface('phone')}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-display font-bold transition-all ${
+                  className={`px-3 py-1 rounded-full text-[11px] font-display font-bold transition-all flex items-center gap-1 ${
                     activeSurface === 'phone'
                       ? 'bg-white text-slate-900 shadow-soft-xs'
                       : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  📱 Phone
+                  <Smartphone className="w-3 h-3 text-purple-600" />
+                  <span>Phone</span>
                 </button>
                 <button
                   onClick={() => setActiveSurface('bottle')}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-display font-bold transition-all ${
+                  className={`px-3 py-1 rounded-full text-[11px] font-display font-bold transition-all flex items-center gap-1 ${
                     activeSurface === 'bottle'
                       ? 'bg-white text-slate-900 shadow-soft-xs'
                       : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  🍶 Tumbler
+                  <Coffee className="w-3 h-3 text-amber-600" />
+                  <span>Bottle</span>
                 </button>
               </div>
             </div>
@@ -224,23 +248,23 @@ export const StickerModal: React.FC<StickerModalProps> = ({
                 {sticker.description || 'A collectible die-cut vinyl sticker precision cut for everyday gear, laptops, and water bottles.'}
               </p>
 
-              {/* Specs Box */}
+              {/* Specs Box with Vector Icons & Natural Copy */}
               <div className="p-3.5 rounded-2xl border border-black/[0.06] bg-slate-50/80 space-y-2 text-xs font-body">
                 <div className="flex items-center gap-2 text-slate-700">
-                  <Droplets className="w-3.5 h-3.5 text-sky-500" />
-                  <span><strong>Material:</strong> 100% Dishwasher &amp; Water Proof Vinyl</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-700">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  <span><strong>Lamination:</strong> Scratch &amp; UV Non-Fade Matte Finish</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-700">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                  <span><strong>Edge Cut:</strong> 0.2mm High-Precision Laser Die-Cut</span>
+                  <span><strong>Material:</strong> Weatherproof Vinyl</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-700">
-                  <Check className="w-3.5 h-3.5 text-purple-500" />
-                  <span><strong>Adhesive:</strong> Residue-Free Clean Peel Formula</span>
+                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  <span><strong>Protection:</strong> UV Sun Fade Resistance</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-700">
+                  <Layers className="w-3.5 h-3.5 text-purple-500" />
+                  <span><strong>Finish:</strong> Premium Matte Touch Finish</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-700">
+                  <Check className="w-3.5 h-3.5 text-sky-500" />
+                  <span><strong>Adhesive:</strong> Residue-Free Clean Peel</span>
                 </div>
               </div>
 
@@ -259,10 +283,7 @@ export const StickerModal: React.FC<StickerModalProps> = ({
                   </button>
                 ) : !isBaseFull ? (
                   <button
-                    onClick={() => {
-                      onSelectBase(sticker);
-                      onClose();
-                    }}
+                    onClick={(e) => handleAddWithParticle(e, false)}
                     className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-display font-bold text-xs flex items-center justify-center gap-2 shadow-soft hover:shadow-soft-md transition-all active:scale-95"
                   >
                     <Plus className="w-4 h-4" />
@@ -270,10 +291,7 @@ export const StickerModal: React.FC<StickerModalProps> = ({
                   </button>
                 ) : bonusUnlocked && !isBonusFull ? (
                   <button
-                    onClick={() => {
-                      onSelectBonus(sticker);
-                      onClose();
-                    }}
+                    onClick={(e) => handleAddWithParticle(e, true)}
                     className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#FF6EB4] to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-display font-bold text-xs flex items-center justify-center gap-2 shadow-glow-pink/30 animate-pulse transition-all active:scale-95"
                   >
                     <Sparkles className="w-4 h-4 text-yellow-300" />

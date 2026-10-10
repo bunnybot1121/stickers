@@ -161,7 +161,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                         ? 'border-pink-300 bg-pink-50/80 ring-1 ring-pink-300'
                         : 'border-slate-200 bg-white'
                     }`}
-                    title={`${s?.name || 'Sticker'} ${isBonus ? '(Bonus ★)' : ''}`}
+                    title={`${s?.name || 'Sticker'} ${isBonus ? '(Bonus)' : ''}`}
                   >
                     {s?.image_path ? (
                       <img
@@ -173,8 +173,8 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                       <Sparkles className="w-4 h-4 text-[#FF6EB4]" />
                     )}
                     {isBonus && (
-                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white font-mono font-bold text-[8px] flex items-center justify-center shadow-soft-xs">
-                        ★
+                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white flex items-center justify-center shadow-soft-xs">
+                        <Sparkles className="w-2.5 h-2.5 text-yellow-300" />
                       </span>
                     )}
                   </div>
@@ -254,7 +254,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               ) : (
                 <>
                   <span>Place Order (10 + 2 Pack)</span>
-                  <span className="text-base">🚀</span>
+                  <Send className="w-4 h-4" />
                 </>
               )}
             </button>
