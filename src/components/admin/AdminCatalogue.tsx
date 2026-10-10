@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -51,6 +51,14 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
   categories,
   onStickerUpdated,
 }) => {
+  const [localStickers, setLocalStickers] = useState<Sticker[]>(stickers);
+  const [stickerToDelete, setStickerToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setLocalStickers(stickers);
+  }, [stickers]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCatFilter, setSelectedCatFilter] = useState('all');
   const [editingSticker, setEditingSticker] = useState<Partial<Sticker> | null>(null);
@@ -72,7 +80,7 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filteredStickers = stickers.filter((s) => {
+  const filteredStickers = localStickers.filter((s) => {
     if (selectedCatFilter !== 'all' && !s.categories?.some((c) => c.slug === selectedCatFilter)) return false;
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase().trim();
@@ -107,17 +115,30 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
     setSelectedCatIds(s.categories?.map((c) => c.id) || []);
   };
 
-  const handleDeleteSticker = async (stickerId: string, name: string) => {
-    if (window.confirm(`Are you sure you want to permanently delete "${name}" from the catalogue?`)) {
-      try {
-        await storeService.deleteSticker(stickerId);
-        onStickerUpdated();
-        if (editingSticker?.id === stickerId) {
-          setEditingSticker(null);
-        }
-      } catch (err: any) {
-        alert(`Failed to delete sticker: ${err.message}`);
-      }
+  const handleDeleteClick = (s: { id: string; name: string }) => {
+    setStickerToDelete(s);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!stickerToDelete) return;
+    const { id } = stickerToDelete;
+    setIsDeleting(true);
+
+    // 1. Optimistic removal from UI immediately
+    setLocalStickers((prev) => prev.filter((item) => item.id !== id));
+    if (editingSticker?.id === id) {
+      setEditingSticker(null);
+    }
+
+    try {
+      await storeService.deleteSticker(id);
+      await onStickerUpdated();
+      setStickerToDelete(null);
+    } catch (err: any) {
+      alert(`Failed to delete sticker: ${err.message}`);
+      setLocalStickers(stickers); // rollback
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -419,9 +440,9 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => handleDeleteSticker(s.id, s.name)}
-                        className="p-1.5 rounded-lg border border-red-500/30 bg-red-950/20 text-red-400 hover:text-red-200 hover:border-red-500 hover:bg-red-900/40 transition-colors"
-                        title="Delete sticker"
+                        onClick={() => handleDeleteClick({ id: s.id, name: s.name })}
+                        className="p-1.5 rounded-lg border border-red-500/40 bg-red-950/20 text-red-400 hover:text-white hover:border-red-500 hover:bg-red-600 transition-colors"
+                        title={`Delete ${s.name}`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -860,8 +881,8 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                 {editingSticker.id ? (
                   <button
                     type="button"
-                    onClick={() => handleDeleteSticker(editingSticker.id!, editingSticker.name || 'this sticker')}
-                    className="px-3.5 py-2 rounded-xl border border-red-500/40 bg-red-950/30 text-red-400 hover:text-red-200 hover:border-red-500 flex items-center gap-1.5 transition-colors"
+                    onClick={() => handleDeleteClick({ id: editingSticker.id!, name: editingSticker.name || 'this sticker' })}
+                    className="px-3.5 py-2 rounded-xl border border-red-500/40 bg-red-950/30 text-red-400 hover:text-white hover:bg-red-600 hover:border-red-600 flex items-center gap-1.5 transition-colors text-xs font-mono font-bold"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Delete Sticker</span>
@@ -887,6 +908,54 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Permanent Delete In-App Confirmation Modal (No blocking window.confirm) */}
+      {stickerToDelete && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in"
+          onClick={() => !isDeleting && setStickerToDelete(null)}
+        >
+          <div
+            className="w-full max-w-md bg-[#181A26] rounded-2xl border-2 border-red-500/40 p-6 shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-red-950/60 border border-red-500/40 flex items-center justify-center text-red-400 flex-shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-base text-white">Permanently Delete Sticker?</h3>
+                <p className="text-xs text-gray-400 font-mono">This design will be removed from your store catalogue.</p>
+              </div>
+            </div>
+
+            <div className="bg-[#12131A] p-3.5 rounded-xl border border-[#2B2E42] mb-5 text-xs text-gray-300 font-body">
+              Are you sure you want to delete <strong className="text-white">"{stickerToDelete.name}"</strong>?
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setStickerToDelete(null)}
+                className="px-4 py-2 rounded-xl border border-[#2B2E42] text-gray-300 hover:text-white text-xs font-mono font-semibold transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-mono font-bold flex items-center gap-1.5 shadow-lg shadow-red-600/30 transition-all active:scale-95 disabled:opacity-50"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isDeleting ? 'Deleting...' : 'Yes, Delete Sticker'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
