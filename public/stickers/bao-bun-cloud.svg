@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    </filter>
+    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4D8"/>
+      <stop offset="50%" stop-color="#FF6EB4"/>
+      <stop offset="100%" stop-color="#F5E642"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
+  <g filter="url(#sticker-shadow)">
+    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
+    <circle cx="100" cy="100" r="82" fill="#E8F5E9"/>
+    
+    <!-- Sticker Art -->
+    
+    <!-- Soft Bun Body -->
+    <path d="M 50 125 C 45 90, 80 65, 100 65 C 120 65, 155 90, 150 125 C 145 142, 55 142, 50 125 Z" 
+          fill="#FFFDF7" stroke="#111111" stroke-width="4"/>
+    <!-- Fold Pinch on Top -->
+    <path d="M 94 65 Q 100 75 106 65" stroke="#111111" stroke-width="3" fill="none"/>
+    <path d="M 90 70 Q 100 80 110 70" stroke="#111111" stroke-width="3" fill="none"/>
+    <!-- Shy Eyes and Blush -->
+    <ellipse cx="80" cy="105" rx="3.5" ry="4" fill="#111111"/>
+    <ellipse cx="120" cy="105" rx="3.5" ry="4" fill="#111111"/>
+    <ellipse cx="70" cy="112" rx="7" ry="4" fill="#FFAAA6"/>
+    <ellipse cx="130" cy="112" rx="7" ry="4" fill="#FFAAA6"/>
+    <path d="M 96 112 Q 100 116 104 112" stroke="#111111" stroke-width="2.5" fill="none"/>
+  
+    
+    <!-- Glossy Highlight Arch -->
+    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+</svg>

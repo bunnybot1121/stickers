@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    </filter>
+    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4D8"/>
+      <stop offset="50%" stop-color="#FF6EB4"/>
+      <stop offset="100%" stop-color="#F5E642"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
+  <g filter="url(#sticker-shadow)">
+    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
+    <circle cx="100" cy="100" r="82" fill="#E8F8F0"/>
+    
+    <!-- Sticker Art -->
+    
+    <!-- Toadstool Cap -->
+    <path d="M 50 100 A 50 45 0 0 1 150 100 Z" fill="#FF4757" stroke="#111111" stroke-width="4"/>
+    <circle cx="75" cy="85" r="9" fill="#FFFFFF"/>
+    <circle cx="120" cy="80" r="11" fill="#FFFFFF"/>
+    <circle cx="95" cy="65" r="7" fill="#FFFFFF"/>
+    <!-- Stem / Frog Underneath -->
+    <path d="M 75 100 L 70 145 Q 100 155 130 145 L 125 100 Z" fill="#FFF2DF" stroke="#111111" stroke-width="3.5"/>
+    <!-- Frog Face in Window -->
+    <ellipse cx="100" cy="120" rx="18" ry="12" fill="#2ED573" stroke="#111111" stroke-width="3"/>
+    <circle cx="90" cy="113" r="5" fill="#2ED573" stroke="#111111" stroke-width="2"/>
+    <circle cx="110" cy="113" r="5" fill="#2ED573" stroke="#111111" stroke-width="2"/>
+    <circle cx="90" cy="113" r="2" fill="#111111"/>
+    <circle cx="110" cy="113" r="2" fill="#111111"/>
+    <path d="M 96 123 Q 100 126 104 123" stroke="#111111" stroke-width="2" fill="none"/>
+  
+    
+    <!-- Glossy Highlight Arch -->
+    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+</svg>

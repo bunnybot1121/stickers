@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    </filter>
+    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4D8"/>
+      <stop offset="50%" stop-color="#FF6EB4"/>
+      <stop offset="100%" stop-color="#F5E642"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
+  <g filter="url(#sticker-shadow)">
+    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
+    <circle cx="100" cy="100" r="82" fill="#FFFDF0"/>
+    
+    <!-- Sticker Art -->
+    
+    <!-- Outer Coin -->
+    <circle cx="100" cy="100" r="55" fill="#F5E642" stroke="#111111" stroke-width="4.5"/>
+    <circle cx="100" cy="100" r="44" fill="#FFD700" stroke="#111111" stroke-width="3" stroke-dasharray="6,4"/>
+    <!-- Pixel Star & 25c Text -->
+    <polygon points="100,70 104,80 114,80 106,87 109,97 100,91 91,97 94,87 86,80 96,80" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+    <text x="75" y="124" font-family="'Courier New', monospace" font-size="20" font-weight="900" fill="#111111">25¢</text>
+  
+    
+    <!-- Glossy Highlight Arch -->
+    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+</svg>

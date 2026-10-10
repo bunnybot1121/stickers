@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    </filter>
+    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4D8"/>
+      <stop offset="50%" stop-color="#FF6EB4"/>
+      <stop offset="100%" stop-color="#F5E642"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
+  <g filter="url(#sticker-shadow)">
+    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
+    <circle cx="100" cy="100" r="82" fill="#FCEAEA"/>
+    
+    <!-- Sticker Art -->
+    
+    <!-- Rocket Fire -->
+    <polygon points="90,140 100,168 110,140" fill="#F5E642" stroke="#111111" stroke-width="3"/>
+    <polygon points="94,140 100,158 106,140" fill="#FF4757"/>
+    <!-- Fins -->
+    <polygon points="70,120 80,105 80,135" fill="#00D4D8" stroke="#111111" stroke-width="3"/>
+    <polygon points="130,120 120,105 120,135" fill="#00D4D8" stroke="#111111" stroke-width="3"/>
+    <!-- Body -->
+    <path d="M 80 135 L 80 90 Q 100 45 120 90 L 120 135 Z" fill="#FF4757" stroke="#111111" stroke-width="4"/>
+    <!-- Window -->
+    <circle cx="100" cy="90" r="14" fill="#FFFFFF" stroke="#111111" stroke-width="3"/>
+    <circle cx="100" cy="90" r="10" fill="#00D4D8"/>
+    <!-- Text / Decal -->
+    <text x="85" y="122" font-family="monospace" font-size="9" font-weight="bold" fill="#FFFFFF">-f</text>
+  
+    
+    <!-- Glossy Highlight Arch -->
+    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+</svg>

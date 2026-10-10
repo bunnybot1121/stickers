@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    </filter>
+    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4D8"/>
+      <stop offset="50%" stop-color="#FF6EB4"/>
+      <stop offset="100%" stop-color="#F5E642"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
+  <g filter="url(#sticker-shadow)">
+    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
+    <circle cx="100" cy="100" r="82" fill="#E0F2F1"/>
+    
+    <!-- Sticker Art -->
+    
+    <!-- Bell / Dome -->
+    <path d="M 60 98 C 55 60, 145 60, 140 98 C 130 108, 120 102, 115 108 C 105 102, 95 108, 85 102 C 80 108, 70 102, 60 98 Z" 
+          fill="#00D4D8" stroke="#111111" stroke-width="4"/>
+    <ellipse cx="100" cy="98" rx="35" ry="8" fill="#80DEEA"/>
+    <!-- Tentacles -->
+    <path d="M 75 105 Q 68 130 80 155" stroke="#FF6EB4" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 90 105 Q 96 130 88 158" stroke="#F5E642" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 105 105 Q 112 130 104 158" stroke="#F5E642" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M 120 105 Q 130 130 118 155" stroke="#FF6EB4" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <!-- Cute Eyes -->
+    <circle cx="85" cy="85" r="3.5" fill="#111111"/>
+    <circle cx="115" cy="85" r="3.5" fill="#111111"/>
+    <ellipse cx="78" cy="90" rx="4" ry="2" fill="#FF6EB4"/>
+    <ellipse cx="122" cy="90" rx="4" ry="2" fill="#FF6EB4"/>
+  
+    
+    <!-- Glossy Highlight Arch -->
+    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+</svg>

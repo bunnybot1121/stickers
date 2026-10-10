@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    </filter>
+    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4D8"/>
+      <stop offset="50%" stop-color="#FF6EB4"/>
+      <stop offset="100%" stop-color="#F5E642"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
+  <g filter="url(#sticker-shadow)">
+    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
+    <circle cx="100" cy="100" r="82" fill="#FFF0F5"/>
+    
+    <!-- Sticker Art -->
+    
+    <!-- Ramen Bowl -->
+    <path d="M 45 105 Q 100 155 155 105 Z" fill="#FF6EB4" stroke="#111111" stroke-width="4"/>
+    <rect x="75" y="138" width="50" height="8" rx="3" fill="#F5E642" stroke="#111111" stroke-width="3"/>
+    <!-- Soup & Noodles -->
+    <ellipse cx="100" cy="105" rx="55" ry="12" fill="#FFE599" stroke="#111111" stroke-width="3"/>
+    <!-- Narutomaki Swirl -->
+    <circle cx="130" cy="104" r="8" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+    <path d="M 128 104 Q 130 101 133 104" stroke="#FF6EB4" stroke-width="2.5" fill="none"/>
+    <!-- Sleeping Cat Curled on Edge -->
+    <ellipse cx="85" cy="92" rx="26" ry="18" fill="#FFFFFF" stroke="#111111" stroke-width="3.5"/>
+    <polygon points="65,80 62,68 74,75" fill="#FFAAA6" stroke="#111111" stroke-width="2.5"/>
+    <polygon points="85,75 92,66 95,78" fill="#FFAAA6" stroke="#111111" stroke-width="2.5"/>
+    <!-- Sleeping Eyes (v v) -->
+    <path d="M 72 92 Q 76 96 80 92" stroke="#111111" stroke-width="2.5" fill="none"/>
+    <path d="M 88 92 Q 92 96 96 92" stroke="#111111" stroke-width="2.5" fill="none"/>
+    <!-- Chopsticks -->
+    <line x1="35" y1="90" x2="165" y2="82" stroke="#8B5A2B" stroke-width="4.5" stroke-linecap="round"/>
+  
+    
+    <!-- Glossy Highlight Arch -->
+    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+</svg>
