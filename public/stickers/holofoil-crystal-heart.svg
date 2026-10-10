@@ -1,37 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
   <defs>
-    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    <filter id="heart-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#181A26" flood-opacity="0.18"/>
     </filter>
-    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00D4D8"/>
-      <stop offset="50%" stop-color="#FF6EB4"/>
-      <stop offset="100%" stop-color="#F5E642"/>
+    <linearGradient id="holoFoil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="30%" stop-color="#A855F7"/>
+      <stop offset="70%" stop-color="#FF6EB4"/>
+      <stop offset="100%" stop-color="#FACC15"/>
     </linearGradient>
   </defs>
-  
-  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
-  <g filter="url(#sticker-shadow)">
-    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
-    <circle cx="100" cy="100" r="82" fill="#F3E5F5"/>
-    
-    <!-- Sticker Art -->
-    
-    <!-- Geometric Crystal Heart with Holographic Facets -->
-    <polygon points="100,68 126,52 148,74 135,108 100,145 65,108 52,74 74,52" 
-             fill="url(#holo-grad)" stroke="#111111" stroke-width="4.5"/>
-    <!-- Facet Inner Lines -->
-    <line x1="100" y1="68" x2="100" y2="145" stroke="#111111" stroke-width="3"/>
-    <line x1="100" y1="95" x2="52" y2="74" stroke="#111111" stroke-width="2.5"/>
-    <line x1="100" y1="95" x2="148" y2="74" stroke="#111111" stroke-width="2.5"/>
-    <line x1="100" y1="95" x2="65" y2="108" stroke="#111111" stroke-width="2.5"/>
-    <line x1="100" y1="95" x2="135" y2="108" stroke="#111111" stroke-width="2.5"/>
-    <!-- Prismatic Sparkles -->
-    <polygon points="145,50 148,56 154,58 148,60 145,66 142,60 136,58 142,56" fill="#FFFFFF"/>
-    <polygon points="55,125 57,129 62,130 57,132 55,136 53,132 48,130 53,129" fill="#FFFFFF"/>
-  
-    
-    <!-- Glossy Highlight Arch -->
-    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+
+  <g filter="url(#heart-shadow)">
+    <!-- White Die-Cut Silhouette Contour -->
+    <path d="M 100 165 L 40 100 C 15 70, 45 30, 80 45 C 92 50, 100 62, 100 62 C 100 62, 108 50, 120 45 C 155 30, 185 70, 160 100 Z" 
+          fill="#FFFFFF" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round"/>
+
+    <!-- Geometric Faceted Crystal Heart -->
+    <polygon points="100,62 80,45 50,60 40,100 100,165" fill="url(#holoFoil)" stroke="#181A26" stroke-width="4"/>
+    <polygon points="100,62 120,45 150,60 160,100 100,165" fill="url(#holoFoil)" stroke="#181A26" stroke-width="4"/>
+
+    <!-- Crystal Facets -->
+    <polygon points="100,62 60,95 100,120" fill="#FFFFFF" opacity="0.35" stroke="#181A26" stroke-width="2"/>
+    <polygon points="100,62 140,95 100,120" fill="#FFFFFF" opacity="0.2" stroke="#181A26" stroke-width="2"/>
+    <polygon points="100,120 40,100 100,165" fill="#C084FC" opacity="0.4" stroke="#181A26" stroke-width="2"/>
+    <polygon points="100,120 160,100 100,165" fill="#38BDF8" opacity="0.4" stroke="#181A26" stroke-width="2"/>
+
+    <!-- Sparkles -->
+    <polygon points="155,42 158,50 166,53 158,56 155,64 152,56 144,53 152,50" fill="#FACC15" stroke="#181A26" stroke-width="2"/>
+    <polygon points="45,45 47,51 53,53 47,55 45,61 43,55 37,53 43,51" fill="#FFFFFF" stroke="#181A26" stroke-width="2"/>
   </g>
 </svg>

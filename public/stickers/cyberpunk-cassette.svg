@@ -1,41 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
   <defs>
-    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    <filter id="tape-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#181A26" flood-opacity="0.18"/>
     </filter>
-    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00D4D8"/>
-      <stop offset="50%" stop-color="#FF6EB4"/>
-      <stop offset="100%" stop-color="#F5E642"/>
+    <linearGradient id="tapeHolo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="50%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#EC4899"/>
     </linearGradient>
   </defs>
-  
-  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
-  <g filter="url(#sticker-shadow)">
-    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
-    <circle cx="100" cy="100" r="82" fill="#E5FBFC"/>
-    
-    <!-- Sticker Art -->
-    
-    <!-- Cassette Outer Body -->
-    <rect x="42" y="60" width="116" height="80" rx="8" fill="#111111" stroke="#00D4D8" stroke-width="4"/>
-    <!-- Cassette Label Area -->
-    <rect x="52" y="70" width="96" height="42" rx="4" fill="url(#holo-grad)" stroke="#111111" stroke-width="3"/>
-    <!-- Cassette Tape Spools Window -->
-    <rect x="68" y="80" width="64" height="22" rx="4" fill="#FFFFFF" stroke="#111111" stroke-width="2.5"/>
-    <circle cx="82" cy="91" r="7" fill="#111111"/>
-    <circle cx="82" cy="91" r="3" fill="#FFFFFF"/>
-    <circle cx="118" cy="91" r="7" fill="#111111"/>
-    <circle cx="118" cy="91" r="3" fill="#FFFFFF"/>
-    <!-- Screws -->
-    <circle cx="48" cy="66" r="2" fill="#FFFFFF"/>
-    <circle cx="152" cy="66" r="2" fill="#FFFFFF"/>
-    <circle cx="48" cy="134" r="2" fill="#FFFFFF"/>
-    <circle cx="152" cy="134" r="2" fill="#FFFFFF"/>
-    <text x="60" y="128" font-family="sans-serif" font-weight="900" font-size="10" fill="#F5E642">SIDE-A // 1984</text>
-  
-    
-    <!-- Glossy Highlight Arch -->
-    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+
+  <g filter="url(#tape-shadow)">
+    <!-- White Die-Cut Silhouette Contour -->
+    <path d="M 35 55 L 165 55 C 172 55, 172 65, 172 65 L 172 135 C 172 145, 162 145, 162 145 L 145 145 L 138 155 L 62 155 L 55 145 L 38 145 C 28 145, 28 135, 28 135 L 28 65 C 28 55, 35 55, 35 55 Z" 
+          fill="#FFFFFF" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round"/>
+
+    <!-- Cassette Main Body -->
+    <path d="M 35 55 L 165 55 C 172 55, 172 65, 172 65 L 172 135 C 172 145, 162 145, 162 145 L 145 145 L 138 155 L 62 155 L 55 145 L 38 145 C 28 145, 28 135, 28 135 L 28 65 C 28 55, 35 55, 35 55 Z" 
+          fill="#181A26" stroke="#181A26" stroke-width="4.5" stroke-linejoin="round"/>
+
+    <!-- Top Label Sticker in Synthwave Holographic Gradient -->
+    <rect x="42" y="65" width="116" height="42" rx="4" fill="url(#tapeHolo)"/>
+    <text x="100" y="78" font-family="'Courier New', monospace" font-size="8" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">CYBER_LOFI // 1984</text>
+
+    <!-- Center Spool Window -->
+    <rect x="60" y="86" width="80" height="28" rx="6" fill="#181A26" stroke="#FFFFFF" stroke-width="2"/>
+
+    <!-- Left Reel Teeth -->
+    <circle cx="76" cy="100" r="10" fill="#FFFFFF"/>
+    <circle cx="76" cy="100" r="5" fill="#181A26"/>
+    <!-- Right Reel Teeth -->
+    <circle cx="124" cy="100" r="10" fill="#FFFFFF"/>
+    <circle cx="124" cy="100" r="5" fill="#181A26"/>
+
+    <!-- Tape Window Guide lines -->
+    <line x1="88" y1="96" x2="112" y2="96" stroke="#FACC15" stroke-width="2"/>
+    <line x1="88" y1="104" x2="112" y2="104" stroke="#FACC15" stroke-width="2"/>
+
+    <!-- Bottom Trapezoid Cutout Area -->
+    <polygon points="66,150 134,150 142,142 58,142" fill="#2B2E42"/>
+    <circle cx="72" cy="146" r="3" fill="#FACC15"/>
+    <circle cx="128" cy="146" r="3" fill="#FACC15"/>
+    <circle cx="100" cy="146" r="3.5" fill="#EF4444"/>
   </g>
 </svg>

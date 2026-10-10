@@ -4,41 +4,42 @@ import { ArrowRight, Sparkles, Award, Layers, Gift, Droplets } from 'lucide-reac
 interface HeroProps {
   onExploreClick: () => void;
   onOpenPackBuilder: () => void;
-  onOpenAiVibe: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder, onOpenAiVibe }) => {
+export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder }) => {
   return (
-    <section className="relative overflow-hidden pt-8 pb-10 sm:pt-16 sm:pb-14 px-4 sm:px-8">
+    <section className="relative overflow-hidden pt-6 pb-12 sm:pt-12 sm:pb-16 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Typography & CTAs */}
-          <div className="lg:col-span-7 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          {/* Left Column: Typography & CTAs matching Reference Mockup Screen 01 */}
+          <div className="lg:col-span-6 space-y-6">
             {/* Promo Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFE4EF] text-[#D81B60] border border-[#FF6EB4] font-mono text-xs font-bold shadow-sm">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF6EB4]" />
-              <span>10 + 2 SPECIAL OFFER IS LIVE!</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFE4EF] text-[#D81B60] border-2 border-[#FF6EB4] font-mono text-xs font-black shadow-sm">
+              <Sparkles className="w-4 h-4 text-[#FF6EB4] animate-spin" style={{ animationDuration: '6s' }} />
+              <span>10 + 2 PACK SPECIAL DEAL IS LIVE!</span>
             </div>
 
             {/* Main Headline matching reference */}
-            <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-brand-dark">
-              Stickers <br />
+            <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight text-brand-dark">
+              Stickers{' '}
+              <span className="inline-block transform -rotate-12 text-2xl sm:text-4xl">👑</span>
+              <br />
               For Your <br />
               Everyday <br />
               <span className="text-[#FF6EB4] relative inline-block">
                 Vibe.
-                {/* Hand-drawn underline accent */}
+                {/* Hand-drawn yellow underline curve matching mockup */}
                 <svg
                   className="absolute -bottom-2 left-0 w-full"
                   viewBox="0 0 100 12"
                   preserveAspectRatio="none"
-                  height="8"
+                  height="10"
                 >
                   <path
-                    d="M0,6 Q30,12 60,4 T100,6"
+                    d="M0,7 Q30,14 60,5 T100,7"
                     fill="none"
                     stroke="#FACC15"
-                    strokeWidth="4"
+                    strokeWidth="5"
                     strokeLinecap="round"
                   />
                 </svg>
@@ -47,18 +48,18 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder, o
 
             <p className="font-body text-base sm:text-lg text-gray-700 max-w-lg font-medium leading-relaxed">
               Explore aesthetic, coding, anime, gaming and more — pick your favorites and get{' '}
-              <strong className="text-black bg-[#FEF9C3] px-1.5 py-0.5 rounded border border-black/10">
+              <span className="font-bold text-brand-dark bg-[#FEF9C3] px-2 py-0.5 rounded-lg border border-black/10 inline-block shadow-sm">
                 +2 FREE stickers
-              </strong>{' '}
+              </span>{' '}
               on every 10!
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            {/* Main CTAs */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-1">
               <button
                 id="hero-build-pack-btn"
                 onClick={onOpenPackBuilder}
-                className="btn-neo-yellow text-sm sm:text-base py-3 px-6 flex items-center gap-2"
+                className="btn-neo-yellow text-sm sm:text-base py-3 px-6 flex items-center gap-2 font-black shadow-neo"
               >
                 <span>Build Your Pack</span>
                 <ArrowRight className="w-4 h-4" />
@@ -67,127 +68,75 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder, o
               <button
                 id="hero-explore-collection-btn"
                 onClick={onExploreClick}
-                className="btn-neo-white text-sm sm:text-base py-3 px-6"
+                className="btn-neo-white text-sm sm:text-base py-3 px-6 font-bold shadow-neo-sm"
               >
                 <span>Explore Collection</span>
-              </button>
-
-              <button
-                onClick={onOpenAiVibe}
-                className="btn-neo bg-[#EBD4FF] text-purple-900 border-2 border-purple-500 hover:bg-purple-200 text-xs sm:text-sm py-2.5 px-4 flex items-center gap-1.5"
-              >
-                <Sparkles className="w-4 h-4 text-purple-600" />
-                <span>AI Vibe Stylist</span>
               </button>
             </div>
           </div>
 
-          {/* Right Column: Realistic Laptop Desk Sticker Scene matching reference */}
-          <div className="lg:col-span-5 relative flex items-center justify-center">
-            <div className="relative w-full max-w-md aspect-[4/3] rounded-3xl bg-white border-2 border-black/80 shadow-neo-lg p-4 overflow-hidden">
-              {/* Background laptop surface simulation */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#F5F2EB] to-[#ECE7DD] flex flex-col justify-end p-6">
-                <div className="w-full h-3/4 rounded-2xl bg-[#2D3142] border-2 border-black relative overflow-hidden shadow-md flex items-center justify-center p-3">
-                  {/* Laptop lid branding */}
-                  <div className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest absolute top-2 text-center w-full">
-                    STICKERZ LAPTOP
-                  </div>
+          {/* Right Column: Real Laptop Desk Flatlay Scene matching Reference Screen 01 */}
+          <div className="lg:col-span-6 relative flex items-center justify-center">
+            <div className="relative w-full max-w-lg aspect-[16/10] rounded-3xl overflow-hidden border-3 border-brand-dark shadow-neo-xl group transition-transform duration-300 hover:rotate-0 transform rotate-1">
+              {/* Photorealistic Hero Image */}
+              <img
+                src="/hero-laptop.jpg"
+                alt="Aesthetic laptop covered in vibrant stickers"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
 
-                  {/* Collage of Stickers on Laptop Lid */}
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <img
-                      src="/stickers/sleepy-ramen-neko.svg"
-                      alt="Neko"
-                      className="w-20 h-20 absolute -top-1 -left-2 transform -rotate-12 filter drop-shadow-[2px_3px_0px_#111] hover:scale-110 transition-transform"
-                    />
-                    <img
-                      src="/stickers/terminal-wizard.svg"
-                      alt="Terminal Wizard"
-                      className="w-20 h-20 absolute -top-1 -right-2 transform rotate-12 filter drop-shadow-[2px_3px_0px_#111] hover:scale-110 transition-transform"
-                    />
-                    <img
-                      src="/stickers/caffeinated-python.svg"
-                      alt="Python"
-                      className="w-20 h-20 absolute -bottom-1 -left-1 transform rotate-6 filter drop-shadow-[2px_3px_0px_#111] hover:scale-110 transition-transform"
-                    />
-                    <img
-                      src="/stickers/pixel-game-cart.svg"
-                      alt="Game Cart"
-                      className="w-20 h-20 absolute -bottom-1 -right-1 transform -rotate-6 filter drop-shadow-[2px_3px_0px_#111] hover:scale-110 transition-transform"
-                    />
-                    <img
-                      src="/stickers/boba-ghost.svg"
-                      alt="Ghost"
-                      className="w-24 h-24 absolute m-auto filter drop-shadow-[3px_4px_0px_#111] hover:scale-110 transition-transform"
-                    />
-                  </div>
-                </div>
+              {/* Floating Badge 1: "- 10 + 2 Free Stickers! -" */}
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm border-2 border-brand-dark rounded-full px-3.5 py-1 text-xs font-mono font-black text-brand-dark shadow-neo-sm transform rotate-2">
+                ✨ 10 + 2 Free Stickers!
               </div>
 
-              {/* Floating Highlight Banner Badge matching reference */}
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm border-2 border-black px-3 py-1.5 rounded-full shadow-neo-sm transform rotate-3 flex items-center gap-1.5 text-xs font-mono font-bold text-black select-none">
-                <span className="text-[#FF6EB4]">✦</span>
-                <span>— 10 + 2 Free Stickers! —</span>
+              {/* Floating Badge 2: "Waterproof Vinyl" */}
+              <div className="absolute bottom-4 left-4 bg-[#FACC15] border-2 border-brand-dark rounded-xl px-3 py-1 text-[11px] font-display font-black text-brand-dark shadow-neo-sm transform -rotate-2">
+                💧 Waterproof Matte Vinyl
               </div>
             </div>
           </div>
         </div>
 
-        {/* 4 Feature Trust Badges matching reference */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-12 pt-8 border-t-2 border-black/10">
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-black/80 shadow-neo-sm">
-            <div className="w-10 h-10 rounded-xl bg-[#FFE4EF] text-[#FF6EB4] border border-black/20 flex items-center justify-center flex-shrink-0">
-              <Award className="w-5 h-5" />
+        {/* 4 Trust Badges Strip matching Reference Mockup Screen 01 */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-12 pt-6 border-t-2 border-black/10">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-brand-dark shadow-neo-sm">
+            <div className="w-10 h-10 rounded-xl bg-pink-100 border border-brand-dark flex items-center justify-center text-xl flex-shrink-0">
+              ⭐
             </div>
             <div>
-              <span className="font-display font-black text-xs sm:text-sm text-brand-dark block">
-                500+ Original
-              </span>
-              <span className="text-[10px] font-mono text-gray-500 block">
-                Original Designs
-              </span>
+              <div className="font-display font-black text-xs sm:text-sm text-brand-dark">Original Designs</div>
+              <div className="text-[10px] font-mono text-gray-500 font-bold">100% Unique Artwork</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-black/80 shadow-neo-sm">
-            <div className="w-10 h-10 rounded-xl bg-[#FEF9C3] text-amber-700 border border-black/20 flex items-center justify-center flex-shrink-0">
-              <Gift className="w-5 h-5" />
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-brand-dark shadow-neo-sm">
+            <div className="w-10 h-10 rounded-xl bg-yellow-100 border border-brand-dark flex items-center justify-center text-xl flex-shrink-0">
+              🎁
             </div>
             <div>
-              <span className="font-display font-black text-xs sm:text-sm text-brand-dark block">
-                10 + 2 Packs
-              </span>
-              <span className="text-[10px] font-mono text-gray-500 block">
-                2 Free Bonus Stickers
-              </span>
+              <div className="font-display font-black text-xs sm:text-sm text-brand-dark">10 + 2 Packs</div>
+              <div className="text-[10px] font-mono text-gray-500 font-bold">+2 Free With Every 10</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-black/80 shadow-neo-sm">
-            <div className="w-10 h-10 rounded-xl bg-[#E0F2FE] text-sky-700 border border-black/20 flex items-center justify-center flex-shrink-0">
-              <Layers className="w-5 h-5" />
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-brand-dark shadow-neo-sm">
+            <div className="w-10 h-10 rounded-xl bg-cyan-100 border border-brand-dark flex items-center justify-center text-xl flex-shrink-0">
+              🏷️
             </div>
             <div>
-              <span className="font-display font-black text-xs sm:text-sm text-brand-dark block">
-                Multiple Categories
-              </span>
-              <span className="text-[10px] font-mono text-gray-500 block">
-                Anime, Tech, Gaming
-              </span>
+              <div className="font-display font-black text-xs sm:text-sm text-brand-dark">Multiple Categories</div>
+              <div className="text-[10px] font-mono text-gray-500 font-bold">Coding, Anime, Memes</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-black/80 shadow-neo-sm">
-            <div className="w-10 h-10 rounded-xl bg-[#DCFCE7] text-emerald-700 border border-black/20 flex items-center justify-center flex-shrink-0">
-              <Droplets className="w-5 h-5" />
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white border-2 border-brand-dark shadow-neo-sm">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-brand-dark flex items-center justify-center text-xl flex-shrink-0">
+              ✨
             </div>
             <div>
-              <span className="font-display font-black text-xs sm:text-sm text-brand-dark block">
-                High Quality Print
-              </span>
-              <span className="text-[10px] font-mono text-gray-500 block">
-                Waterproof Matte Vinyl
-              </span>
+              <div className="font-display font-black text-xs sm:text-sm text-brand-dark">High Quality Print</div>
+              <div className="text-[10px] font-mono text-gray-500 font-bold">UV &amp; Water Resistant</div>
             </div>
           </div>
         </div>
@@ -195,3 +144,4 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder, o
     </section>
   );
 };
+

@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
 
-          {/* Center Navigation Links matching reference */}
+          {/* Center Navigation Links matching reference Screen 01/02 */}
           <nav className="hidden md:flex items-center gap-8 font-display font-bold text-sm text-gray-700">
             <button
               onClick={() => handleNavClick('home', 'home')}
@@ -91,13 +91,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               Categories
             </button>
             <button
-              onClick={onOpenAiVibe}
-              className="text-[#FF6EB4] hover:text-pink-600 flex items-center gap-1.5 transition-colors"
-            >
-              <Sparkles className="w-4 h-4 animate-spin text-[#FF6EB4]" style={{ animationDuration: '4s' }} />
-              <span>AI Pack Stylist</span>
-            </button>
-            <button
               onClick={() => handleNavClick('about-section', 'about')}
               className={`hover:text-black transition-colors ${
                 activeNav === 'about' ? 'text-black border-b-2 border-black pb-0.5' : ''
@@ -107,20 +100,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Right Controls */}
+          {/* Right Controls matching mockup */}
           <div className="flex items-center gap-2.5 sm:gap-3.5">
-            {/* AI Assistant Pill Badge */}
-            {hasGroq && (
-              <button
-                onClick={onOpenAiVibe}
-                title="Groq AI Integration Active"
-                className="hidden xl:flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-[#EBD4FF] text-purple-900 border border-purple-400 hover:bg-purple-200 transition-colors"
-              >
-                <Sparkles className="w-3 h-3 text-purple-600" />
-                <span>Groq AI Ready</span>
-              </button>
-            )}
-
             {/* Supabase Status Pill */}
             <div
               title={isSupabase ? 'Supabase Live Connection' : 'Local Resilient Demo Mode'}

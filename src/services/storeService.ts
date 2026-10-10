@@ -18,8 +18,8 @@ import {
 import { validatePack, DEFAULT_PACK_RULE } from '../lib/packRules';
 
 // Local storage keys for persistent demo mode
-const STORAGE_KEY_STICKERS = 'sticker_verse_stickers';
-const STORAGE_KEY_CATEGORIES = 'sticker_verse_categories';
+const STORAGE_KEY_STICKERS = 'sticker_verse_stickers_v5';
+const STORAGE_KEY_CATEGORIES = 'sticker_verse_categories_v5';
 const STORAGE_KEY_PACK_RULE = 'sticker_verse_pack_rule';
 const STORAGE_KEY_ORDERS = 'sticker_verse_orders';
 const STORAGE_KEY_BATCHES = 'sticker_verse_batches';

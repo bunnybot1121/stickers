@@ -1,38 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
   <defs>
-    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    <filter id="rocket-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#181A26" flood-opacity="0.18"/>
     </filter>
-    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00D4D8"/>
-      <stop offset="50%" stop-color="#FF6EB4"/>
-      <stop offset="100%" stop-color="#F5E642"/>
+    <linearGradient id="rocketBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F43F5E"/>
+      <stop offset="100%" stop-color="#BE123C"/>
+    </linearGradient>
+    <linearGradient id="exhaustFlame" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FACC15"/>
+      <stop offset="50%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EF4444"/>
     </linearGradient>
   </defs>
-  
-  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
-  <g filter="url(#sticker-shadow)">
-    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
-    <circle cx="100" cy="100" r="82" fill="#FCEAEA"/>
-    
-    <!-- Sticker Art -->
-    
-    <!-- Rocket Fire -->
-    <polygon points="90,140 100,168 110,140" fill="#F5E642" stroke="#111111" stroke-width="3"/>
-    <polygon points="94,140 100,158 106,140" fill="#FF4757"/>
-    <!-- Fins -->
-    <polygon points="70,120 80,105 80,135" fill="#00D4D8" stroke="#111111" stroke-width="3"/>
-    <polygon points="130,120 120,105 120,135" fill="#00D4D8" stroke="#111111" stroke-width="3"/>
-    <!-- Body -->
-    <path d="M 80 135 L 80 90 Q 100 45 120 90 L 120 135 Z" fill="#FF4757" stroke="#111111" stroke-width="4"/>
-    <!-- Window -->
-    <circle cx="100" cy="90" r="14" fill="#FFFFFF" stroke="#111111" stroke-width="3"/>
-    <circle cx="100" cy="90" r="10" fill="#00D4D8"/>
-    <!-- Text / Decal -->
-    <text x="85" y="122" font-family="monospace" font-size="9" font-weight="bold" fill="#FFFFFF">-f</text>
-  
-    
-    <!-- Glossy Highlight Arch -->
-    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+
+  <g filter="url(#rocket-shadow)">
+    <!-- White Die-Cut Silhouette Contour -->
+    <path d="M 100 25 C 125 50, 135 105, 128 135 L 145 155 L 122 145 L 100 150 L 78 145 L 55 155 L 72 135 C 65 105, 75 50, 100 25 Z" 
+          fill="#FFFFFF" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round"/>
+
+    <!-- Exhaust Blast Flame -->
+    <path d="M 85 148 Q 100 185 100 185 Q 100 185 115 148 Z" fill="url(#exhaustFlame)" stroke="#181A26" stroke-width="3"/>
+    <path d="M 92 148 Q 100 170 100 170 Q 100 170 108 148 Z" fill="#FFFFFF"/>
+
+    <!-- Main Rocket Fuselage -->
+    <path d="M 100 30 C 125 55, 132 105, 126 135 L 74 135 C 68 105, 75 55, 100 30 Z" 
+          fill="url(#rocketBody)" stroke="#181A26" stroke-width="4.5" stroke-linejoin="round"/>
+
+    <!-- Rocket Fins -->
+    <polygon points="74,115 52,145 74,138" fill="#1E293B" stroke="#181A26" stroke-width="3.5"/>
+    <polygon points="126,115 148,145 126,138" fill="#1E293B" stroke="#181A26" stroke-width="3.5"/>
+
+    <!-- Porthole Window -->
+    <circle cx="100" cy="80" r="16" fill="#38BDF8" stroke="#181A26" stroke-width="4"/>
+    <circle cx="100" cy="80" r="12" fill="#E0F2FE"/>
+    <path d="M 94 74 L 106 86" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Nose Cone Cap -->
+    <path d="M 100 30 C 110 42, 114 55, 114 55 L 86 55 C 86 55, 90 42, 100 30 Z" fill="#FACC15" stroke="#181A26" stroke-width="3"/>
+
+    <!-- Git Branch / Terminal Flag on Side -->
+    <rect x="80" y="108" width="40" height="14" rx="4" fill="#181A26"/>
+    <text x="100" y="118" font-family="'Courier New', monospace" font-size="8" font-weight="900" fill="#38BDF8" text-anchor="middle">--force</text>
   </g>
 </svg>

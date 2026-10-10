@@ -24,7 +24,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
 }) => {
   const [customerName, setCustomerName] = useState('');
   const [customerContact, setCustomerContact] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
   const [customerNote, setCustomerNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -55,7 +54,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       const res = await storeService.submitOrder({
         customerName: customerName.trim(),
         customerContact: `+91 ${customerContact.trim().replace(/^\+91\s*/, '')}`,
-        customerEmail: customerEmail.trim() || undefined,
         customerNote: customerNote.trim() || undefined,
         baseStickerIds: selection.baseStickerIds,
         bonusStickerIds: selection.bonusStickerIds,
@@ -220,33 +218,17 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             </div>
           </div>
 
-          {/* Email Input (Optional) */}
+          {/* Delivery Address / Notes */}
           <div>
             <label className="block font-display font-bold text-xs uppercase tracking-wider text-brand-dark mb-1.5">
-              Email <span className="text-gray-400 font-normal">(optional)</span>
-            </label>
-            <input
-              id="customer-email-input"
-              type="email"
-              value={customerEmail}
-              onChange={(e) => setCustomerEmail(e.target.value)}
-              placeholder="yourmail@gmail.com"
-              className="w-full px-4 py-3 rounded-2xl border-2 border-brand-dark bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4] shadow-neo-sm transition-all"
-              disabled={isSubmitting}
-            />
-          </div>
-
-          {/* Special Notes (Optional) */}
-          <div>
-            <label className="block font-display font-bold text-xs uppercase tracking-wider text-brand-dark mb-1.5">
-              Any special notes? <span className="text-gray-400 font-normal">(optional)</span>
+              Delivery Address / Special Notes <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <textarea
               id="customer-note-input"
               rows={2}
               value={customerNote}
               onChange={(e) => setCustomerNote(e.target.value)}
-              placeholder="E.g. preferred themes, gift, etc."
+              placeholder="House / flat no., street, city, pin code (or delivery notes)"
               className="w-full px-4 py-3 rounded-2xl border-2 border-brand-dark bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4] shadow-neo-sm transition-all resize-none"
               disabled={isSubmitting}
             />

@@ -236,7 +236,6 @@ export function App() {
               <Hero
                 onExploreClick={scrollToCatalogue}
                 onOpenPackBuilder={() => setIsPackBuilderOpen(true)}
-                onOpenAiVibe={() => setIsAiVibeOpen(true)}
               />
 
               <OfferExplainer />

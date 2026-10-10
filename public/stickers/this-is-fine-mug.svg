@@ -1,38 +1,56 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
   <defs>
-    <filter id="sticker-shadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="3" dy="4" stdDeviation="0" flood-color="#111111" flood-opacity="1"/>
+    <filter id="mug-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#181A26" flood-opacity="0.18"/>
     </filter>
-    <linearGradient id="holo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00D4D8"/>
-      <stop offset="50%" stop-color="#FF6EB4"/>
-      <stop offset="100%" stop-color="#F5E642"/>
+    <linearGradient id="fireOuter" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="60%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+    <linearGradient id="fireInner" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#FEF08A"/>
     </linearGradient>
   </defs>
-  
-  <!-- Outer Die-Cut White Rim with Neo-Brutalist Border -->
-  <g filter="url(#sticker-shadow)">
-    <circle cx="100" cy="100" r="90" fill="#FFFFFF" stroke="#111111" stroke-width="4.5"/>
-    <circle cx="100" cy="100" r="82" fill="#FFF1E6"/>
-    
-    <!-- Sticker Art -->
-    
-    <!-- Fire Background Flames -->
-    <path d="M 50 140 Q 40 90 70 100 Q 80 60 105 85 Q 130 50 135 95 Q 160 85 150 140 Z" 
-          fill="#FF7675" stroke="#111111" stroke-width="4"/>
-    <path d="M 65 140 Q 60 105 80 110 Q 95 80 115 105 Q 135 90 135 140 Z" 
-          fill="#F5E642" stroke="#111111" stroke-width="3"/>
-    <!-- Mug in center -->
-    <rect x="75" y="98" width="45" height="42" rx="5" fill="#FFFFFF" stroke="#111111" stroke-width="4"/>
-    <path d="M 120 106 C 132 106, 132 126, 120 126" fill="none" stroke="#111111" stroke-width="4"/>
-    <!-- Cute Happy Derp Face on Mug -->
-    <circle cx="88" cy="115" r="3" fill="#111111"/>
-    <circle cx="106" cy="115" r="3" fill="#111111"/>
-    <path d="M 94 122 Q 97 127 101 122" stroke="#111111" stroke-width="2.5" fill="none"/>
-    <text x="80" y="136" font-family="sans-serif" font-size="7" font-weight="900" fill="#FF7675">IT'S FINE</text>
-  
-    
-    <!-- Glossy Highlight Arch -->
-    <path d="M 45 45 A 75 75 0 0 1 155 45 A 72 72 0 0 0 45 45 Z" fill="#FFFFFF" opacity="0.6"/>
+
+  <g filter="url(#mug-shadow)">
+    <!-- White Die-Cut Silhouette Contour -->
+    <path d="M 40 145 C 30 110, 45 70, 70 85 C 75 55, 95 35, 110 50 C 130 35, 155 60, 150 90 C 165 95, 172 135, 160 145 C 165 155, 150 162, 50 162 C 40 162, 35 155, 40 145 Z" 
+          fill="#FFFFFF" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round"/>
+
+    <!-- Outer Roaring Flame Background -->
+    <path d="M 42 145 C 32 110, 48 72, 72 86 C 76 56, 96 36, 112 52 C 132 36, 156 62, 152 92 C 166 96, 170 136, 158 145 C 162 155, 148 160, 48 160 Z" 
+          fill="url(#fireOuter)" stroke="#181A26" stroke-width="4.5" stroke-linejoin="round"/>
+
+    <!-- Inner Hot Yellow Core Flame -->
+    <path d="M 58 145 C 50 120, 62 90, 80 102 C 86 80, 100 68, 112 80 C 126 70, 142 90, 138 112 C 148 118, 148 145, 138 152 Z" 
+          fill="url(#fireInner)" stroke="#181A26" stroke-width="3" stroke-linejoin="round"/>
+
+    <!-- Cute Smiling Ceramic Mug -->
+    <rect x="70" y="98" width="56" height="52" rx="8" fill="#FFFFFF" stroke="#181A26" stroke-width="4.5"/>
+    <!-- Mug Handle -->
+    <path d="M 126 108 C 144 108, 144 140, 126 140" fill="none" stroke="#181A26" stroke-width="5" stroke-linecap="round"/>
+    <path d="M 126 114 C 136 114, 136 134, 126 134" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+
+    <!-- Coffee Liquid line -->
+    <line x1="74" y1="104" x2="122" y2="104" stroke="#78350F" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- Cartoon Derp Face -->
+    <circle cx="86" cy="120" r="4.5" fill="#181A26"/>
+    <circle cx="110" cy="120" r="4.5" fill="#181A26"/>
+    <circle cx="84.5" cy="118.5" r="1.5" fill="#FFFFFF"/>
+    <circle cx="108.5" cy="118.5" r="1.5" fill="#FFFFFF"/>
+
+    <!-- Pink Derp Cheeks -->
+    <ellipse cx="78" cy="127" rx="5" ry="3" fill="#FF6EB4" opacity="0.8"/>
+    <ellipse cx="118" cy="127" rx="5" ry="3" fill="#FF6EB4" opacity="0.8"/>
+
+    <!-- Unbothered Smile -->
+    <path d="M 94 128 Q 98 134 102 128" fill="none" stroke="#181A26" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- "THIS IS FINE" Banner on Mug -->
+    <rect x="74" y="137" width="48" height="10" rx="3" fill="#EF4444" stroke="#181A26" stroke-width="1.5"/>
+    <text x="98" y="145" font-family="'Impact', sans-serif" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">THIS IS FINE</text>
   </g>
 </svg>

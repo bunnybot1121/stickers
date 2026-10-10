@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   LayoutDashboard,
   ShoppingBag,
-  Printer,
   Layers,
   Tags,
   Box,
@@ -16,7 +15,6 @@ import {
 import { Order, Sticker, Category, PackRule, PrintBatch } from '../../types';
 import { AdminDashboard } from './AdminDashboard';
 import { AdminOrders } from './AdminOrders';
-import { AdminPrintStudio } from './AdminPrintStudio';
 import { AdminCatalogue } from './AdminCatalogue';
 import { AdminCategories } from './AdminCategories';
 import { AdminInventory } from './AdminInventory';
@@ -51,13 +49,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [inspectingOrder, setInspectingOrder] = useState<Order | null>(null);
 
-  const readyToPrintCount = orders.filter((o) => o.status === 'ready_to_print' || o.status === 'submitted').length;
+  interface NavItem {
+    id: string;
+    label: string;
+    icon: any;
+    badge?: number;
+    badgeColor?: string;
+  }
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
     { id: 'orders', label: 'Orders', icon: ShoppingBag, badge: orders.length },
-    { id: 'print-studio', label: 'Print Studio', icon: Printer, badge: readyToPrintCount, badgeColor: 'bg-brand-pink text-white' },
-    { id: 'catalogue', label: 'Catalogue', icon: Layers, badge: stickers.length },
+    { id: 'catalogue', label: 'Catalogue & Bulk AI', icon: Layers, badge: stickers.length },
     { id: 'categories', label: 'Categories', icon: Tags },
     { id: 'inventory', label: 'Inventory', icon: Box },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -182,13 +185,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           />
         )}
 
-        {activeTab === 'print-studio' && (
-          <AdminPrintStudio
-            orders={orders}
-            batches={batches}
-            onBatchCreated={onRefreshData}
-          />
-        )}
+
 
         {activeTab === 'catalogue' && (
           <AdminCatalogue

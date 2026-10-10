@@ -35,11 +35,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   // Top Stickers ranking data
   const topStickersList = [
-    { name: 'Sneaky Cat', count: 48, pct: 95, img: '/stickers/cat-coder.svg' },
-    { name: 'Good Code Mood', count: 36, pct: 75, img: '/stickers/code-mode.svg' },
-    { name: 'Chill Frog', count: 32, pct: 65, img: '/stickers/matcha-frog.svg' },
-    { name: 'Anime Girl', count: 28, pct: 55, img: '/stickers/anime-coder.svg' },
-    { name: 'Game Controller', count: 24, pct: 45, img: '/stickers/cyber-deck.svg' },
+    { name: 'Terminal Cat', count: 52, pct: 98, img: '/stickers/cat-programmer.jpg' },
+    { name: 'Cyberpunk Anime Girl', count: 44, pct: 82, img: '/stickers/headphone-girl.jpg' },
+    { name: 'Pixel Game Cart', count: 36, pct: 68, img: '/stickers/pixel-game-cart.svg' },
+    { name: 'This Is Fine Mug', count: 31, pct: 58, img: '/stickers/this-is-fine-mug.svg' },
+    { name: 'Boba Spooky Ghost', count: 26, pct: 48, img: '/stickers/boba-ghost.svg' },
   ];
 
   // Recent Orders (matching Mockup columns: #, Name, Stickers, Status, Date)
