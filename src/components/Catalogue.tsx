@@ -89,58 +89,63 @@ export const Catalogue: React.FC<CatalogueProps> = ({
   };
 
   return (
-    <section id="catalogue-section" className="py-10 px-4 sm:px-8 max-w-7xl mx-auto">
-      {/* Top Search & Filter Bar matching reference */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
-        {/* Search input with rounded pill style */}
+    <section id="catalogue-section" className="py-12 pb-28 sm:pb-32 px-4 sm:px-8 max-w-7xl mx-auto">
+      {/* Top Search & Filter Bar */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+        {/* Search input with sleek rounded pill style */}
         <div className="w-full md:w-96 relative">
           <input
             id="catalogue-search-input"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search stickers (e.g. python, cat, anime...)"
-            className="w-full rounded-2xl border-2 border-black/80 bg-white px-4 py-2.5 pl-10 text-xs sm:text-sm font-medium shadow-neo-sm focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]"
+            placeholder="Search stickers (e.g. cat, dev, anime, synth)..."
+            className="w-full rounded-full border border-black/10 bg-white/90 backdrop-blur-sm px-4 py-3 pl-11 text-xs sm:text-sm font-medium shadow-soft-xs focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] transition-all placeholder:text-slate-400"
           />
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-4 top-3.5 pointer-events-none" />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3.5 top-3 text-gray-400 hover:text-black"
+              className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-900 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Sort by dropdown */}
-        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-          <span className="text-xs font-mono font-bold text-gray-500 hidden sm:inline">
-            Sort by:
+        {/* Sort by dropdown & result counter */}
+        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+          <span className="text-xs font-mono font-medium text-slate-500">
+            Showing <strong className="text-slate-900 font-bold">{filteredStickers.length}</strong> collectible stickers
           </span>
-          <select
-            value={sortBy}
-            onChange={(e: any) => setSortBy(e.target.value)}
-            className="px-3 py-2 rounded-xl border-2 border-black/80 bg-white text-xs font-bold text-brand-dark shadow-neo-sm focus:outline-none"
-          >
-            <option value="featured">Popular / Featured</option>
-            <option value="newest">Newest Arrivals</option>
-            <option value="name-asc">Name (A–Z)</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono font-medium text-slate-400 hidden sm:inline">
+              Sort:
+            </span>
+            <select
+              value={sortBy}
+              onChange={(e: any) => setSortBy(e.target.value)}
+              className="px-3.5 py-2 rounded-full border border-black/10 bg-white text-xs font-bold text-slate-800 shadow-soft-xs focus:outline-none focus:border-black/30 cursor-pointer"
+            >
+              <option value="featured">Popular / Featured</option>
+              <option value="newest">Newest Arrivals</option>
+              <option value="name-asc">Name (A–Z)</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Horizontal Category Chips Bar matching reference */}
+      {/* Horizontal Category Chips Bar */}
       <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 scrollbar-none">
         <button
           onClick={() => setSelectedCategorySlug('all')}
-          className={`px-4 py-2 rounded-xl font-display font-bold text-xs transition-all whitespace-nowrap border-2 border-black/80 ${
+          className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border ${
             selectedCategorySlug === 'all'
-              ? 'bg-black text-white shadow-neo-sm'
-              : 'bg-white text-black hover:bg-gray-100'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-soft-sm'
+              : 'bg-white text-slate-700 border-black/[0.08] hover:bg-slate-50 hover:border-black/20'
           }`}
         >
-          All
+          ✨ All Stickers
         </button>
 
         {categories.map((cat) => {
@@ -149,10 +154,10 @@ export const Catalogue: React.FC<CatalogueProps> = ({
             <button
               key={cat.id}
               onClick={() => setSelectedCategorySlug(cat.slug)}
-              className={`px-4 py-2 rounded-xl font-display font-bold text-xs transition-all whitespace-nowrap border-2 border-black/80 ${
+              className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border ${
                 isActive
-                  ? 'bg-[#FACC15] text-black shadow-neo-sm'
-                  : 'bg-white text-black hover:bg-gray-100'
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-soft-sm'
+                  : 'bg-white text-slate-700 border-black/[0.08] hover:bg-slate-50 hover:border-black/20'
               }`}
             >
               {cat.name}
@@ -163,26 +168,26 @@ export const Catalogue: React.FC<CatalogueProps> = ({
 
       {/* Main Grid: Desktop Category Sidebar (Left) + Stickers Grid (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Desktop Category Sidebar matching reference */}
+        {/* Left Desktop Category Sidebar */}
         <div className="hidden lg:block lg:col-span-3 space-y-4 sticky top-24">
-          <div className="card-neo p-4 bg-white border-2 border-black/80">
-            <h3 className="font-display font-black text-sm uppercase tracking-wider text-black mb-3 px-2">
+          <div className="p-4 rounded-3xl bg-white border border-black/[0.07] shadow-soft">
+            <h3 className="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-3 px-2">
               Categories
             </h3>
             <div className="space-y-1">
               <button
                 onClick={() => setSelectedCategorySlug('all')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-display font-bold transition-all ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-display font-bold transition-all ${
                   selectedCategorySlug === 'all'
-                    ? 'bg-black text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-slate-900 text-white shadow-soft-xs'
+                    : 'text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <span>★</span>
                   <span>All Stickers</span>
                 </div>
-                <span className="text-[10px] font-mono opacity-60">
+                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${selectedCategorySlug === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
                   {stickers.filter((s) => s.status === 'active').length}
                 </span>
               </button>
@@ -198,17 +203,19 @@ export const Catalogue: React.FC<CatalogueProps> = ({
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategorySlug(cat.slug)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-display font-bold transition-all ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-display font-bold transition-all ${
                       isActive
-                        ? 'bg-[#FFE4EF] text-[#D81B60] border border-[#FF6EB4]'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-pink-50 text-pink-700 border border-pink-200 shadow-soft-xs'
+                        : 'text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <Icon className="w-3.5 h-3.5" />
                       <span>{cat.name}</span>
                     </div>
-                    <span className="text-[10px] font-mono opacity-60">{count}</span>
+                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${isActive ? 'bg-pink-200/60 text-pink-800' : 'bg-slate-100 text-slate-600'}`}>
+                      {count}
+                    </span>
                   </button>
                 );
               })}
@@ -216,13 +223,13 @@ export const Catalogue: React.FC<CatalogueProps> = ({
           </div>
 
           {/* Sticky 10+2 Promotional Promo Box */}
-          <div className="card-neo p-4 bg-gradient-to-br from-[#FEF9C3] to-[#FFE4EF] border-2 border-black/80 text-center">
-            <span className="text-2xl block mb-1">🎁</span>
-            <span className="font-display font-black text-sm text-black block">
+          <div className="p-5 rounded-3xl bg-gradient-to-br from-amber-50 via-pink-50 to-purple-50 border border-pink-200/60 text-center shadow-soft">
+            <span className="text-3xl block mb-1.5 animate-subtle-float">🎁</span>
+            <span className="font-display font-black text-sm text-slate-900 block">
               10 + 2 On Every Pack!
             </span>
-            <p className="text-[11px] font-medium text-gray-700 mt-1">
-              Select any 10 stickers and get 2 bonus designs automatically unlocked.
+            <p className="text-[11px] font-medium text-slate-600 mt-1.5 leading-relaxed">
+              Add any 10 base stickers and unlock 2 bonus designs for free at checkout.
             </p>
           </div>
         </div>
@@ -250,29 +257,29 @@ export const Catalogue: React.FC<CatalogueProps> = ({
               ))}
             </div>
           ) : (
-            <div className="card-neo p-12 text-center bg-white border-2 border-black/80 max-w-md mx-auto">
-              <AlertCircle className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-              <h3 className="font-display font-black text-xl text-brand-dark mb-1">
+            <div className="p-12 text-center bg-white rounded-3xl border border-black/[0.08] shadow-soft max-w-md mx-auto">
+              <AlertCircle className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <h3 className="font-display font-bold text-lg text-slate-900 mb-1">
                 No stickers found
               </h3>
-              <p className="font-body text-xs text-gray-500 mb-4">
-                Try searching for another keyword or clear your category filter.
+              <p className="font-body text-xs text-slate-500 mb-4">
+                Try searching for another keyword or select All Stickers.
               </p>
               <button
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedCategorySlug('all');
                 }}
-                className="btn-neo-yellow text-xs py-2 px-4"
+                className="btn-neo-dark text-xs py-2 px-5 rounded-full"
               >
-                Reset Search
+                Reset Filters
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Sticker Detail Modal matching reference */}
+      {/* Sticker Detail Modal */}
       <StickerModal
         sticker={inspectingSticker}
         allStickers={stickers}

@@ -77,66 +77,70 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="order-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-dark/70 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-[#FAF7F2] rounded-3xl border-3 border-brand-dark overflow-hidden relative shadow-neo-xl max-h-[94vh] flex flex-col animate-in zoom-in-95 duration-200"
+        className="w-full max-w-lg bg-white rounded-[28px] border border-black/10 overflow-hidden relative shadow-soft-xl max-h-[94vh] flex flex-col animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top App Header matching reference screens */}
-        <div className="flex items-center justify-between px-5 py-4 border-b-2 border-brand-dark bg-white">
+        {/* Top App Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.06] bg-slate-50/70">
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl border border-brand-dark hover:bg-gray-100 transition-colors"
+              className="p-1.5 rounded-full border border-black/10 bg-white hover:bg-slate-100 transition-colors shadow-soft-xs"
               aria-label="Back"
             >
-              <ArrowLeft className="w-4 h-4 text-brand-dark" />
+              <ArrowLeft className="w-4 h-4 text-slate-700" />
             </button>
-            <span className="font-display font-black text-xl tracking-tight text-brand-dark">
-              STICKER<span className="text-[#FF6EB4]">Z</span>
+            <span className="font-display font-black text-xl tracking-tight text-slate-900">
+              STICKER<span className="text-[#FF6EB4]">VERSE</span>
             </span>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl border-2 border-brand-dark bg-white hover:bg-gray-100 shadow-neo-sm transition-all"
+            className="p-1.5 rounded-full border border-black/10 bg-white hover:bg-slate-100 text-slate-700 transition-colors shadow-soft-xs"
             aria-label="Close dialog"
           >
-            <X className="w-4 h-4 text-brand-dark" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Scrollable Form Content */}
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 overflow-y-auto space-y-4">
           <div className="flex items-center justify-between">
-            <h2 id="order-modal-title" className="font-display font-black text-2xl text-brand-dark">
-              Order Details
-            </h2>
-            <span className="badge-neo bg-[#FF6EB4] text-white text-[11px] py-0.5">
-              10 + 2 Deal Applied
+            <div>
+              <h2 id="order-modal-title" className="font-display font-black text-2xl text-slate-900 leading-tight">
+                Complete Your Pack
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">Free courier dispatch on all 10+2 custom packs</p>
+            </div>
+            <span className="inline-flex items-center gap-1 bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-soft-xs">
+              <Sparkles className="w-3 h-3 text-yellow-300" />
+              <span>10 + 2 Deal</span>
             </span>
           </div>
 
           {errorMessage && (
-            <div className="p-3.5 rounded-2xl bg-red-50 border-2 border-red-500 text-red-800 text-xs font-bold flex items-start gap-2">
+            <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold flex items-start gap-2 shadow-soft-xs">
               <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          {/* Pack Review Snippet Box matching Mockup Screen 08 / 11 */}
-          <div className="p-4 rounded-2xl bg-white border-2 border-brand-dark shadow-neo-sm">
+          {/* Pack Review Snippet Box */}
+          <div className="p-4 rounded-2xl bg-slate-50/70 border border-black/[0.06] shadow-soft-xs">
             <div className="flex items-center justify-between mb-3">
-              <span className="font-display font-bold text-sm text-brand-dark">
-                Your Pack ({totalSelected} Stickers)
+              <span className="font-display font-bold text-xs uppercase tracking-wider text-slate-500">
+                Your Pack ({totalSelected} Stickers Selected)
               </span>
               {onEditPack && (
                 <button
                   type="button"
                   onClick={onEditPack}
-                  className="text-xs font-mono font-bold text-[#FF6EB4] hover:underline flex items-center gap-1"
+                  className="text-xs font-mono font-bold text-pink-600 hover:text-pink-700 hover:underline flex items-center gap-1"
                 >
                   <Edit3 className="w-3 h-3" />
                   <span>Edit Pack</span>
@@ -152,10 +156,10 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 return (
                   <div
                     key={`${id}-${idx}`}
-                    className={`relative aspect-square rounded-xl border-2 flex items-center justify-center p-1 ${
+                    className={`relative aspect-square rounded-xl border flex items-center justify-center p-1 shadow-soft-xs ${
                       isBonus
-                        ? 'border-[#FF6EB4] bg-pink-50 ring-1 ring-[#FF6EB4]'
-                        : 'border-brand-dark bg-[#FAF7F2]'
+                        ? 'border-pink-300 bg-pink-50/80 ring-1 ring-pink-300'
+                        : 'border-slate-200 bg-white'
                     }`}
                     title={`${s?.name || 'Sticker'} ${isBonus ? '(Bonus ★)' : ''}`}
                   >
@@ -163,13 +167,13 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                       <img
                         src={s.image_path}
                         alt={s.name}
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-full max-w-full object-contain filter drop-shadow-sm"
                       />
                     ) : (
                       <Sparkles className="w-4 h-4 text-[#FF6EB4]" />
                     )}
                     {isBonus && (
-                      <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-[#FF6EB4] text-white font-mono font-bold text-[8px] flex items-center justify-center">
+                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white font-mono font-bold text-[8px] flex items-center justify-center shadow-soft-xs">
                         ★
                       </span>
                     )}
@@ -181,7 +185,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
 
           {/* Full Name Input */}
           <div>
-            <label className="block font-display font-bold text-xs uppercase tracking-wider text-brand-dark mb-1.5">
+            <label className="block font-display font-bold text-xs uppercase tracking-wider text-slate-700 mb-1.5">
               Full Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -190,19 +194,19 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               required
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="Enter your name"
-              className="w-full px-4 py-3 rounded-2xl border-2 border-brand-dark bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4] shadow-neo-sm transition-all"
+              placeholder="e.g. Alex Rivera"
+              className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] shadow-soft-xs transition-all"
               disabled={isSubmitting}
             />
           </div>
 
           {/* Contact Number Input with +91 Country Code Badge */}
           <div>
-            <label className="block font-display font-bold text-xs uppercase tracking-wider text-brand-dark mb-1.5">
+            <label className="block font-display font-bold text-xs uppercase tracking-wider text-slate-700 mb-1.5">
               Contact Number <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center rounded-2xl border-2 border-brand-dark bg-white shadow-neo-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#FF6EB4]">
-              <span className="px-3.5 py-3 font-mono font-bold text-xs bg-gray-100 border-r-2 border-brand-dark text-gray-700 select-none">
+            <div className="flex items-center rounded-2xl border border-slate-200 bg-white shadow-soft-xs overflow-hidden focus-within:ring-2 focus-within:ring-[#FF6EB4]/40 focus-within:border-[#FF6EB4]">
+              <span className="px-4 py-3 font-mono font-bold text-xs bg-slate-100 border-r border-slate-200 text-slate-700 select-none">
                 +91
               </span>
               <input
@@ -220,37 +224,37 @@ export const OrderModal: React.FC<OrderModalProps> = ({
 
           {/* Delivery Address / Notes */}
           <div>
-            <label className="block font-display font-bold text-xs uppercase tracking-wider text-brand-dark mb-1.5">
-              Delivery Address / Special Notes <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block font-display font-bold text-xs uppercase tracking-wider text-slate-700 mb-1.5">
+              Delivery Address &amp; Notes <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <textarea
               id="customer-note-input"
               rows={2}
               value={customerNote}
               onChange={(e) => setCustomerNote(e.target.value)}
-              placeholder="House / flat no., street, city, pin code (or delivery notes)"
-              className="w-full px-4 py-3 rounded-2xl border-2 border-brand-dark bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4] shadow-neo-sm transition-all resize-none"
+              placeholder="Apartment / street, city, pin code (or delivery notes)"
+              className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] shadow-soft-xs transition-all resize-none"
               disabled={isSubmitting}
             />
           </div>
 
-          {/* Big Vibrant Pink Submit Button matching Mockup */}
+          {/* Big Vibrant Submit Button */}
           <div className="pt-2">
             <button
               id="submit-order-btn"
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 px-6 rounded-2xl border-2 border-brand-dark bg-[#FF6EB4] hover:bg-pink-600 active:translate-x-0.5 active:translate-y-0.5 text-white font-display font-extrabold text-base shadow-neo flex items-center justify-center gap-2.5 transition-all"
+              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#FF6EB4] via-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 active:scale-[0.99] text-white font-display font-extrabold text-base shadow-glow-pink/40 hover:shadow-glow-pink/60 flex items-center justify-center gap-2.5 transition-all"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Submitting Order...</span>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Confirming Order...</span>
                 </>
               ) : (
                 <>
-                  <span>Submit Order</span>
-                  <span className="text-lg">✈</span>
+                  <span>Place Order (10 + 2 Pack)</span>
+                  <span className="text-base">🚀</span>
                 </>
               )}
             </button>
@@ -260,4 +264,3 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     </div>
   );
 };
-

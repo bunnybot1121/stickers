@@ -44,49 +44,50 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="pack-builder-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="card-neo w-full max-w-3xl bg-white overflow-hidden relative shadow-neo-xl max-h-[92vh] flex flex-col border-2 border-black"
+        className="w-full max-w-3xl bg-white rounded-[28px] overflow-hidden relative shadow-soft-xl max-h-[92vh] flex flex-col border border-black/10"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header matching reference */}
-        <div className="flex items-center justify-between p-4 sm:p-5 border-b-2 border-black/10 bg-[#FAF7F2]">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-black/[0.06] bg-slate-50/70">
           <div>
-            <div className="flex items-center gap-2">
-              <h2 id="pack-builder-title" className="font-display font-black text-xl sm:text-2xl text-brand-dark">
-                My Pack
+            <div className="flex items-center gap-2.5">
+              <h2 id="pack-builder-title" className="font-display font-black text-xl sm:text-2xl text-slate-900">
+                My Curated Pack
               </h2>
-              <span className="badge-neo bg-[#FFE4EF] text-[#D81B60] text-[10px]">
-                10 + 2 OFFER
+              <span className="inline-flex items-center gap-1 bg-pink-50 text-pink-700 border border-pink-200 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full">
+                <Sparkles className="w-3 h-3 text-[#FF6EB4]" />
+                <span>10 + 2 OFFER</span>
               </span>
             </div>
-            <p className="font-body text-xs text-gray-500 font-medium">
-              Select 10 stickers and get 2 <strong className="text-[#FF6EB4]">FREE!</strong>
+            <p className="font-body text-xs text-slate-500 font-medium mt-0.5">
+              Select 10 base stickers to unlock 2 bonus stickers <strong className="text-pink-600">completely free</strong>.
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full border border-black/20 bg-white hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-full border border-black/10 bg-white hover:bg-slate-100 text-slate-700 transition-colors shadow-soft-xs"
           >
-            <X className="w-4 h-4 text-black" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Stepper Bar matching reference (1 through 10 -> +2) */}
-        <div className="px-6 py-3 bg-white border-b border-gray-100 flex items-center justify-between overflow-x-auto scrollbar-none">
+        {/* Stepper Bar (1 through 10 -> +2) */}
+        <div className="px-6 py-3 bg-white border-b border-slate-100 flex items-center justify-between overflow-x-auto scrollbar-none">
           <div className="flex items-center gap-1.5 sm:gap-2 mx-auto">
             {Array.from({ length: rule.base_quantity }).map((_, idx) => {
               const isFilled = idx < selection.baseStickerIds.length;
               return (
                 <div
                   key={`step-${idx}`}
-                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-mono font-bold text-[11px] transition-all border ${
+                  className={`w-7 h-7 rounded-full flex items-center justify-center font-mono font-bold text-[11px] transition-all border ${
                     isFilled
-                      ? 'bg-[#FF6EB4] text-white border-[#FF6EB4] scale-105'
-                      : 'bg-gray-100 text-gray-400 border-gray-300'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-soft-xs scale-105'
+                      : 'bg-slate-50 text-slate-400 border-slate-200'
                   }`}
                 >
                   {idx + 1}
@@ -94,14 +95,14 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
               );
             })}
 
-            <span className="text-gray-400 font-bold px-1">→</span>
+            <span className="text-slate-300 font-bold px-1">→</span>
 
             {/* Glowing +2 Bonus Step */}
             <div
-              className={`px-2.5 py-1 rounded-full font-mono font-black text-xs border transition-all ${
+              className={`px-3 py-1 rounded-full font-mono font-bold text-xs border transition-all ${
                 bonusUnlocked
-                  ? 'bg-[#FACC15] text-black border-black shadow-sm animate-pulse'
-                  : 'bg-gray-100 text-gray-400 border-gray-300'
+                  ? 'bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white border-pink-300 shadow-glow-pink/30 animate-pulse'
+                  : 'bg-slate-50 text-slate-400 border-slate-200'
               }`}
             >
               +2 FREE
@@ -114,15 +115,15 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
           {/* Base Stickers Grid */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="font-display font-bold text-xs uppercase tracking-wider text-gray-500">
+              <span className="font-display font-bold text-xs uppercase tracking-wider text-slate-400">
                 Base Stickers ({selection.baseStickerIds.length}/{rule.base_quantity})
               </span>
               {remainingBase > 0 ? (
-                <span className="text-xs font-mono text-amber-700 font-bold">
+                <span className="text-xs font-mono text-amber-700 font-bold bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
                   Pick {remainingBase} more
                 </span>
               ) : (
-                <span className="text-xs font-mono text-emerald-700 font-bold flex items-center gap-1">
+                <span className="text-xs font-mono text-emerald-700 font-bold flex items-center gap-1 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5" /> 10 Base Complete!
                 </span>
               )}
@@ -137,11 +138,11 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
                   return (
                     <div
                       key={`base-${idx}`}
-                      className="p-3 rounded-2xl border-2 border-black/80 bg-white relative group flex flex-col items-center justify-between text-center min-h-[125px] shadow-sm hover:shadow-neo-sm transition-all"
+                      className="p-3 rounded-2xl border border-black/[0.08] bg-white relative group flex flex-col items-center justify-between text-center min-h-[130px] shadow-soft hover:shadow-soft-md transition-all"
                     >
                       <button
                         onClick={() => onRemove(sticker.id)}
-                        className="absolute top-1.5 right-1.5 p-1 rounded-full bg-red-50 text-red-600 hover:bg-red-100"
+                        className="absolute top-1.5 right-1.5 p-1 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors"
                         title="Remove"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -150,10 +151,10 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
                         <img
                           src={sticker.image_path}
                           alt={sticker.name}
-                          className="max-h-full max-w-full object-contain filter drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)]"
+                          className="max-h-full max-w-full object-contain filter drop-shadow-sm"
                         />
                       </div>
-                      <span className="font-display font-bold text-[11px] text-brand-dark truncate w-full">
+                      <span className="font-display font-bold text-[11px] text-slate-900 truncate w-full">
                         {sticker.name}
                       </span>
                     </div>
@@ -164,11 +165,11 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
                   <div
                     key={`empty-base-${idx}`}
                     onClick={onExploreMore}
-                    className="p-3 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center text-center min-h-[125px] cursor-pointer hover:bg-[#FAF7F2] transition-colors"
+                    className="p-3 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/60 flex flex-col items-center justify-center text-center min-h-[130px] cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all group"
                   >
-                    <span className="text-gray-400 font-mono text-xs">#{idx + 1}</span>
-                    <span className="text-xl text-gray-300 font-bold">+</span>
-                    <span className="text-[10px] font-mono text-gray-500">Add sticker</span>
+                    <span className="text-slate-400 font-mono text-xs font-medium">#{idx + 1}</span>
+                    <span className="text-xl text-slate-300 group-hover:text-slate-500 font-bold my-1 transition-colors">+</span>
+                    <span className="text-[10px] font-mono text-slate-500 font-medium">Add sticker</span>
                   </div>
                 );
               })}
@@ -176,15 +177,15 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
           </div>
 
           {/* +2 Bonus Stickers Section */}
-          <div className="p-4 rounded-2xl bg-[#FFE4EF]/30 border-2 border-[#FF6EB4]/60">
-            <div className="flex items-center justify-between mb-3">
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-pink-50/70 via-purple-50/50 to-pink-50/70 border border-pink-200">
+            <div className="flex items-center justify-between mb-3.5">
               <div className="flex items-center gap-2">
                 <Gift className="w-4 h-4 text-[#FF6EB4]" />
-                <h3 className="font-display font-bold text-sm text-brand-dark">
-                  Bonus Reward Stickers (2 Free)
+                <h3 className="font-display font-bold text-sm text-slate-900">
+                  Bonus Reward Stickers (2 Free Collectibles)
                 </h3>
               </div>
-              <span className="text-xs font-mono font-bold text-[#FF6EB4]">
+              <span className="text-xs font-mono font-bold text-pink-700 bg-pink-100/80 px-2.5 py-0.5 rounded-full">
                 {selection.bonusStickerIds.length}/{rule.bonus_quantity} Selected
               </span>
             </div>
@@ -198,7 +199,7 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
                   return (
                     <div
                       key={`bonus-${idx}`}
-                      className="p-3 rounded-xl border-2 border-[#FF6EB4] bg-white flex items-center justify-between gap-3 shadow-sm"
+                      className="p-3.5 rounded-2xl border border-pink-300 bg-white flex items-center justify-between gap-3 shadow-soft"
                     >
                       <div className="flex items-center gap-3">
                         <img
@@ -207,17 +208,17 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
                           className="w-12 h-12 object-contain"
                         />
                         <div>
-                          <span className="badge-neo bg-[#FFE4EF] text-[#D81B60] text-[9px] py-0 mb-0.5">
-                            BONUS #{idx + 1}
+                          <span className="inline-block bg-pink-100 text-pink-700 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full mb-0.5">
+                            BONUS #{idx + 1} FREE
                           </span>
-                          <span className="font-display font-bold text-xs text-brand-dark block truncate max-w-[140px]">
+                          <span className="font-display font-bold text-xs text-slate-900 block truncate max-w-[140px]">
                             {sticker.name}
                           </span>
                         </div>
                       </div>
                       <button
                         onClick={() => onRemove(sticker.id)}
-                        className="p-1.5 rounded-lg text-red-500 hover:bg-red-50"
+                        className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -231,17 +232,17 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
                     onClick={() => {
                       if (bonusUnlocked) onExploreMore();
                     }}
-                    className={`p-3 rounded-xl border-2 border-dashed flex items-center justify-center gap-2 min-h-[64px] ${
+                    className={`p-3.5 rounded-2xl border-2 border-dashed flex items-center justify-center gap-2 min-h-[68px] transition-all ${
                       bonusUnlocked
-                        ? 'border-[#FF6EB4] bg-white/70 cursor-pointer hover:bg-white text-[#FF6EB4]'
-                        : 'border-gray-300 bg-gray-50/50 cursor-not-allowed text-gray-400'
+                        ? 'border-pink-300 bg-white cursor-pointer hover:bg-pink-50 text-pink-600 shadow-soft-xs'
+                        : 'border-slate-200 bg-slate-50/50 cursor-not-allowed text-slate-400'
                     }`}
                   >
-                    {bonusUnlocked ? <Sparkles className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                    {bonusUnlocked ? <Sparkles className="w-4 h-4 text-yellow-400 animate-spin" /> : <Lock className="w-4 h-4 text-slate-300" />}
                     <span className="font-display font-bold text-xs">
                       {bonusUnlocked
                         ? `Pick Bonus Sticker #${idx + 1}`
-                        : `Bonus Slot #${idx + 1} (Select 10 Base First)`}
+                        : `Bonus Slot #${idx + 1} (Fill 10 Base First)`}
                     </span>
                   </div>
                 );
@@ -251,15 +252,15 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t-2 border-black/10 bg-[#FAF7F2] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs font-mono font-bold text-gray-600">
-            Total Pack: {selection.baseStickerIds.length + selection.bonusStickerIds.length} / 12 Stickers
+        <div className="p-4 px-6 border-t border-black/[0.06] bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-xs font-mono font-bold text-slate-600">
+            Total Pack: <strong className="text-slate-900">{selection.baseStickerIds.length + selection.bonusStickerIds.length}</strong> / 12 Stickers
           </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <button
               onClick={onExploreMore}
-              className="btn-neo-white text-xs py-2 px-4 flex-1 sm:flex-initial"
+              className="btn-neo-white text-xs py-2.5 px-4 flex-1 sm:flex-initial rounded-full"
             >
               Browse Catalogue
             </button>
@@ -268,15 +269,15 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
               <button
                 id="pack-proceed-checkout-btn"
                 onClick={onProceedToOrder}
-                className="btn-neo-yellow text-xs sm:text-sm py-2 px-5 flex-1 sm:flex-initial flex items-center justify-center gap-2 shadow-neo animate-bounce"
+                className="btn-neo-yellow text-xs sm:text-sm py-2.5 px-6 flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-full shadow-glow-yellow/50 animate-bounce"
               >
-                <span>Proceed to Order</span>
+                <span>Proceed to Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             ) : bonusUnlocked && remainingBonus > 0 ? (
               <button
                 onClick={onExploreMore}
-                className="btn-neo-pink text-xs sm:text-sm py-2 px-5 flex-1 sm:flex-initial flex items-center justify-center gap-2 animate-pulse"
+                className="btn-neo-pink text-xs sm:text-sm py-2.5 px-6 flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-full shadow-glow-pink/40 animate-pulse"
               >
                 <span>Choose {remainingBonus} Bonus</span>
                 <ArrowRight className="w-4 h-4" />
@@ -284,7 +285,7 @@ export const PackBuilderModal: React.FC<PackBuilderModalProps> = ({
             ) : (
               <button
                 disabled
-                className="btn-neo bg-gray-200 text-gray-400 text-xs py-2 px-5 flex-1 sm:flex-initial cursor-not-allowed"
+                className="btn-neo bg-slate-200 text-slate-400 text-xs py-2.5 px-5 flex-1 sm:flex-initial rounded-full cursor-not-allowed"
               >
                 Select {remainingBase} more base
               </button>

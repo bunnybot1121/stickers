@@ -200,7 +200,7 @@ export function App() {
 
   // View: Customer Storefront
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-brand-pink selection:text-white bg-[#FAF7F2]">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-brand-pink selection:text-white bg-[#FAF9F6]">
       <div>
         <Navbar
           selection={selection}

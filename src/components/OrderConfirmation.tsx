@@ -23,7 +23,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   const [copied, setCopied] = useState(false);
   const [showItems, setShowItems] = useState(false);
 
-  // Format order ID like #STK2026-0017 as in reference screen 09
+  // Format order ID like #STK2026-0017
   const formattedOrderId = orderNumber.startsWith('ORD-')
     ? `#STK2026-${orderNumber.replace('ORD-', '')}`
     : `#${orderNumber}`;
@@ -34,7 +34,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
       particleCount: 80,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#FF6EB4', '#FACC15', '#00D4D8', '#12131A'],
+      colors: ['#FF6EB4', '#FACC15', '#00D4D8', '#11131A'],
     });
   }, []);
 
@@ -45,23 +45,27 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   };
 
   return (
-    <div className="py-8 sm:py-12 px-4 max-w-md mx-auto animate-in zoom-in-95 duration-300">
-      <div className="bg-[#FAF7F2] rounded-3xl border-3 border-brand-dark p-6 sm:p-8 text-center shadow-neo-xl">
+    <div className="py-10 sm:py-16 px-4 max-w-md mx-auto animate-in zoom-in-95 duration-300">
+      <div className="bg-white rounded-[32px] border border-black/10 p-6 sm:p-8 text-center shadow-soft-xl relative overflow-hidden">
+        {/* Ambient Top Glow */}
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#FF6EB4] via-[#FACC15] to-[#00D4D8]" />
+
         {/* Top Mini Header */}
-        <div className="flex items-center justify-between pb-4 mb-2 border-b border-brand-dark/10">
+        <div className="flex items-center justify-between pb-4 mb-2 border-b border-slate-100">
           <div className="flex items-center gap-1.5">
-            <span className="font-display font-black text-lg tracking-tight text-brand-dark">
-              STICKER<span className="text-[#FF6EB4]">Z</span>
+            <span className="font-display font-black text-lg tracking-tight text-slate-900">
+              STICKER<span className="text-[#FF6EB4]">VERSE</span>
             </span>
           </div>
-          <span className="badge-neo bg-[#FACC15] text-brand-dark text-[10px]">
-            10 + 2 PACK
+          <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full">
+            <Sparkles className="w-3 h-3 text-amber-500" />
+            <span>10 + 2 PACK</span>
           </span>
         </div>
 
-        {/* Cute Cat in Delivery Box SVG Illustration matching Reference Screen 09 */}
+        {/* Cute Cat in Delivery Box SVG Illustration */}
         <div className="relative w-44 h-44 mx-auto my-3 flex items-center justify-center">
-          <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-md">
+          <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-sm">
             {/* Sparkles & Stars */}
             <circle cx="35" cy="40" r="4" fill="#FACC15" />
             <circle cx="165" cy="45" r="4" fill="#FACC15" />
@@ -83,11 +87,9 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
             <polygon points="129,80 136,58 117,72" fill="#FF6EB4" />
 
             {/* Cat Face */}
-            {/* Left Eye */}
             <ellipse cx="85" cy="92" rx="6" ry="8" fill="#FFFFFF" />
             <circle cx="86" cy="93" r="4.5" fill="#18181B" />
             <circle cx="87" cy="90" r="1.5" fill="#FFFFFF" />
-            {/* Right Eye */}
             <ellipse cx="115" cy="92" rx="6" ry="8" fill="#FFFFFF" />
             <circle cx="114" cy="93" r="4.5" fill="#18181B" />
             <circle cx="113" cy="90" r="1.5" fill="#FFFFFF" />
@@ -113,36 +115,33 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               strokeWidth="3.5"
               strokeLinejoin="round"
             />
-            {/* Box Front Flaps / Fold Line */}
             <path d="M 45 115 L 100 130 L 155 115" stroke="#18181B" strokeWidth="3" fill="#DDBB88" />
-            {/* Tape on box */}
             <rect x="90" y="125" width="20" height="48" fill="#F4E0BE" stroke="#18181B" strokeWidth="2" strokeDasharray="4 2" />
-            {/* Box Stamp Icon */}
             <polygon points="100,146 102,151 107,151 103,154 105,159 100,156 95,159 97,154 93,151 98,151" fill="#B38959" />
           </svg>
         </div>
 
-        {/* Headlines matching Screen 09 */}
-        <h1 className="font-display font-black text-2xl sm:text-3xl text-brand-dark mb-2">
+        {/* Headlines */}
+        <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 mb-2">
           Order Submitted!
         </h1>
-        <p className="font-body text-xs sm:text-sm text-gray-600 font-medium max-w-xs mx-auto mb-5">
-          Thank you for your order! We've received your sticker pack request. We'll get back to you soon!
+        <p className="font-body text-xs sm:text-sm text-slate-500 font-normal max-w-xs mx-auto mb-5 leading-relaxed">
+          Thank you! We've received your curated pack request. Your order is queued for laser die-cut production!
         </p>
 
-        {/* Order ID & Status Box matching Screen 09 */}
-        <div className="bg-white rounded-2xl border-2 border-brand-dark p-3.5 mb-5 shadow-neo-sm flex items-center justify-between">
+        {/* Order ID & Status Box */}
+        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-3.5 mb-5 shadow-soft-xs flex items-center justify-between">
           <div className="text-left">
-            <span className="text-[10px] font-mono text-gray-400 font-bold uppercase tracking-wider block">
+            <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider block">
               Order ID
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="font-mono font-black text-sm sm:text-base text-brand-dark">
+              <span className="font-mono font-bold text-sm sm:text-base text-slate-900">
                 {formattedOrderId}
               </span>
               <button
                 onClick={handleCopy}
-                className="p-1 rounded-md hover:bg-gray-100 text-gray-500"
+                className="p-1 rounded-md hover:bg-slate-200 text-slate-500 transition-colors"
                 title="Copy Order ID"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -151,52 +150,52 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           </div>
 
           <div className="text-right">
-            <span className="text-[10px] font-mono text-gray-400 font-bold uppercase tracking-wider block mb-0.5">
+            <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
               Status
             </span>
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#FACC15] text-brand-dark border border-brand-dark">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-300">
               Pending
             </span>
           </div>
         </div>
 
-        {/* Buttons matching Reference Screen 09 */}
+        {/* Buttons */}
         <div className="space-y-2.5">
           <button
             onClick={() => onOpenAdmin()}
-            className="w-full py-3 px-5 rounded-2xl border-2 border-brand-dark bg-white hover:bg-gray-50 text-brand-dark font-display font-bold text-sm shadow-neo-sm flex items-center justify-center gap-2 transition-all active:translate-x-0.5 active:translate-y-0.5"
+            className="w-full py-3 px-5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-display font-bold text-sm shadow-soft-md flex items-center justify-center gap-2 transition-all"
           >
-            <Package className="w-4 h-4 text-brand-dark" />
-            <span>Track Order</span>
+            <Package className="w-4 h-4 text-pink-400" />
+            <span>Track in Admin Console</span>
           </button>
 
           <button
             onClick={onReset}
-            className="w-full py-3 px-5 rounded-2xl border-2 border-brand-dark bg-white hover:bg-gray-50 text-brand-dark font-display font-bold text-sm shadow-neo-sm transition-all active:translate-x-0.5 active:translate-y-0.5"
+            className="w-full py-3 px-5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-display font-semibold text-sm shadow-soft-xs transition-all"
           >
             Back to Home
           </button>
         </div>
 
         {/* Expandable Sticker Item Thumbnails */}
-        <div className="mt-4 pt-4 border-t border-brand-dark/10">
+        <div className="mt-5 pt-4 border-t border-slate-100">
           <button
             onClick={() => setShowItems(!showItems)}
-            className="text-[11px] font-mono font-bold text-gray-500 hover:text-black flex items-center justify-center gap-1 mx-auto"
+            className="text-[11px] font-mono font-semibold text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1 mx-auto transition-colors"
           >
             <span>{showItems ? 'Hide' : 'Review'} Pack Items ({selection.baseStickerIds.length + selection.bonusStickerIds.length})</span>
           </button>
 
           {showItems && (
-            <div className="grid grid-cols-6 gap-1.5 mt-3 animate-in fade-in">
+            <div className="grid grid-cols-6 gap-2 mt-3 animate-in fade-in">
               {[...selection.baseStickerIds, ...selection.bonusStickerIds].map((id, idx) => {
                 const s = stickersMap.get(id);
                 const isBonus = idx >= 10;
                 return (
                   <div
                     key={`${id}-${idx}`}
-                    className={`aspect-square rounded-lg border p-0.5 flex items-center justify-center ${
-                      isBonus ? 'border-[#FF6EB4] bg-pink-50' : 'border-gray-300 bg-white'
+                    className={`aspect-square rounded-xl border p-1 flex items-center justify-center shadow-soft-xs ${
+                      isBonus ? 'border-pink-300 bg-pink-50' : 'border-slate-200 bg-white'
                     }`}
                     title={s?.name}
                   >
@@ -215,4 +214,3 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
     </div>
   );
 };
-

@@ -6,79 +6,176 @@
   --color-brand-cyan: #00D4D8;
   --color-brand-pink: #FF6EB4;
   --color-brand-yellow: #F5E642;
-  --color-brand-dark: #12131A;
-  --color-brand-cream: #FAF7F2;
+  --color-brand-dark: #11131A;
+  --color-brand-cream: #FAF9F6;
   --color-brand-purple: #9B51E0;
 }
 
 @layer base {
   body {
-    background-color: #FAF7F2;
-    color: #161616;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: #FAF9F6;
+    color: #0F172A;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(255, 110, 180, 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 10%, rgba(0, 212, 216, 0.05) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(245, 230, 66, 0.03) 0px, transparent 60%),
+      radial-gradient(at 100% 100%, rgba(155, 81, 224, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .shadow-soft-xs {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  .shadow-soft {
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-soft-md {
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-soft-lg {
+    box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.1), 0 6px 16px -3px rgba(0, 0, 0, 0.05);
+  }
+  .shadow-soft-xl {
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.14), 0 12px 24px -6px rgba(0, 0, 0, 0.06);
+  }
+  .shadow-glow-pink {
+    box-shadow: 0 0 25px -4px rgba(255, 110, 180, 0.45);
+  }
+  .shadow-glow-yellow {
+    box-shadow: 0 0 25px -4px rgba(250, 204, 21, 0.45);
+  }
+  .shadow-glow-cyan {
+    box-shadow: 0 0 25px -4px rgba(0, 212, 216, 0.45);
   }
 }
 
 @layer components {
-  /* Stickerz Buttons matching reference designs */
+  /* Frosted Luxury Glass Panels */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-black/[0.07] shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .glass-pill {
+    @apply bg-white/90 backdrop-blur-md border border-black/[0.08] shadow-sm;
+  }
+
+  /* Modernized Luxury Buttons */
   .btn-neo {
-    @apply inline-flex items-center justify-center font-display font-bold px-5 py-2.5 rounded-xl border-2 border-brand-dark shadow-neo transition-all duration-150 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0;
+    @apply inline-flex items-center justify-center font-display font-bold px-5 py-2.5 rounded-2xl border border-black/10 shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 hover:-translate-y-0.5;
   }
 
   .btn-neo-yellow {
-    @apply btn-neo bg-[#FACC15] text-brand-dark hover:bg-[#EAB308];
+    @apply btn-neo bg-gradient-to-r from-[#FACC15] to-[#EAB308] text-slate-900 hover:from-[#FDE047] hover:to-[#FACC15] shadow-sm hover:shadow-md;
   }
 
   .btn-neo-pink {
-    @apply btn-neo bg-[#FF6EB4] text-white hover:bg-[#F43F5E];
+    @apply btn-neo bg-gradient-to-r from-[#FF6EB4] to-[#F43F5E] text-white hover:from-[#FF85C0] hover:to-[#FB7185] shadow-sm hover:shadow-md;
   }
 
   .btn-neo-cyan {
-    @apply btn-neo bg-[#38BDF8] text-brand-dark hover:bg-[#0EA5E9];
+    @apply btn-neo bg-gradient-to-r from-[#38BDF8] to-[#0EA5E9] text-slate-900 hover:from-[#7DD3FC] hover:to-[#38BDF8] shadow-sm hover:shadow-md;
   }
 
   .btn-neo-white {
-    @apply btn-neo bg-white text-brand-dark hover:bg-gray-50;
+    @apply btn-neo bg-white/95 text-slate-800 border-black/[0.08] hover:bg-white hover:border-black/20 shadow-sm;
   }
 
   .btn-neo-dark {
-    @apply btn-neo bg-[#12131A] text-white hover:bg-black;
+    @apply btn-neo bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg;
   }
 
-  /* Sticker Cards */
+  /* Sticker Cards with Luxury Depth */
   .card-neo {
-    @apply bg-white rounded-2xl border-2 border-brand-dark/90 shadow-neo transition-all duration-200;
+    @apply bg-white/90 backdrop-blur-sm rounded-3xl border border-black/[0.08] shadow-sm transition-all duration-300;
   }
 
   .card-neo-interactive {
-    @apply card-neo hover:-translate-y-1 hover:shadow-neo-lg hover:scale-[1.02];
+    @apply card-neo hover:-translate-y-1.5 hover:shadow-md hover:border-black/15;
   }
 
   /* Badge Pills */
   .badge-neo {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold border border-brand-dark/80;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold tracking-tight border border-black/[0.08];
   }
 
   /* Input fields */
   .input-neo {
-    @apply w-full rounded-xl border-2 border-brand-dark bg-white px-4 py-2.5 font-medium text-brand-dark shadow-neo-sm focus:outline-none focus:ring-2 focus:ring-[#FF6EB4] transition-all;
+    @apply w-full rounded-2xl border border-black/10 bg-white/90 px-4 py-2.5 font-medium text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/50 focus:border-[#FF6EB4] transition-all;
+  }
+}
+
+/* Holographic Prismatic Foil Sheen */
+.holo-foil {
+  position: relative;
+  overflow: hidden;
+}
+
+.holo-foil::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.4) 35%,
+    rgba(255, 110, 180, 0.3) 42%,
+    rgba(0, 212, 216, 0.3) 48%,
+    rgba(250, 204, 21, 0.3) 54%,
+    rgba(255, 255, 255, 0.5) 60%,
+    transparent 75%
+  );
+  transform: translateX(-100%) rotate(25deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.group:hover .holo-foil::after,
+.holo-foil:hover::after {
+  opacity: 1;
+  animation: holo-sweep 1.8s ease-in-out infinite;
+}
+
+@keyframes holo-sweep {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(25deg);
   }
 }
 
 /* Micro-animations */
 @keyframes pop-bounce {
-  0% { transform: scale(0.9); }
-  50% { transform: scale(1.1); }
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.06); }
   100% { transform: scale(1); }
 }
 
 .animate-pop-bounce {
-  animation: pop-bounce 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: pop-bounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Floating animation */
+@keyframes subtle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-subtle-float {
+  animation: subtle-float 4s ease-in-out infinite;
 }
 
 /* Reduced Motion Override */
