@@ -138,7 +138,7 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
 
     try {
       const res = await groqService.sortAndLabelUploadedFiles(
-        uploadedFiles.map((u) => ({ name: u.name, size: u.size })),
+        uploadedFiles.map((u) => ({ name: u.name, size: u.size, previewUrl: u.previewUrl })),
         categories
       );
 
