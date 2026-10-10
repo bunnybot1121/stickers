@@ -306,6 +306,21 @@ class StoreService {
     return true;
   }
 
+  async deleteSticker(stickerId: string): Promise<boolean> {
+    this.stickers = this.stickers.filter((item) => item.id !== stickerId);
+    this.persistLocal(STORAGE_KEY_STICKERS, this.stickers);
+
+    if (this.isConnectedToSupabase) {
+      try {
+        await supabase.from('sticker_categories').delete().eq('sticker_id', stickerId);
+        await supabase.from('stickers').delete().eq('id', stickerId);
+      } catch {
+        // fallback
+      }
+    }
+    return true;
+  }
+
   // --------------------------------------------------------------------------
   // Pack Rules
   // --------------------------------------------------------------------------

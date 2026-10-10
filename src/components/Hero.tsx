@@ -16,53 +16,53 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder })
         <div className="absolute top-20 right-1/4 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[600px] h-64 bg-amber-300/10 rounded-full blur-3xl" />
 
-        {/* Scattered Real Die-Cut Stickers with soft shadows and natural tilt angles */}
+        {/* Scattered Real Die-Cut Stickers from user collection with soft shadows and natural tilt angles */}
         <div className="pointer-events-auto">
-          {/* Top-left sticker */}
+          {/* Top-left sticker: 80s retro sticker */}
           <div className="absolute top-8 left-4 2xl:left-12 hidden lg:block transform -rotate-12 hover:rotate-0 hover:scale-110 transition-all duration-300 animate-subtle-float">
             <img
-              src="/stickers/cyber-hacker-cat.svg"
-              alt="Floating Hacker Cat"
-              className="w-20 h-20 xl:w-24 xl:h-24 object-contain filter drop-shadow-[0_12px_18px_rgba(0,0,0,0.14)]"
+              src="/stickers/decorations/80-s-sticker-pegatinas-retro.jpg"
+              alt="80s Retro Sticker"
+              className="w-20 h-20 xl:w-24 xl:h-24 rounded-2xl object-cover filter drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)] ring-2 ring-white/90"
             />
           </div>
 
-          {/* Bottom-left sticker */}
+          {/* Bottom-left sticker: Adorable Penguin */}
           <div className="absolute bottom-12 left-6 2xl:left-16 hidden lg:block transform rotate-12 hover:rotate-0 hover:scale-110 transition-all duration-300">
             <img
-              src="/stickers/headphone-girl.jpg"
-              alt="Floating Anime Girl"
-              className="w-20 h-20 xl:w-24 xl:h-24 rounded-2xl object-cover filter drop-shadow-[0_14px_20px_rgba(0,0,0,0.15)] ring-2 ring-white/80"
+              src="/stickers/decorations/sticker-laptop-adorable-penguin-loading-sticker.jpg"
+              alt="Penguin Loading Sticker"
+              className="w-20 h-20 xl:w-24 xl:h-24 rounded-2xl object-cover filter drop-shadow-[0_14px_20px_rgba(0,0,0,0.18)] ring-2 ring-white/90"
             />
           </div>
 
-          {/* Top-right sticker */}
+          {/* Top-right sticker: Retro Gaming */}
           <div
             className="absolute top-6 right-8 2xl:right-16 hidden lg:block transform rotate-6 hover:rotate-0 hover:scale-110 transition-all duration-300 animate-subtle-float"
             style={{ animationDelay: '1.8s' }}
           >
             <img
-              src="/stickers/cyberpunk-cassette.svg"
-              alt="Floating Cyberpunk Cassette"
-              className="w-20 h-20 xl:w-22 xl:h-22 object-contain filter drop-shadow-[0_12px_18px_rgba(0,0,0,0.14)]"
+              src="/stickers/decorations/retro-gaming-stickers-for-pc-phone-shop-now-and-personalize-your-setup.jpg"
+              alt="Retro Gaming Sticker"
+              className="w-20 h-20 xl:w-24 xl:h-24 rounded-2xl object-cover filter drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)] ring-2 ring-white/90"
             />
           </div>
 
-          {/* Bottom-right sticker */}
+          {/* Bottom-right sticker: Spider-Verse */}
           <div className="absolute bottom-14 right-6 2xl:right-14 hidden lg:block transform -rotate-6 hover:rotate-0 hover:scale-110 transition-all duration-300">
             <img
-              src="/stickers/pixel-game-cart.svg"
-              alt="Floating Pixel Game Cart"
-              className="w-20 h-20 xl:w-22 xl:h-22 object-contain filter drop-shadow-[0_12px_18px_rgba(0,0,0,0.14)]"
+              src="/stickers/decorations/spider-man-sticker-for-laptop-across-the-spiderverse-spider-sticker.jpg"
+              alt="Spider Sticker"
+              className="w-20 h-20 xl:w-22 xl:h-22 rounded-2xl object-cover filter drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)] ring-2 ring-white/90"
             />
           </div>
 
-          {/* Extra mid decorative sticker */}
-          <div className="absolute top-1/2 -left-4 -translate-y-1/2 hidden 2xl:block transform rotate-45 hover:rotate-12 hover:scale-110 transition-all duration-300">
+          {/* Extra mid decorative sticker: Pacman Ghosts */}
+          <div className="absolute top-1/2 -left-4 -translate-y-1/2 hidden 2xl:block transform rotate-12 hover:rotate-0 hover:scale-110 transition-all duration-300">
             <img
-              src="/stickers/boba-ghost.svg"
-              alt="Floating Boba Ghost"
-              className="w-18 h-18 object-contain filter drop-shadow-[0_10px_16px_rgba(0,0,0,0.12)] opacity-85"
+              src="/stickers/decorations/diy-laptop-sticker-pacman-ghosts-by-seingalad.jpg"
+              alt="Pacman Ghosts Sticker"
+              className="w-18 h-18 rounded-2xl object-cover filter drop-shadow-[0_10px_16px_rgba(0,0,0,0.16)] ring-2 ring-white/90 opacity-90"
             />
           </div>
         </div>

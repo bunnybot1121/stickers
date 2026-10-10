@@ -107,6 +107,20 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
     setSelectedCatIds(s.categories?.map((c) => c.id) || []);
   };
 
+  const handleDeleteSticker = async (stickerId: string, name: string) => {
+    if (window.confirm(`Are you sure you want to permanently delete "${name}" from the catalogue?`)) {
+      try {
+        await storeService.deleteSticker(stickerId);
+        onStickerUpdated();
+        if (editingSticker?.id === stickerId) {
+          setEditingSticker(null);
+        }
+      } catch (err: any) {
+        alert(`Failed to delete sticker: ${err.message}`);
+      }
+    }
+  };
+
   // Handle Multi-file selection / drop
   const handleFilesSelected = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -396,13 +410,22 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                     ₹{(s.price * 14).toFixed(0)}
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => handleOpenEdit(s)}
-                      className="p-1.5 rounded-lg border border-[#2B2E42] bg-[#12131A] text-gray-300 hover:text-white hover:border-[#FF6EB4] transition-colors"
-                      title="Edit sticker"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => handleOpenEdit(s)}
+                        className="p-1.5 rounded-lg border border-[#2B2E42] bg-[#12131A] text-gray-300 hover:text-white hover:border-[#FF6EB4] transition-colors"
+                        title="Edit sticker"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSticker(s.id, s.name)}
+                        className="p-1.5 rounded-lg border border-red-500/30 bg-red-950/20 text-red-400 hover:text-red-200 hover:border-red-500 hover:bg-red-900/40 transition-colors"
+                        title="Delete sticker"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -833,22 +856,35 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#2B2E42]">
-                <button
-                  type="button"
-                  onClick={() => setEditingSticker(null)}
-                  className="px-4 py-2 rounded-xl border border-[#2B2E42] text-gray-400 hover:text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="px-5 py-2 rounded-xl bg-[#FACC15] hover:bg-yellow-400 text-brand-dark font-display font-bold shadow-neo flex items-center gap-1.5"
-                >
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  <span>{isSaving ? 'Saving...' : 'Save Sticker'}</span>
-                </button>
+              <div className="pt-4 flex items-center justify-between border-t border-[#2B2E42]">
+                {editingSticker.id ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSticker(editingSticker.id!, editingSticker.name || 'this sticker')}
+                    className="px-3.5 py-2 rounded-xl border border-red-500/40 bg-red-950/30 text-red-400 hover:text-red-200 hover:border-red-500 flex items-center gap-1.5 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Sticker</span>
+                  </button>
+                ) : <div />}
+
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setEditingSticker(null)}
+                    className="px-4 py-2 rounded-xl border border-[#2B2E42] text-gray-400 hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="px-5 py-2 rounded-xl bg-[#FACC15] hover:bg-yellow-400 text-brand-dark font-display font-bold shadow-neo flex items-center gap-1.5"
+                  >
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    <span>{isSaving ? 'Saving...' : 'Save Sticker'}</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>

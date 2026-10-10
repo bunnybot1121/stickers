@@ -91,11 +91,19 @@ export const Catalogue: React.FC<CatalogueProps> = ({
   return (
     <section id="catalogue-section" className="py-12 pb-28 sm:pb-36 px-4 sm:px-8 max-w-7xl mx-auto relative">
       {/* Background scattered stickers on section margins */}
-      <div className="absolute top-24 -right-10 w-28 h-28 hidden 2xl:block opacity-65 transform rotate-12 pointer-events-none">
-        <img src="/stickers/this-is-fine-mug.svg" alt="" className="w-full h-full object-contain filter drop-shadow-md" />
+      <div className="absolute top-24 -right-10 w-28 h-28 hidden 2xl:block opacity-80 transform rotate-12 pointer-events-none">
+        <img
+          src="/stickers/decorations/what-the-duck.jpg"
+          alt="Duck Sticker"
+          className="w-full h-full object-cover rounded-2xl ring-2 ring-white/90 filter drop-shadow-lg"
+        />
       </div>
-      <div className="absolute top-1/2 -left-12 w-28 h-28 hidden 2xl:block opacity-65 transform -rotate-12 pointer-events-none">
-        <img src="/stickers/sleepy-ramen-neko.svg" alt="" className="w-full h-full object-contain filter drop-shadow-md" />
+      <div className="absolute top-1/2 -left-12 w-28 h-28 hidden 2xl:block opacity-80 transform -rotate-12 pointer-events-none">
+        <img
+          src="/stickers/decorations/anime-stickers-for-printing-4-zenitsu-stickers-for-sale.jpg"
+          alt="Zenitsu Sticker"
+          className="w-full h-full object-cover rounded-2xl ring-2 ring-white/90 filter drop-shadow-lg"
+        />
       </div>
 
       {/* Top Search & Filter Bar */}
