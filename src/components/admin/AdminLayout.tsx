@@ -69,22 +69,22 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-brand-cream/80 flex flex-col md:flex-row">
-      {/* Sidebar for Desktop */}
-      <aside className="w-full md:w-64 bg-white border-b-3 md:border-b-0 md:border-r-3 border-brand-dark flex flex-col justify-between p-4 flex-shrink-0">
+    <div className="min-h-screen bg-[#12131A] text-white flex flex-col md:flex-row">
+      {/* Sidebar for Desktop matching reference dark sidebar */}
+      <aside className="w-full md:w-64 bg-[#181A26] border-b md:border-b-0 md:border-r border-[#2B2E42] flex flex-col justify-between p-4 flex-shrink-0">
         <div>
-          {/* Logo / Admin Badge */}
-          <div className="flex items-center justify-between pb-4 mb-4 border-b-2 border-brand-dark/10">
+          {/* Logo / Admin Badge matching STICKERZ */}
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#2B2E42]">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-brand-yellow border-2 border-brand-dark shadow-neo-sm flex items-center justify-center font-display font-black">
-                ⚡
+              <div className="w-8 h-8 rounded-lg bg-[#FF6EB4] text-white flex items-center justify-center font-display font-black text-sm">
+                ★
               </div>
               <div>
-                <span className="font-display font-black text-lg text-brand-dark leading-tight block">
-                  STUDIO OPS
+                <span className="font-display font-black text-base text-white leading-tight block tracking-tight">
+                  STICKER<span className="text-[#FF6EB4]">Z</span>
                 </span>
-                <span className="font-mono text-[10px] text-gray-500 uppercase tracking-wider block">
-                  Admin Portal
+                <span className="font-mono text-[10px] text-gray-400 uppercase tracking-wider block">
+                  Studio Operations
                 </span>
               </div>
             </div>
@@ -92,7 +92,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1.5 rounded-lg border border-brand-dark"
+              className="md:hidden p-1.5 rounded-lg border border-[#2B2E42] text-gray-300"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -110,10 +110,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     setActiveTab(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-display font-bold text-xs transition-all ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-display font-bold text-xs transition-all ${
                     isActive
-                      ? 'bg-brand-dark text-white shadow-neo-sm'
-                      : 'text-brand-dark hover:bg-yellow-50'
+                      ? 'bg-[#FF6EB4] text-white shadow-md'
+                      : 'text-gray-300 hover:bg-[#25283B] hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -122,8 +122,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                   </div>
                   {item.badge !== undefined && (
                     <span
-                      className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full border ${
-                        item.badgeColor || (isActive ? 'bg-white/20 text-white border-transparent' : 'bg-gray-100 text-gray-700 border-gray-300')
+                      className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full border ${
+                        item.badgeColor ||
+                        (isActive
+                          ? 'bg-white/20 text-white border-transparent'
+                          : 'bg-[#12131A] text-gray-400 border-[#2B2E42]')
                       }`}
                     >
                       {item.badge}
@@ -136,22 +139,22 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </div>
 
         {/* Sidebar Footer */}
-        <div className={`pt-4 border-t-2 border-brand-dark/10 space-y-2 ${mobileMenuOpen ? 'block' : 'hidden md:block'}`}>
-          <div className="p-2 rounded-xl bg-gray-50 border border-gray-200 text-[11px] font-mono text-gray-600 truncate">
-            User: <strong>{adminEmail}</strong>
+        <div className={`pt-4 border-t border-[#2B2E42] space-y-2 ${mobileMenuOpen ? 'block' : 'hidden md:block'}`}>
+          <div className="p-2.5 rounded-xl bg-[#12131A] border border-[#2B2E42] text-[11px] font-mono text-gray-400 truncate">
+            Admin: <strong className="text-gray-200">{adminEmail}</strong>
           </div>
 
           <button
             onClick={onReturnToStore}
-            className="w-full btn-neo-white text-xs py-2 flex items-center justify-center gap-1.5"
+            className="w-full py-2 px-3 rounded-xl border border-[#2B2E42] bg-[#181A26] hover:bg-[#25283B] text-xs font-mono font-bold text-gray-200 flex items-center justify-center gap-1.5 transition-colors"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5 text-[#FF6EB4]" />
             <span>Storefront</span>
           </button>
 
           <button
             onClick={onSignOut}
-            className="w-full py-1.5 text-xs font-mono font-bold text-red-600 hover:text-red-800 flex items-center justify-center gap-1"
+            className="w-full py-1.5 text-xs font-mono font-bold text-red-400 hover:text-red-300 flex items-center justify-center gap-1"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>

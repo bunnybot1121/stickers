@@ -7,6 +7,8 @@ import { PackTray } from './components/PackTray';
 import { PackBuilderModal } from './components/PackBuilderModal';
 import { OrderModal } from './components/OrderModal';
 import { OrderConfirmation } from './components/OrderConfirmation';
+import { BonusCelebrationModal } from './components/BonusCelebrationModal';
+import { AiVibeModal } from './components/AiVibeModal';
 import { Footer } from './components/Footer';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -25,6 +27,7 @@ export function App() {
   // App views: 'store' | 'admin-login' | 'admin'
   const [currentView, setCurrentView] = useState<'store' | 'admin-login' | 'admin'>('store');
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const [activeNav, setActiveNav] = useState('home');
 
   // Data state
   const [stickers, setStickers] = useState<Sticker[]>([]);
@@ -41,6 +44,9 @@ export function App() {
   });
   const [isPackBuilderOpen, setIsPackBuilderOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isCelebrationOpen, setIsCelebrationOpen] = useState(false);
+  const [hasCelebrated, setHasCelebrated] = useState(false);
+  const [isAiVibeOpen, setIsAiVibeOpen] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<{ orderNumber: string; orderId: string } | null>(null);
 
   // Load initial data
@@ -83,6 +89,16 @@ export function App() {
   const isBaseFull = selection.baseStickerIds.length >= packRule.base_quantity;
   const isBonusFull = selection.bonusStickerIds.length >= packRule.bonus_quantity;
 
+  // Trigger celebration modal when base reaches required 10 stickers
+  useEffect(() => {
+    if (selection.baseStickerIds.length >= packRule.base_quantity && !hasCelebrated) {
+      setIsCelebrationOpen(true);
+      setHasCelebrated(true);
+    } else if (selection.baseStickerIds.length < packRule.base_quantity && hasCelebrated) {
+      setHasCelebrated(false);
+    }
+  }, [selection.baseStickerIds.length, packRule.base_quantity, hasCelebrated]);
+
   // Selection handlers
   const handleSelectBase = (sticker: Sticker) => {
     if (isBaseFull) return;
@@ -111,6 +127,21 @@ export function App() {
     }));
   };
 
+  // AI Vibe auto-populate handler
+  const handleApplyVibePack = (suggestedStickers: Sticker[]) => {
+    const baseIds = suggestedStickers.slice(0, packRule.base_quantity).map((s) => s.id);
+    const bonusIds = suggestedStickers
+      .slice(packRule.base_quantity, packRule.base_quantity + packRule.bonus_quantity)
+      .map((s) => s.id);
+
+    setSelection({
+      baseStickerIds: baseIds,
+      bonusStickerIds: bonusIds,
+    });
+    setIsAiVibeOpen(false);
+    setIsPackBuilderOpen(true);
+  };
+
   // Order submission success
   const handleOrderSuccess = (orderNumber: string, orderId: string) => {
     setIsOrderModalOpen(false);
@@ -122,6 +153,7 @@ export function App() {
   const handleResetForNewPack = () => {
     setSelection({ baseStickerIds: [], bonusStickerIds: [] });
     setConfirmedOrder(null);
+    setHasCelebrated(false);
   };
 
   const scrollToCatalogue = () => {
@@ -168,7 +200,7 @@ export function App() {
 
   // View: Customer Storefront
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-brand-pink selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-brand-pink selection:text-white bg-[#FAF7F2]">
       <div>
         <Navbar
           selection={selection}
@@ -179,11 +211,14 @@ export function App() {
             else setCurrentView('admin-login');
           }}
           onNavigateHome={() => setConfirmedOrder(null)}
+          onOpenAiVibe={() => setIsAiVibeOpen(true)}
+          activeNav={activeNav}
+          setActiveNav={setActiveNav}
         />
 
         <main>
           {confirmedOrder ? (
-            /* Order Confirmation View */
+            /* Order Confirmation View matching Mockup Screen 09 */
             <OrderConfirmation
               orderNumber={confirmedOrder.orderNumber}
               orderId={confirmedOrder.orderId}
@@ -201,6 +236,7 @@ export function App() {
               <Hero
                 onExploreClick={scrollToCatalogue}
                 onOpenPackBuilder={() => setIsPackBuilderOpen(true)}
+                onOpenAiVibe={() => setIsAiVibeOpen(true)}
               />
 
               <OfferExplainer />
@@ -241,7 +277,7 @@ export function App() {
                 onExploreMore={scrollToCatalogue}
               />
 
-              {/* Order Submission Form Modal */}
+              {/* Order Submission Form Modal matching Mockup Screen 08 */}
               <OrderModal
                 isOpen={isOrderModalOpen}
                 onClose={() => setIsOrderModalOpen(false)}
@@ -249,6 +285,35 @@ export function App() {
                 rule={packRule}
                 stickersMap={stickersMap}
                 onOrderSuccess={handleOrderSuccess}
+                onEditPack={() => {
+                  setIsOrderModalOpen(false);
+                  setIsPackBuilderOpen(true);
+                }}
+              />
+
+              {/* Bonus Unlock Celebration Modal matching Mockup Screen 07 / 10 */}
+              <BonusCelebrationModal
+                isOpen={isCelebrationOpen}
+                onClose={() => setIsCelebrationOpen(false)}
+                onChooseBonus={() => {
+                  setIsCelebrationOpen(false);
+                  setIsPackBuilderOpen(true);
+                }}
+              />
+
+              {/* Customer AI Vibe Stylist Modal Powered by Groq */}
+              <AiVibeModal
+                isOpen={isAiVibeOpen}
+                onClose={() => setIsAiVibeOpen(false)}
+                stickers={stickers}
+                onApplyPack={(baseIds, bonusIds) => {
+                  setSelection({
+                    baseStickerIds: baseIds,
+                    bonusStickerIds: bonusIds,
+                  });
+                  setIsAiVibeOpen(false);
+                  setIsPackBuilderOpen(true);
+                }}
               />
             </>
           )}
@@ -267,3 +332,4 @@ export function App() {
 }
 
 export default App;
+

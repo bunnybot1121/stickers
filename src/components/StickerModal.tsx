@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { X, Plus, Trash2, Sparkles, Check, Package, Tag as TagIcon } from 'lucide-react';
+import { X, Plus, Trash2, Sparkles, Heart, Droplets, Check, ShieldCheck, Laptop } from 'lucide-react';
 import { Sticker } from '../types';
 
 interface StickerModalProps {
   sticker: Sticker | null;
+  allStickers: Sticker[];
   onClose: () => void;
   isSelectedBase: boolean;
   isSelectedBonus: boolean;
@@ -13,10 +14,12 @@ interface StickerModalProps {
   onSelectBase: (sticker: Sticker) => void;
   onSelectBonus: (sticker: Sticker) => void;
   onRemove: (stickerId: string) => void;
+  onSelectSimilar: (sticker: Sticker) => void;
 }
 
 export const StickerModal: React.FC<StickerModalProps> = ({
   sticker,
+  allStickers,
   onClose,
   isSelectedBase,
   isSelectedBonus,
@@ -26,6 +29,7 @@ export const StickerModal: React.FC<StickerModalProps> = ({
   onSelectBase,
   onSelectBonus,
   onRemove,
+  onSelectSimilar,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -38,125 +42,162 @@ export const StickerModal: React.FC<StickerModalProps> = ({
   if (!sticker) return null;
 
   const isSelected = isSelectedBase || isSelectedBonus;
-  const isOutOfStock = sticker.track_inventory && (sticker.stock_on_hand ?? 0) < 1;
+  const similarStickers = allStickers
+    .filter((s) => s.id !== sticker.id && s.style === sticker.style)
+    .slice(0, 4);
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="sticker-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/60 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in"
       onClick={onClose}
     >
       <div
-        className="card-neo w-full max-w-lg bg-white overflow-hidden relative shadow-neo-xl max-h-[90vh] flex flex-col"
+        className="card-neo w-full max-w-2xl bg-white overflow-hidden relative shadow-neo-xl max-h-[92vh] flex flex-col border-2 border-black"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header with Close */}
-        <div className="flex items-center justify-between p-4 border-b-3 border-brand-dark bg-brand-yellow/30">
-          <div className="flex items-center gap-2">
-            <span className="badge-neo bg-brand-cyan text-brand-dark">{sticker.style}</span>
-            {sticker.categories?.map((cat) => (
-              <span key={cat.id} className="badge-neo bg-white text-brand-dark">
-                {cat.name}
-              </span>
-            ))}
+        {/* Header Breadcrumbs & Close */}
+        <div className="flex items-center justify-between p-4 border-b-2 border-black/10 bg-[#FAF7F2]">
+          <div className="text-xs font-mono text-gray-500 font-bold flex items-center gap-1.5">
+            <span>Home</span>
+            <span>&gt;</span>
+            <span className="text-black">{sticker.categories?.[0]?.name || sticker.style}</span>
+            <span>&gt;</span>
+            <span className="text-[#FF6EB4]">{sticker.name}</span>
           </div>
+
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl border-2 border-brand-dark bg-white hover:bg-gray-100 shadow-neo-sm transition-all"
-            aria-label="Close dialog"
+            className="p-1.5 rounded-full border border-black/20 bg-white hover:bg-gray-100 transition-colors"
           >
-            <X className="w-5 h-5 text-brand-dark" />
+            <X className="w-4 h-4 text-black" />
           </button>
         </div>
 
-        {/* Content Body */}
+        {/* Content Body matching reference */}
         <div className="p-6 overflow-y-auto space-y-6">
-          {/* Big Artwork Preview */}
-          <div className="w-full h-56 sm:h-64 rounded-2xl bg-gradient-to-b from-brand-cream to-white border-3 border-brand-dark shadow-neo-sm flex items-center justify-center p-4">
-            <img
-              src={sticker.image_path}
-              alt={sticker.name}
-              className="max-h-full max-w-full object-contain filter drop-shadow-[4px_8px_0px_rgba(0,0,0,0.15)]"
-            />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+            {/* Left: Sticker Canvas Display */}
+            <div className="sm:col-span-5 flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-[#FFE4EF]/30 to-[#E0F2FE]/30 border-2 border-black/10">
+              <div className="w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
+                <img
+                  src={sticker.image_path}
+                  alt={sticker.name}
+                  className="max-h-full max-w-full object-contain filter drop-shadow-[4px_6px_0px_rgba(0,0,0,0.15)]"
+                />
+              </div>
+            </div>
 
-          <div>
-            <h2 id="sticker-modal-title" className="font-display font-black text-2xl sm:text-3xl text-brand-dark mb-2">
-              {sticker.name}
-            </h2>
-            <p className="font-body text-base text-gray-700 leading-relaxed font-medium">
-              {sticker.description}
-            </p>
-          </div>
-
-          {/* Details specs */}
-          <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-            <div className="p-3 rounded-xl border-2 border-brand-dark bg-gray-50 flex items-center gap-2">
-              <Package className="w-4 h-4 text-brand-purple" />
-              <div>
-                <span className="text-gray-500 block">Inventory:</span>
-                <span className="font-bold text-brand-dark">
-                  {sticker.track_inventory
-                    ? `${sticker.stock_on_hand ?? 0} in stock`
-                    : 'Print to order'}
+            {/* Right: Specifications & Title */}
+            <div className="sm:col-span-7 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="badge-neo bg-[#FFE4EF] text-[#D81B60] text-[10px]">
+                  {sticker.categories?.[0]?.name || sticker.style}
+                </span>
+                <span className="badge-neo bg-[#FEF9C3] text-amber-800 text-[10px]">
+                  {sticker.style}
                 </span>
               </div>
-            </div>
-            <div className="p-3 rounded-xl border-2 border-brand-dark bg-gray-50 flex items-center gap-2">
-              <TagIcon className="w-4 h-4 text-brand-pink" />
-              <div>
-                <span className="text-gray-500 block">Offer Status:</span>
-                <span className="font-bold text-brand-dark">Eligible for 10+2</span>
+
+              <h2 id="sticker-modal-title" className="font-display font-black text-2xl text-brand-dark">
+                {sticker.name}
+              </h2>
+
+              <p className="font-body text-xs sm:text-sm text-gray-600 leading-relaxed font-medium">
+                {sticker.description || 'A cute collectible sticker buddy for your laptop, notebook or anywhere you like!'}
+              </p>
+
+              {/* Specs Box matching reference 03 */}
+              <div className="p-3.5 rounded-xl border border-black/10 bg-gray-50/80 space-y-1.5 text-xs font-body">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                  <span><strong>Material:</strong> Waterproof Vinyl</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span><strong>Finish:</strong> Premium Matte Finish</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  <span><strong>Size:</strong> ~5 cm Laser Die-Cut</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Laptop className="w-3.5 h-3.5 text-purple-500" />
+                  <span><strong>Use on:</strong> Laptops, Bottles, Notebooks</span>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-2">
+                {isSelected ? (
+                  <button
+                    onClick={() => {
+                      onRemove(sticker.id);
+                      onClose();
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl border border-red-300 bg-red-50 text-red-700 font-display font-bold text-xs flex items-center justify-center gap-1.5"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Remove from Pack</span>
+                  </button>
+                ) : !isBaseFull ? (
+                  <button
+                    onClick={() => {
+                      onSelectBase(sticker);
+                      onClose();
+                    }}
+                    className="w-full btn-neo-pink py-2.5 px-4 text-xs font-black flex items-center justify-center gap-2 shadow-neo"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add to Pack</span>
+                  </button>
+                ) : bonusUnlocked && !isBonusFull ? (
+                  <button
+                    onClick={() => {
+                      onSelectBonus(sticker);
+                      onClose();
+                    }}
+                    className="w-full btn-neo-pink py-2.5 px-4 text-xs font-black flex items-center justify-center gap-2 shadow-neo animate-pulse"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Add as Bonus Free (10+2)</span>
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full py-2.5 px-4 rounded-xl border border-gray-300 bg-gray-100 text-gray-400 font-display font-bold text-xs cursor-not-allowed"
+                  >
+                    Pack Full (12/12 Selected)
+                  </button>
+                )}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Footer Actions */}
-        <div className="p-4 border-t-3 border-brand-dark bg-gray-50 flex items-center justify-end gap-3">
-          {isSelected ? (
-            <button
-              onClick={() => {
-                onRemove(sticker.id);
-                onClose();
-              }}
-              className="btn-neo bg-red-100 hover:bg-red-200 text-red-700 flex items-center gap-2 text-sm"
-            >
-              <Trash2 className="w-4 h-4" />
-              <span>Remove from Pack</span>
-            </button>
-          ) : isOutOfStock ? (
-            <button disabled className="btn-neo bg-gray-200 text-gray-400 cursor-not-allowed text-sm">
-              Sold Out
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              {!isBaseFull && (
-                <button
-                  onClick={() => {
-                    onSelectBase(sticker);
-                    onClose();
-                  }}
-                  className="btn-neo-yellow flex items-center gap-2 text-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add to Base (10)</span>
-                </button>
-              )}
-              {bonusUnlocked && !isBonusFull && (
-                <button
-                  onClick={() => {
-                    onSelectBonus(sticker);
-                    onClose();
-                  }}
-                  className="btn-neo-pink flex items-center gap-2 text-sm animate-pulse"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Add as +2 Bonus Free</span>
-                </button>
-              )}
+          {/* Similar Stickers Row matching reference */}
+          {similarStickers.length > 0 && (
+            <div className="pt-4 border-t border-gray-100">
+              <h4 className="font-display font-bold text-xs uppercase tracking-wider text-gray-500 mb-3">
+                Similar Stickers You Might Like
+              </h4>
+              <div className="grid grid-cols-4 gap-3">
+                {similarStickers.map((sim) => (
+                  <div
+                    key={sim.id}
+                    onClick={() => onSelectSimilar(sim)}
+                    className="p-2 rounded-xl border border-black/10 bg-gray-50 hover:bg-white hover:border-black cursor-pointer text-center transition-all flex flex-col items-center justify-center"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center mb-1">
+                      <img src={sim.image_path} alt={sim.name} className="max-h-full max-w-full object-contain" />
+                    </div>
+                    <span className="font-display font-bold text-[10px] text-brand-dark truncate w-full">
+                      {sim.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

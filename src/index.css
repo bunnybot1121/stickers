@@ -6,19 +6,17 @@
   --color-brand-cyan: #00D4D8;
   --color-brand-pink: #FF6EB4;
   --color-brand-yellow: #F5E642;
-  --color-brand-dark: #111111;
-  --color-brand-cream: #FFF9F0;
+  --color-brand-dark: #12131A;
+  --color-brand-cream: #FAF7F2;
   --color-brand-purple: #9B51E0;
 }
 
 @layer base {
   body {
-    background-color: var(--color-brand-cream);
-    color: var(--color-brand-dark);
+    background-color: #FAF7F2;
+    color: #161616;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    background-image: radial-gradient(#111111 0.75px, transparent 0.75px);
-    background-size: 24px 24px;
-    background-position: 0 0;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -27,21 +25,21 @@
 }
 
 @layer components {
-  /* Neo-Brutalist Buttons */
+  /* Stickerz Buttons matching reference designs */
   .btn-neo {
-    @apply inline-flex items-center justify-center font-display font-bold px-5 py-2.5 rounded-xl border-3 border-brand-dark shadow-neo transition-all duration-150 active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0 disabled:active:shadow-neo;
+    @apply inline-flex items-center justify-center font-display font-bold px-5 py-2.5 rounded-xl border-2 border-brand-dark shadow-neo transition-all duration-150 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0;
   }
 
   .btn-neo-yellow {
-    @apply btn-neo bg-brand-yellow text-brand-dark hover:bg-yellow-300;
+    @apply btn-neo bg-[#FACC15] text-brand-dark hover:bg-[#EAB308];
   }
 
   .btn-neo-pink {
-    @apply btn-neo bg-brand-pink text-white hover:bg-pink-400;
+    @apply btn-neo bg-[#FF6EB4] text-white hover:bg-[#F43F5E];
   }
 
   .btn-neo-cyan {
-    @apply btn-neo bg-brand-cyan text-brand-dark hover:bg-cyan-300;
+    @apply btn-neo bg-[#38BDF8] text-brand-dark hover:bg-[#0EA5E9];
   }
 
   .btn-neo-white {
@@ -49,27 +47,38 @@
   }
 
   .btn-neo-dark {
-    @apply btn-neo bg-brand-dark text-white hover:bg-black;
+    @apply btn-neo bg-[#12131A] text-white hover:bg-black;
   }
 
-  /* Neo-Brutalist Cards */
+  /* Sticker Cards */
   .card-neo {
-    @apply bg-white rounded-2xl border-3 border-brand-dark shadow-neo-md transition-all duration-200;
+    @apply bg-white rounded-2xl border-2 border-brand-dark/90 shadow-neo transition-all duration-200;
   }
 
   .card-neo-interactive {
-    @apply card-neo hover:-translate-y-1 hover:translate-x-0.5 hover:shadow-neo-lg;
+    @apply card-neo hover:-translate-y-1 hover:shadow-neo-lg hover:scale-[1.02];
   }
 
   /* Badge Pills */
   .badge-neo {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold border-2 border-brand-dark;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold border border-brand-dark/80;
   }
 
   /* Input fields */
   .input-neo {
-    @apply w-full rounded-xl border-3 border-brand-dark bg-white px-4 py-2.5 font-medium text-brand-dark shadow-neo-sm focus:outline-none focus:ring-2 focus:ring-brand-cyan focus:shadow-neo transition-all;
+    @apply w-full rounded-xl border-2 border-brand-dark bg-white px-4 py-2.5 font-medium text-brand-dark shadow-neo-sm focus:outline-none focus:ring-2 focus:ring-[#FF6EB4] transition-all;
   }
+}
+
+/* Micro-animations */
+@keyframes pop-bounce {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.animate-pop-bounce {
+  animation: pop-bounce 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* Reduced Motion Override */

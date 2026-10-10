@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, SlidersHorizontal, Sparkles, AlertCircle } from 'lucide-react';
-import { Category, Sticker, StickerStyle, PackSelectionState } from '../types';
+import { Search, X, Sparkles, AlertCircle, Heart, Flame, Code, Coffee, Gamepad2, Cat } from 'lucide-react';
+import { Category, Sticker, PackSelectionState } from '../types';
 import { StickerCard } from './StickerCard';
 import { StickerModal } from './StickerModal';
 
@@ -29,34 +29,26 @@ export const Catalogue: React.FC<CatalogueProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>('all');
-  const [selectedStyle, setSelectedStyle] = useState<string>('all');
-  const [inStockOnly, setInStockOnly] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'featured' | 'newest' | 'name-asc'>('featured');
   const [inspectingSticker, setInspectingSticker] = useState<Sticker | null>(null);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+
+  const handleToggleFavorite = (id: string) => {
+    setFavoriteIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
   // Filter & Sort logic
   const filteredStickers = useMemo(() => {
     return stickers
       .filter((sticker) => {
-        // Only active stickers in storefront
         if (sticker.status !== 'active') return false;
 
         // Category filter
         if (selectedCategorySlug !== 'all') {
           const inCat = sticker.categories?.some((c) => c.slug === selectedCategorySlug);
           if (!inCat) return false;
-        }
-
-        // Style filter
-        if (selectedStyle !== 'all') {
-          if (sticker.style !== selectedStyle) return false;
-        }
-
-        // In-stock only
-        if (inStockOnly) {
-          if (sticker.track_inventory && (sticker.stock_on_hand ?? 0) < 1) {
-            return false;
-          }
         }
 
         // Search query
@@ -74,202 +66,216 @@ export const Catalogue: React.FC<CatalogueProps> = ({
       .sort((a, b) => {
         if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
         if (sortBy === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        // default featured first
         return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
       });
-  }, [stickers, searchQuery, selectedCategorySlug, selectedStyle, inStockOnly, sortBy]);
+  }, [stickers, searchQuery, selectedCategorySlug, sortBy]);
 
-  const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedCategorySlug('all');
-    setSelectedStyle('all');
-    setInStockOnly(false);
-    setSortBy('featured');
+  // Category Icon helper
+  const getCategoryIcon = (slug: string) => {
+    switch (slug) {
+      case 'coding-tech':
+        return Code;
+      case 'anime-chibi':
+        return Sparkles;
+      case 'aesthetic-chill':
+        return Coffee;
+      case 'retro-gaming':
+        return Gamepad2;
+      case 'cute-animals':
+        return Cat;
+      default:
+        return Flame;
+    }
   };
 
-  const hasActiveFilters =
-    searchQuery.trim() !== '' ||
-    selectedCategorySlug !== 'all' ||
-    selectedStyle !== 'all' ||
-    inStockOnly;
-
   return (
-    <section id="catalogue-section" className="py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-      {/* Section Title & Subheading */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-        <div>
-          <div className="inline-flex items-center gap-1.5 badge-neo bg-brand-pink text-white mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>DISCOVERY ARENA</span>
-          </div>
-          <h2 className="font-display font-black text-3xl sm:text-5xl text-brand-dark tracking-tight">
-            Explore All Stickers
-          </h2>
-          <p className="font-body text-gray-700 font-medium text-sm sm:text-base mt-1">
-            Tap designs to inspect or quickly add them to your 10 + 2 pack builder.
-          </p>
-        </div>
-
-        {/* Search bar */}
-        <div className="w-full md:w-80 relative">
+    <section id="catalogue-section" className="py-10 px-4 sm:px-8 max-w-7xl mx-auto">
+      {/* Top Search & Filter Bar matching reference */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+        {/* Search input with rounded pill style */}
+        <div className="w-full md:w-96 relative">
           <input
             id="catalogue-search-input"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search name, category, style..."
-            className="input-neo pl-10 pr-9 text-sm"
+            placeholder="Search stickers (e.g. python, cat, anime...)"
+            className="w-full rounded-2xl border-2 border-black/80 bg-white px-4 py-2.5 pl-10 text-xs sm:text-sm font-medium shadow-neo-sm focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]"
           />
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5 pointer-events-none" />
+          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3 pointer-events-none" />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-3 text-gray-400 hover:text-brand-dark"
-              title="Clear search"
+              className="absolute right-3.5 top-3 text-gray-400 hover:text-black"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
-      </div>
 
-      {/* Category Pills Slider / Filter */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
-        <button
-          onClick={() => setSelectedCategorySlug('all')}
-          className={`px-4 py-2 rounded-xl font-display font-bold text-xs sm:text-sm border-2 border-brand-dark transition-all whitespace-nowrap ${
-            selectedCategorySlug === 'all'
-              ? 'bg-brand-dark text-white shadow-neo-sm translate-y-[-1px]'
-              : 'bg-white text-brand-dark hover:bg-gray-100'
-          }`}
-        >
-          All Designs ({stickers.filter((s) => s.status === 'active').length})
-        </button>
-
-        {categories.map((cat) => {
-          const count = stickers.filter(
-            (s) => s.status === 'active' && s.categories?.some((c) => c.slug === cat.slug)
-          ).length;
-          const isActive = selectedCategorySlug === cat.slug;
-
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategorySlug(cat.slug)}
-              className={`px-4 py-2 rounded-xl font-display font-bold text-xs sm:text-sm border-2 border-brand-dark transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                isActive
-                  ? 'bg-brand-yellow text-brand-dark shadow-neo-sm translate-y-[-1px]'
-                  : 'bg-white text-brand-dark hover:bg-gray-100'
-              }`}
-            >
-              <span>{cat.name}</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-brand-dark/10">
-                {count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Secondary Controls Bar: Style, In Stock, Sorting */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white border-3 border-brand-dark shadow-neo-sm mb-8">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-gray-500">
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Filters:</span>
-          </div>
-
-          {/* Style Selector */}
-          <select
-            value={selectedStyle}
-            onChange={(e) => setSelectedStyle(e.target.value)}
-            className="px-3 py-1.5 rounded-xl border-2 border-brand-dark bg-gray-50 text-xs font-bold text-brand-dark focus:outline-none focus:ring-1 focus:ring-brand-cyan"
-          >
-            <option value="all">All Styles</option>
-            <option value="Kawaii">Kawaii</option>
-            <option value="Neo-Brutal">Neo-Brutal</option>
-            <option value="Pixel Art">Pixel Art</option>
-            <option value="Holographic">Holographic</option>
-            <option value="Retro">Retro</option>
-          </select>
-
-          {/* In-stock Checkbox */}
-          <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-brand-dark">
-            <input
-              type="checkbox"
-              checked={inStockOnly}
-              onChange={(e) => setInStockOnly(e.target.checked)}
-              className="w-4 h-4 rounded border-2 border-brand-dark text-brand-pink focus:ring-0"
-            />
-            <span>In-Stock Only</span>
-          </label>
-        </div>
-
-        {/* Sort & Count */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-mono text-gray-500 hidden sm:inline">
-            Showing <strong>{filteredStickers.length}</strong> items
+        {/* Sort by dropdown */}
+        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+          <span className="text-xs font-mono font-bold text-gray-500 hidden sm:inline">
+            Sort by:
           </span>
-
           <select
             value={sortBy}
             onChange={(e: any) => setSortBy(e.target.value)}
-            className="px-3 py-1.5 rounded-xl border-2 border-brand-dark bg-gray-50 text-xs font-bold text-brand-dark focus:outline-none focus:ring-1 focus:ring-brand-cyan"
+            className="px-3 py-2 rounded-xl border-2 border-black/80 bg-white text-xs font-bold text-brand-dark shadow-neo-sm focus:outline-none"
           >
-            <option value="featured">Featured First</option>
-            <option value="newest">Newest First</option>
+            <option value="featured">Popular / Featured</option>
+            <option value="newest">Newest Arrivals</option>
             <option value="name-asc">Name (A–Z)</option>
           </select>
         </div>
       </div>
 
-      {/* Grid of Sticker Cards */}
-      {filteredStickers.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredStickers.map((sticker) => {
-            const isSelectedBase = selection.baseStickerIds.includes(sticker.id);
-            const isSelectedBonus = selection.bonusStickerIds.includes(sticker.id);
+      {/* Horizontal Category Chips Bar matching reference */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 scrollbar-none">
+        <button
+          onClick={() => setSelectedCategorySlug('all')}
+          className={`px-4 py-2 rounded-xl font-display font-bold text-xs transition-all whitespace-nowrap border-2 border-black/80 ${
+            selectedCategorySlug === 'all'
+              ? 'bg-black text-white shadow-neo-sm'
+              : 'bg-white text-black hover:bg-gray-100'
+          }`}
+        >
+          All
+        </button>
 
-            return (
-              <StickerCard
-                key={sticker.id}
-                sticker={sticker}
-                isSelectedBase={isSelectedBase}
-                isSelectedBonus={isSelectedBonus}
-                isBaseFull={isBaseFull}
-                isBonusFull={isBonusFull}
-                bonusUnlocked={bonusUnlocked}
-                onSelectBase={onSelectBase}
-                onSelectBonus={onSelectBonus}
-                onRemove={onRemove}
-                onInspect={setInspectingSticker}
-              />
-            );
-          })}
-        </div>
-      ) : (
-        /* Empty State */
-        <div className="card-neo p-12 text-center bg-white my-8 max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-2xl bg-amber-100 border-3 border-brand-dark shadow-neo-sm flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8 text-amber-600" />
-          </div>
-          <h3 className="font-display font-black text-2xl text-brand-dark mb-2">
-            No Stickers Found
-          </h3>
-          <p className="font-body text-sm text-gray-600 mb-6 font-medium">
-            We couldn't find any stickers matching your current search and filter criteria.
-          </p>
-          {hasActiveFilters && (
-            <button onClick={clearFilters} className="btn-neo-yellow text-sm">
-              Clear All Filters
+        {categories.map((cat) => {
+          const isActive = selectedCategorySlug === cat.slug;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategorySlug(cat.slug)}
+              className={`px-4 py-2 rounded-xl font-display font-bold text-xs transition-all whitespace-nowrap border-2 border-black/80 ${
+                isActive
+                  ? 'bg-[#FACC15] text-black shadow-neo-sm'
+                  : 'bg-white text-black hover:bg-gray-100'
+              }`}
+            >
+              {cat.name}
             </button>
+          );
+        })}
+      </div>
+
+      {/* Main Grid: Desktop Category Sidebar (Left) + Stickers Grid (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Desktop Category Sidebar matching reference */}
+        <div className="hidden lg:block lg:col-span-3 space-y-4 sticky top-24">
+          <div className="card-neo p-4 bg-white border-2 border-black/80">
+            <h3 className="font-display font-black text-sm uppercase tracking-wider text-black mb-3 px-2">
+              Categories
+            </h3>
+            <div className="space-y-1">
+              <button
+                onClick={() => setSelectedCategorySlug('all')}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-display font-bold transition-all ${
+                  selectedCategorySlug === 'all'
+                    ? 'bg-black text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span>★</span>
+                  <span>All Stickers</span>
+                </div>
+                <span className="text-[10px] font-mono opacity-60">
+                  {stickers.filter((s) => s.status === 'active').length}
+                </span>
+              </button>
+
+              {categories.map((cat) => {
+                const Icon = getCategoryIcon(cat.slug);
+                const count = stickers.filter(
+                  (s) => s.status === 'active' && s.categories?.some((c) => c.slug === cat.slug)
+                ).length;
+                const isActive = selectedCategorySlug === cat.slug;
+
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategorySlug(cat.slug)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-display font-bold transition-all ${
+                      isActive
+                        ? 'bg-[#FFE4EF] text-[#D81B60] border border-[#FF6EB4]'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{cat.name}</span>
+                    </div>
+                    <span className="text-[10px] font-mono opacity-60">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Sticky 10+2 Promotional Promo Box */}
+          <div className="card-neo p-4 bg-gradient-to-br from-[#FEF9C3] to-[#FFE4EF] border-2 border-black/80 text-center">
+            <span className="text-2xl block mb-1">🎁</span>
+            <span className="font-display font-black text-sm text-black block">
+              10 + 2 On Every Pack!
+            </span>
+            <p className="text-[11px] font-medium text-gray-700 mt-1">
+              Select any 10 stickers and get 2 bonus designs automatically unlocked.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Area: Sticker Grid (9 cols) */}
+        <div className="lg:col-span-9">
+          {filteredStickers.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+              {filteredStickers.map((sticker) => (
+                <StickerCard
+                  key={sticker.id}
+                  sticker={sticker}
+                  isSelectedBase={selection.baseStickerIds.includes(sticker.id)}
+                  isSelectedBonus={selection.bonusStickerIds.includes(sticker.id)}
+                  isBaseFull={isBaseFull}
+                  isBonusFull={isBonusFull}
+                  bonusUnlocked={bonusUnlocked}
+                  isFavorited={favoriteIds.includes(sticker.id)}
+                  onToggleFavorite={handleToggleFavorite}
+                  onSelectBase={onSelectBase}
+                  onSelectBonus={onSelectBonus}
+                  onRemove={onRemove}
+                  onInspect={setInspectingSticker}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="card-neo p-12 text-center bg-white border-2 border-black/80 max-w-md mx-auto">
+              <AlertCircle className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+              <h3 className="font-display font-black text-xl text-brand-dark mb-1">
+                No stickers found
+              </h3>
+              <p className="font-body text-xs text-gray-500 mb-4">
+                Try searching for another keyword or clear your category filter.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategorySlug('all');
+                }}
+                className="btn-neo-yellow text-xs py-2 px-4"
+              >
+                Reset Search
+              </button>
+            </div>
           )}
         </div>
-      )}
+      </div>
 
-      {/* Detail Modal */}
+      {/* Sticker Detail Modal matching reference */}
       <StickerModal
         sticker={inspectingSticker}
+        allStickers={stickers}
         onClose={() => setInspectingSticker(null)}
         isSelectedBase={inspectingSticker ? selection.baseStickerIds.includes(inspectingSticker.id) : false}
         isSelectedBonus={inspectingSticker ? selection.bonusStickerIds.includes(inspectingSticker.id) : false}
@@ -279,6 +285,7 @@ export const Catalogue: React.FC<CatalogueProps> = ({
         onSelectBase={onSelectBase}
         onSelectBonus={onSelectBonus}
         onRemove={onRemove}
+        onSelectSimilar={(s) => setInspectingSticker(s)}
       />
     </section>
   );

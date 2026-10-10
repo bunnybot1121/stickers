@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Archive, CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { Plus, Search, Edit2, Archive, CheckCircle, AlertTriangle, X, Sparkles, Trash2, ArrowRight } from 'lucide-react';
 import { Sticker, Category, StickerStyle } from '../../types';
 import { storeService } from '../../services/storeService';
+import { groqService } from '../../services/groqService';
 
 interface AdminCatalogueProps {
   stickers: Sticker[];
@@ -19,6 +20,14 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
   const [editingSticker, setEditingSticker] = useState<Partial<Sticker> | null>(null);
   const [selectedCatIds, setSelectedCatIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+
+  // AI Bulk Dump Modal State
+  const [isAiBulkDumpOpen, setIsAiBulkDumpOpen] = useState(false);
+  const [rawBulkText, setRawBulkText] = useState('');
+  const [isAiParsing, setIsAiParsing] = useState(false);
+  const [parsedStickers, setParsedStickers] = useState<any[]>([]);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [isBatchSaving, setIsBatchSaving] = useState(false);
 
   const filteredStickers = stickers.filter((s) => {
     if (selectedCatFilter !== 'all' && !s.categories?.some((c) => c.slug === selectedCatFilter)) return false;
@@ -54,6 +63,84 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
     setEditingSticker({ ...s });
     setSelectedCatIds(s.categories?.map((c) => c.id) || []);
   };
+
+  // AI Bulk Dump handler using Groq
+  const handleRunAiBulkDump = async () => {
+    if (!rawBulkText.trim()) return;
+    setIsAiParsing(true);
+    setAiError(null);
+
+    try {
+      const results = await groqService.parseAndDumpStickers(rawBulkText, categories);
+      setParsedStickers(results);
+    } catch (err: any) {
+      setAiError(err.message || 'Groq AI failed to parse stickers. Please check your API key.');
+    } finally {
+      setIsAiParsing(false);
+    }
+  };
+
+  // Commit all parsed stickers to database
+  const handleSaveAllParsedStickers = async () => {
+    if (parsedStickers.length === 0) return;
+    setIsBatchSaving(true);
+
+    try {
+      // SVGs pool for assigning graphics
+      const svgPool = [
+        '/stickers/cat-coder.svg',
+        '/stickers/anime-coder.svg',
+        '/stickers/matcha-frog.svg',
+        '/stickers/code-mode.svg',
+        '/stickers/boba-ghost.svg',
+        '/stickers/cyber-deck.svg',
+        '/stickers/coffee-first.svg',
+        '/stickers/chill-guy.svg',
+      ];
+
+      for (let i = 0; i < parsedStickers.length; i++) {
+        const item = parsedStickers[i];
+        const assignedImage = svgPool[i % svgPool.length];
+
+        // Find matching category ID or default to first category
+        const matchedCategory = categories.find(
+          (c) => c.slug.toLowerCase() === (item.suggestedCategory || '').toLowerCase()
+        ) || categories[0];
+
+        await storeService.saveSticker(
+          {
+            name: item.name,
+            slug: item.slug || item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            description: item.description,
+            image_path: assignedImage,
+            style: item.style || 'Kawaii',
+            status: 'active',
+            is_featured: false,
+            track_inventory: true,
+            stock_on_hand: 50,
+            low_stock_threshold: 10,
+            price: 3.5,
+          },
+          matchedCategory ? [matchedCategory.id] : []
+        );
+      }
+
+      onStickerUpdated();
+      setIsAiBulkDumpOpen(false);
+      setParsedStickers([]);
+      setRawBulkText('');
+      alert(`Success! Successfully added ${parsedStickers.length} stickers to the catalogue.`);
+    } catch (err: any) {
+      alert(`Error saving batch: ${err.message}`);
+    } finally {
+      setIsBatchSaving(false);
+    }
+  };
+
+  const handleRemoveParsedItem = (idx: number) => {
+    setParsedStickers((prev) => prev.filter((_, i) => i !== idx));
+  };
+
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,13 +185,24 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="btn-neo-yellow py-2 px-4 text-xs sm:text-sm flex items-center gap-1.5"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Sticker</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setIsAiBulkDumpOpen(true)}
+            className="flex items-center gap-1.5 py-2 px-3.5 rounded-xl border-2 border-brand-dark bg-[#EBD4FF] hover:bg-purple-200 text-purple-950 font-display font-bold text-xs sm:text-sm shadow-neo-sm transition-all"
+            title="Dump raw text/ideas of stickers and let Groq AI categorize and structure them automatically"
+          >
+            <Sparkles className="w-4 h-4 text-purple-600" />
+            <span>AI Bulk Dump (Groq)</span>
+          </button>
+
+          <button
+            onClick={handleOpenAdd}
+            className="btn-neo-yellow py-2 px-4 text-xs sm:text-sm flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Sticker</span>
+          </button>
+        </div>
       </div>
 
       {/* Filters Bar */}
@@ -369,6 +467,168 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* AI Bulk Dump Modal */}
+      {isAiBulkDumpOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/75 backdrop-blur-sm animate-in fade-in"
+          onClick={() => setIsAiBulkDumpOpen(false)}
+        >
+          <div
+            className="card-neo w-full max-w-2xl bg-white overflow-hidden relative shadow-neo-xl max-h-[92vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b-3 border-brand-dark bg-[#EBD4FF]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="font-display font-black text-xl text-brand-dark">
+                    AI Bulk Sticker Dump
+                  </h2>
+                  <p className="font-mono text-[11px] text-purple-900 font-bold">
+                    Powered by Groq Llama 3.3 — Instant auto-categorization &amp; formatting
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsAiBulkDumpOpen(false)}
+                className="p-1.5 rounded-xl border-2 border-brand-dark bg-white hover:bg-gray-100"
+              >
+                <X className="w-5 h-5 text-brand-dark" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-4">
+              {aiError && (
+                <div className="p-3.5 rounded-xl bg-red-50 border-2 border-red-500 text-red-800 text-xs font-bold flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <span>{aiError}</span>
+                </div>
+              )}
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-display font-bold text-xs uppercase tracking-wider text-brand-dark">
+                    Paste Raw Sticker Ideas / Dump Text
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setRawBulkText(
+                        'Cyberpunk Neon Cat with goggles, Boba Ghost drinking matcha boba, 80s Synthwave Sunset cassette tape, Git Commit Coffee Mug with funny terminal quote, Pixel Sword 16-bit RPG retro'
+                      )
+                    }
+                    className="text-[11px] font-mono font-bold text-purple-700 hover:underline"
+                  >
+                    Insert Example
+                  </button>
+                </div>
+                <textarea
+                  rows={4}
+                  value={rawBulkText}
+                  onChange={(e) => setRawBulkText(e.target.value)}
+                  placeholder="Paste any raw notes, comma-separated sticker ideas, or brainstorming dump here..."
+                  className="w-full p-3 rounded-2xl border-2 border-brand-dark bg-[#FAF7F2] font-body text-xs resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  disabled={isAiParsing}
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleRunAiBulkDump}
+                  disabled={isAiParsing || !rawBulkText.trim()}
+                  className="btn-neo-pink text-xs py-2 px-5 flex items-center gap-2"
+                >
+                  <Sparkles className={`w-3.5 h-3.5 ${isAiParsing ? 'animate-spin' : ''}`} />
+                  <span>{isAiParsing ? 'Analyzing with Groq AI...' : 'Sort & Categorize with Groq AI'}</span>
+                </button>
+              </div>
+
+              {/* Parsed Results Preview */}
+              {parsedStickers.length > 0 && (
+                <div className="pt-3 border-t-2 border-gray-100 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-display font-bold text-sm text-brand-dark">
+                      AI Generated Stickers ({parsedStickers.length})
+                    </span>
+                    <span className="text-[11px] font-mono text-gray-500">
+                      Review before committing to catalogue
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    {parsedStickers.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-xl border-2 border-brand-dark bg-yellow-50/50 flex items-start justify-between gap-3 shadow-neo-sm"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-display font-bold text-xs text-brand-dark">
+                              {item.name}
+                            </span>
+                            <span className="badge-neo bg-purple-100 text-purple-800 text-[10px] py-0">
+                              {item.style}
+                            </span>
+                            <span className="badge-neo bg-white text-gray-700 text-[10px] py-0">
+                              Category: {item.suggestedCategory}
+                            </span>
+                          </div>
+                          <p className="text-[11px] font-body text-gray-600">
+                            {item.description}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveParsedItem(idx)}
+                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                          title="Remove from batch"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-3 flex justify-between items-center">
+                    <button
+                      type="button"
+                      onClick={() => setParsedStickers([])}
+                      className="text-xs font-mono text-gray-500 hover:text-black"
+                    >
+                      Clear Results
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleSaveAllParsedStickers}
+                      disabled={isBatchSaving}
+                      className="btn-neo-yellow text-xs py-2 px-6 flex items-center gap-2 font-bold"
+                    >
+                      {isBatchSaving ? (
+                        <span>Adding Stickers to Database...</span>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Add All ({parsedStickers.length}) to Catalogue</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
