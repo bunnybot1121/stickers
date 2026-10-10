@@ -63,7 +63,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           </span>
         </div>
 
-        {/* Cute Cat in Delivery Box SVG Illustration */}
+        {/* Cute Cat in Sticker Box SVG Illustration */}
         <div className="relative w-44 h-44 mx-auto my-3 flex items-center justify-center">
           <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-sm">
             {/* Sparkles & Stars */}
@@ -126,7 +126,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           Order Submitted!
         </h1>
         <p className="font-body text-xs sm:text-sm text-slate-500 font-normal max-w-xs mx-auto mb-5 leading-relaxed">
-          Thank you! We've received your curated pack request. Your order is queued for print preparation and dispatch!
+          Thank you! We've received your curated pack request. Your order is confirmed and queued for production.
         </p>
 
         {/* Order ID & Status Box */}

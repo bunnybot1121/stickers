@@ -115,7 +115,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               <h2 id="order-modal-title" className="font-display font-black text-2xl text-slate-900 leading-tight">
                 Complete Your Pack
               </h2>
-              <p className="text-xs text-slate-500 font-medium">Free courier dispatch on all 10+2 custom packs</p>
+              <p className="text-xs text-slate-500 font-medium">Review your custom pack and confirm your reservation</p>
             </div>
             <span className="inline-flex items-center gap-1 bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-soft-xs">
               <Sparkles className="w-3 h-3 text-yellow-300" />
@@ -222,17 +222,17 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             </div>
           </div>
 
-          {/* Delivery Address / Notes */}
+          {/* Special Notes / Instructions */}
           <div>
             <label className="block font-display font-bold text-xs uppercase tracking-wider text-slate-700 mb-1.5">
-              Delivery Address &amp; Notes <span className="text-slate-400 font-normal">(optional)</span>
+              Special Notes / Instructions <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <textarea
               id="customer-note-input"
               rows={2}
               value={customerNote}
               onChange={(e) => setCustomerNote(e.target.value)}
-              placeholder="Apartment / street, city, pin code (or delivery notes)"
+              placeholder="Any special notes or custom preferences for your pack"
               className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] shadow-soft-xs transition-all resize-none"
               disabled={isSubmitting}
             />

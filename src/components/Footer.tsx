@@ -57,7 +57,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, onNavigateHome }) =
         {/* Quality Guarantee (No raw emojis or repetitive technical claims) */}
         <div>
           <h4 className="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-3.5">
-            Material Guarantee
+            Material &amp; Finish
           </h4>
           <ul className="space-y-2 text-xs font-normal text-slate-500 font-body leading-relaxed">
             <li className="flex items-center gap-2">

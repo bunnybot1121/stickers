@@ -1,5 +1,5 @@
 import React from 'react';
-import { Palette, Gift, Truck, Check, Sparkles, ArrowRight } from 'lucide-react';
+import { Palette, Gift, CheckCircle2, Sparkles } from 'lucide-react';
 
 export const OfferExplainer: React.FC = () => {
   const steps = [
@@ -25,13 +25,13 @@ export const OfferExplainer: React.FC = () => {
     },
     {
       num: '03',
-      title: 'Sealed & Shipped to Doorstep',
-      desc: 'Confirm your phone and delivery address. Your stickers are carefully packed and delivered in protective rigid mailers.',
-      icon: Truck,
-      badge: 'Fast Dispatch',
-      color: 'from-amber-400 to-orange-500',
-      lightBg: 'bg-amber-50',
-      textColor: 'text-amber-600',
+      title: 'Confirm & Lock Your Pack',
+      desc: 'Enter your name and contact number to reserve your 12-sticker custom bundle. Your unique Order ID is generated instantly.',
+      icon: CheckCircle2,
+      badge: 'Instant Reserve',
+      color: 'from-emerald-400 to-teal-500',
+      lightBg: 'bg-emerald-50',
+      textColor: 'text-emerald-600',
     },
   ];
 

@@ -132,33 +132,27 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder })
               </button>
             </div>
 
-            {/* Social Proof Strip with real sticker avatars and Lucide Stars (No emojis) */}
-            <div className="pt-3 flex flex-wrap items-center gap-5 text-xs text-slate-600">
+            {/* Curated Collection Badge (Authentic, no fake metrics) */}
+            <div className="pt-3 flex flex-wrap items-center gap-3.5 text-xs text-slate-600">
               <div className="flex -space-x-2 overflow-hidden">
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-pink-50 p-0.5 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/cyber-hacker-cat.svg" alt="Avatar 1" className="w-full h-full object-contain" />
+                  <img src="/stickers/cyber-hacker-cat.svg" alt="Preview 1" className="w-full h-full object-contain" />
                 </div>
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-purple-50 p-0 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/headphone-girl.jpg" alt="Avatar 2" className="w-full h-full object-cover" />
+                  <img src="/stickers/headphone-girl.jpg" alt="Preview 2" className="w-full h-full object-cover" />
                 </div>
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-amber-50 p-0.5 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/pixel-game-cart.svg" alt="Avatar 3" className="w-full h-full object-contain" />
+                  <img src="/stickers/pixel-game-cart.svg" alt="Preview 3" className="w-full h-full object-contain" />
                 </div>
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-cyan-50 p-0.5 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/cyberpunk-cassette.svg" alt="Avatar 4" className="w-full h-full object-contain" />
+                  <img src="/stickers/cyberpunk-cassette.svg" alt="Preview 4" className="w-full h-full object-contain" />
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 font-medium">
-                <div className="flex text-amber-400 gap-0.5">
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                </div>
-                <span className="font-bold text-slate-900">4.9/5</span>
+              <div className="flex items-center gap-2 font-medium">
+                <Sparkles className="w-3.5 h-3.5 text-[#FF6EB4]" />
+                <span className="font-bold text-slate-900">Custom Die-Cut Vinyl</span>
                 <span className="text-slate-400">•</span>
-                <span>Loved by 12,000+ sticker collectors</span>
+                <span>Original Curated Artwork</span>
               </div>
             </div>
           </div>
