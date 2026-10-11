@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, Sparkles, AlertCircle, Heart, Flame, Code, Coffee, Gamepad2, Cat, Gift, Star } from 'lucide-react';
+import { Search, X, Sparkles, AlertCircle, Heart, Flame, Code, Coffee, Gamepad2, Cat, Gift, Star, Zap } from 'lucide-react';
 import { Category, Sticker, PackSelectionState } from '../types';
 import { StickerCard } from './StickerCard';
 import { StickerModal } from './StickerModal';
@@ -77,14 +77,19 @@ export const Catalogue: React.FC<CatalogueProps> = ({
         return Code;
       case 'anime-chibi':
         return Sparkles;
-      case 'aesthetic-chill':
-        return Coffee;
+      case 'motorsport-speed':
+        return Zap;
       case 'retro-gaming':
         return Gamepad2;
+      case 'pop-culture':
+        return Flame;
+      case 'aesthetic-chill':
+      case 'memes-chaos':
+        return Coffee;
       case 'cute-animals':
         return Cat;
       default:
-        return Flame;
+        return Sparkles;
     }
   };
 

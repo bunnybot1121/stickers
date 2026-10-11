@@ -62,24 +62,6 @@ export const StickerCard: React.FC<StickerCardProps> = ({
     }
   };
 
-  // Aesthetic subtle background gradient for the sticker preview stage
-  const getStageColor = (style: string) => {
-    switch (style) {
-      case 'Kawaii':
-        return 'from-pink-100/40 via-rose-50/20 to-white';
-      case 'Neo-Brutal':
-        return 'from-amber-100/40 via-yellow-50/20 to-white';
-      case 'Pixel Art':
-        return 'from-sky-100/40 via-blue-50/20 to-white';
-      case 'Holographic':
-        return 'from-purple-100/40 via-fuchsia-50/20 to-white';
-      case 'Retro':
-        return 'from-orange-100/40 via-amber-50/20 to-white';
-      default:
-        return 'from-emerald-100/40 via-teal-50/20 to-white';
-    }
-  };
-
   const getCategoryBadgeColor = (style: string) => {
     switch (style) {
       case 'Kawaii':
@@ -92,8 +74,14 @@ export const StickerCard: React.FC<StickerCardProps> = ({
         return 'bg-purple-50 text-purple-800 border-purple-200';
       case 'Retro':
         return 'bg-orange-50 text-orange-800 border-orange-200';
-      default:
+      case 'Die-Cut':
         return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+      case 'Pop Culture':
+        return 'bg-rose-50 text-rose-800 border-rose-200';
+      case 'Vintage':
+        return 'bg-amber-50/70 text-amber-900 border-amber-300';
+      default:
+        return 'bg-slate-50 text-slate-700 border-slate-200';
     }
   };
 
@@ -145,18 +133,17 @@ export const StickerCard: React.FC<StickerCardProps> = ({
         </button>
       </div>
 
-      {/* Die-Cut Sticker Stage with Holographic Foil effect on Hover */}
+      {/* Die-Cut Sticker Stage with Neutral Studio Backing & Vinyl Contours */}
       <div
         onClick={() => onInspect(sticker)}
-        className={`relative pt-10 pb-6 px-4 flex items-center justify-center cursor-pointer m-2 rounded-2xl bg-gradient-to-b ${getStageColor(
-          sticker.style
-        )} holo-foil transition-all duration-300 border border-black/[0.04] overflow-hidden`}
+        className="relative pt-10 pb-6 px-4 flex items-center justify-center cursor-pointer m-2 rounded-2xl bg-[#F8F9FA] sticker-stage-neutral holo-foil transition-all duration-300 border border-black/[0.04] overflow-hidden"
       >
         <div className="w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center relative">
           <img
             src={sticker.image_path}
             alt={sticker.name}
-            className={`max-h-full max-w-full object-contain filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.12)] drop-shadow-[0_4px_6px_rgba(0,0,0,0.06)] group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-300 ease-out ${
+            loading="lazy"
+            className={`max-h-full max-w-full object-contain sticker-die-cut group-hover:scale-105 group-hover:-rotate-2 transition-transform duration-300 ease-out ${
               justAdded ? 'scale-110 -rotate-3 transition-transform duration-200' : ''
             }`}
           />

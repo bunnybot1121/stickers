@@ -18,8 +18,8 @@ import {
 import { validatePack, DEFAULT_PACK_RULE } from '../lib/packRules';
 
 // Local storage keys for persistent demo mode
-const STORAGE_KEY_STICKERS = 'sticker_verse_stickers_v5';
-const STORAGE_KEY_CATEGORIES = 'sticker_verse_categories_v5';
+const STORAGE_KEY_STICKERS = 'sticker_verse_stickers_v6';
+const STORAGE_KEY_CATEGORIES = 'sticker_verse_categories_v6';
 const STORAGE_KEY_PACK_RULE = 'sticker_verse_pack_rule';
 const STORAGE_KEY_ORDERS = 'sticker_verse_orders';
 const STORAGE_KEY_BATCHES = 'sticker_verse_batches';
@@ -272,7 +272,7 @@ class StoreService {
       name: sticker.name || 'Untitled Sticker',
       slug: sticker.slug || `sticker-${Date.now()}`,
       description: sticker.description || '',
-      image_path: sticker.image_path || '/stickers/boba-ghost.svg',
+      image_path: sticker.image_path || '/stickers/what-the-duck.jpg',
       status: sticker.status || 'active',
       style: sticker.style || 'Kawaii',
       is_featured: sticker.is_featured || false,

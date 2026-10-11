@@ -1,4 +1,4 @@
-export type StickerStyle = 'Kawaii' | 'Neo-Brutal' | 'Pixel Art' | 'Holographic' | 'Retro' | 'Minimal' | 'Vintage';
+export type StickerStyle = 'Kawaii' | 'Neo-Brutal' | 'Pixel Art' | 'Holographic' | 'Retro' | 'Minimal' | 'Vintage' | 'Die-Cut' | 'Pop Culture';
 
 export type StickerStatus = 'active' | 'draft' | 'archived';
 

@@ -107,13 +107,13 @@ export const StickerModal: React.FC<StickerModalProps> = ({
             {/* Left: Sticker Canvas Display with Lifestyle Mockup Switcher */}
             <div className="sm:col-span-6 flex flex-col items-center">
               {/* Mockup Canvas */}
-              <div className="relative w-full aspect-square rounded-2xl bg-slate-100/80 border border-black/[0.06] flex items-center justify-center overflow-hidden shadow-inner">
+              <div className="relative w-full aspect-square rounded-2xl bg-[#F8F9FA] sticker-stage-neutral border border-black/[0.06] flex items-center justify-center overflow-hidden shadow-inner">
                 {activeSurface === 'cutout' && (
                   <div className="w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center relative holo-foil">
                     <img
                       src={sticker.image_path}
                       alt={sticker.name}
-                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_16px_24px_rgba(0,0,0,0.18)] drop-shadow-[0_4px_8px_rgba(0,0,0,0.1)] transition-transform duration-300 hover:scale-105"
+                      className="max-h-full max-w-full object-contain sticker-die-cut transition-transform duration-300 hover:scale-105"
                     />
                   </div>
                 )}

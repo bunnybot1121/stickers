@@ -136,16 +136,16 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onOpenPackBuilder })
             <div className="pt-3 flex flex-wrap items-center gap-3.5 text-xs text-slate-600">
               <div className="flex -space-x-2 overflow-hidden">
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-pink-50 p-0.5 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/cyber-hacker-cat.svg" alt="Preview 1" className="w-full h-full object-contain" />
+                  <img src="/stickers/what-the-duck.jpg" alt="Duck Debugger" className="w-full h-full object-cover" />
                 </div>
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-purple-50 p-0 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/headphone-girl.jpg" alt="Preview 2" className="w-full h-full object-cover" />
+                  <img src="/stickers/headphone-girl.jpg" alt="Cyberpunk Girl" className="w-full h-full object-cover" />
                 </div>
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-amber-50 p-0.5 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/pixel-game-cart.svg" alt="Preview 3" className="w-full h-full object-contain" />
+                  <img src="/stickers/porsche-911-gt3rs.jpg" alt="Porsche GT3" className="w-full h-full object-cover" />
                 </div>
                 <div className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-cyan-50 p-0.5 flex-shrink-0 shadow-soft-xs overflow-hidden">
-                  <img src="/stickers/cyberpunk-cassette.svg" alt="Preview 4" className="w-full h-full object-contain" />
+                  <img src="/stickers/spiderman-spiderverse.jpg" alt="Spider-Man" className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="flex items-center gap-2 font-medium">
