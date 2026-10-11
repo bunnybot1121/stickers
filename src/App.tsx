@@ -23,10 +23,39 @@ import {
 import { isBonusUnlocked, DEFAULT_PACK_RULE } from './lib/packRules';
 
 export function App() {
-  // App views: 'store' | 'admin-login' | 'admin'
   const [currentView, setCurrentView] = useState<'store' | 'admin-login' | 'admin'>('store');
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState('home');
+
+  // Sync active navigation state based on user scroll position
+  useEffect(() => {
+    if (currentView !== 'store') return;
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const catalogueEl = document.getElementById('catalogue-section');
+      const offerEl = document.getElementById('offer-explainer-section');
+
+      if (scrollY < 200) {
+        setActiveNav('home');
+        return;
+      }
+
+      const catalogueTop = catalogueEl?.offsetTop ? catalogueEl.offsetTop - 150 : Infinity;
+      const offerTop = offerEl?.offsetTop ? offerEl.offsetTop - 150 : Infinity;
+
+      if (scrollY >= catalogueTop) {
+        setActiveNav('shop');
+      } else if (scrollY >= offerTop) {
+        setActiveNav('offer');
+      } else {
+        setActiveNav('home');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentView]);
 
   // Data state
   const [stickers, setStickers] = useState<Sticker[]>([]);

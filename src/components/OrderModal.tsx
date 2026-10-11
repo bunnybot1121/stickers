@@ -149,7 +149,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             </div>
 
             {/* Sticker Thumbnail Grid */}
-            <div className="grid grid-cols-6 gap-2">
+            <div className="grid grid-cols-6 gap-2 mb-3">
               {[...selection.baseStickerIds, ...selection.bonusStickerIds].map((id, idx) => {
                 const s = stickersMap.get(id);
                 const isBonus = idx >= 10;
@@ -181,6 +181,44 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 );
               })}
             </div>
+
+            {/* Dynamic Transparent Price Breakdown */}
+            {(() => {
+              const baseSubtotal = selection.baseStickerIds.reduce((sum, id) => {
+                const s = stickersMap.get(id);
+                return sum + (s?.price || 49);
+              }, 0);
+              const bonusValue = selection.bonusStickerIds.reduce((sum, id) => {
+                const s = stickersMap.get(id);
+                return sum + (s?.price || 49);
+              }, 0);
+              const deliveryFee = 0;
+              const finalPayable = baseSubtotal + deliveryFee;
+
+              return (
+                <div className="pt-3 border-t border-slate-200/80 space-y-1.5 text-xs font-mono">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Base Stickers ({selection.baseStickerIds.length} @ ₹49)</span>
+                    <span className="font-bold text-slate-900">₹{baseSubtotal}</span>
+                  </div>
+                  <div className="flex justify-between text-pink-700 font-semibold">
+                    <span>Bonus Stickers ({selection.bonusStickerIds.length} unlocked)</span>
+                    <span>FREE {bonusValue > 0 ? `(-₹${bonusValue})` : ''}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Delivery Charge</span>
+                    <span className="text-emerald-600 font-bold">FREE</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-display font-black text-slate-900 pt-2 border-t border-slate-200">
+                    <span>Total Amount Payable</span>
+                    <span className="text-base text-slate-900">₹{finalPayable}</span>
+                  </div>
+                  <div className="text-[11px] font-body text-slate-500 pt-1">
+                    Pay upon doorstep delivery via UPI or Cash. No advance payment required.
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Full Name Input */}
@@ -195,7 +233,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder="e.g. Alex Rivera"
-              className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] shadow-soft-xs transition-all"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] shadow-soft-xs transition-all"
               disabled={isSubmitting}
             />
           </div>
@@ -205,8 +243,8 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             <label className="block font-display font-bold text-xs uppercase tracking-wider text-slate-700 mb-1.5">
               Contact Number <span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center rounded-2xl border border-slate-200 bg-white shadow-soft-xs overflow-hidden focus-within:ring-2 focus-within:ring-[#FF6EB4]/40 focus-within:border-[#FF6EB4]">
-              <span className="px-4 py-3 font-mono font-bold text-xs bg-slate-100 border-r border-slate-200 text-slate-700 select-none">
+            <div className="flex items-center rounded-xl border border-slate-200 bg-white shadow-soft-xs overflow-hidden focus-within:ring-2 focus-within:ring-[#FF6EB4]/40 focus-within:border-[#FF6EB4]">
+              <span className="px-3.5 py-2.5 font-mono font-bold text-xs bg-slate-100 border-r border-slate-200 text-slate-700 select-none">
                 +91
               </span>
               <input
@@ -216,7 +254,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 value={customerContact}
                 onChange={(e) => setCustomerContact(e.target.value)}
                 placeholder="98765 43210"
-                className="w-full px-4 py-3 font-mono text-sm font-semibold focus:outline-none bg-transparent"
+                className="w-full px-3.5 py-2.5 font-mono text-sm font-semibold focus:outline-none bg-transparent"
                 disabled={isSubmitting}
               />
             </div>
@@ -232,8 +270,8 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               rows={2}
               value={customerNote}
               onChange={(e) => setCustomerNote(e.target.value)}
-              placeholder="Any special notes or custom preferences for your pack"
-              className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] shadow-soft-xs transition-all resize-none"
+              placeholder="Delivery landmark, apartment details, or preferences"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white font-body text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] shadow-soft-xs transition-all resize-none"
               disabled={isSubmitting}
             />
           </div>
@@ -244,16 +282,16 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               id="submit-order-btn"
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#FF6EB4] via-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 active:scale-[0.99] text-white font-display font-extrabold text-base shadow-glow-pink/40 hover:shadow-glow-pink/60 flex items-center justify-center gap-2.5 transition-all"
+              className="w-full py-3.5 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-display font-bold text-sm sm:text-base shadow-soft hover:shadow-soft-md flex items-center justify-center gap-2.5 transition-all"
             >
               {isSubmitting ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Confirming Order...</span>
+                  <span>Confirming Pack Reservation...</span>
                 </>
               ) : (
                 <>
-                  <span>Place Order (10 + 2 Pack)</span>
+                  <span>Confirm Pack Reservation (₹490 Pay on Delivery)</span>
                   <Send className="w-4 h-4" />
                 </>
               )}

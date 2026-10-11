@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, X, Sparkles, AlertCircle, Heart, Flame, Code, Coffee, Gamepad2, Cat, Gift, Star, Zap } from 'lucide-react';
+import { Search, X, Sparkles, AlertCircle, Heart, Flame, Code, Coffee, Gamepad2, Cat, Gift, Star, Zap, SlidersHorizontal, Info } from 'lucide-react';
 import { Category, Sticker, PackSelectionState } from '../types';
 import { StickerCard } from './StickerCard';
 import { StickerModal } from './StickerModal';
@@ -16,6 +16,8 @@ interface CatalogueProps {
   onRemove: (stickerId: string) => void;
 }
 
+export type SortOption = 'featured' | 'popular' | 'newest' | 'price-asc' | 'price-desc';
+
 export const Catalogue: React.FC<CatalogueProps> = ({
   stickers,
   categories,
@@ -29,7 +31,7 @@ export const Catalogue: React.FC<CatalogueProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'featured' | 'newest' | 'name-asc'>('featured');
+  const [sortBy, setSortBy] = useState<SortOption>('featured');
   const [inspectingSticker, setInspectingSticker] = useState<Sticker | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
 
@@ -38,6 +40,24 @@ export const Catalogue: React.FC<CatalogueProps> = ({
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  // Reconciled active sticker count
+  const totalActiveStickers = useMemo(
+    () => stickers.filter((s) => s.status === 'active').length,
+    [stickers]
+  );
+
+  // Reconciled dynamic category counts
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const cat of categories) {
+      const count = stickers.filter(
+        (s) => s.status === 'active' && s.categories?.some((c) => c.slug === cat.slug)
+      ).length;
+      counts.set(cat.slug, count);
+    }
+    return counts;
+  }, [categories, stickers]);
 
   // Filter & Sort logic
   const filteredStickers = useMemo(() => {
@@ -64,8 +84,14 @@ export const Catalogue: React.FC<CatalogueProps> = ({
         return true;
       })
       .sort((a, b) => {
-        if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
+        if (sortBy === 'price-asc') return a.price - b.price;
+        if (sortBy === 'price-desc') return b.price - a.price;
         if (sortBy === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        if (sortBy === 'popular') {
+          // Sort by stock scarcity / popularity
+          return (a.stock_on_hand ?? 50) - (b.stock_on_hand ?? 50);
+        }
+        // Default: 'featured'
         return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
       });
   }, [stickers, searchQuery, selectedCategorySlug, sortBy]);
@@ -94,215 +120,158 @@ export const Catalogue: React.FC<CatalogueProps> = ({
   };
 
   return (
-    <section id="catalogue-section" className="py-12 pb-28 sm:pb-36 px-4 sm:px-8 max-w-7xl mx-auto relative">
-      {/* Background scattered stickers on section margins */}
-      <div className="absolute top-24 -right-10 w-28 h-28 hidden 2xl:block opacity-80 transform rotate-12 pointer-events-none">
-        <img
-          src="/stickers/decorations/what-the-duck.jpg"
-          alt="Duck Sticker"
-          className="w-full h-full object-cover rounded-2xl ring-2 ring-white/90 filter drop-shadow-lg"
-        />
-      </div>
-      <div className="absolute top-1/2 -left-12 w-28 h-28 hidden 2xl:block opacity-80 transform -rotate-12 pointer-events-none">
-        <img
-          src="/stickers/decorations/anime-stickers-for-printing-4-zenitsu-stickers-for-sale.jpg"
-          alt="Zenitsu Sticker"
-          className="w-full h-full object-cover rounded-2xl ring-2 ring-white/90 filter drop-shadow-lg"
-        />
-      </div>
+    <section id="catalogue-section" className="py-10 pb-36 sm:pb-44 px-4 sm:px-8 max-w-7xl mx-auto relative">
+      {/* Compact Header & Toolbar */}
+      <div className="space-y-4 mb-6">
+        {/* Title & Subtitle */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-black/[0.06] pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-md mb-1.5">
+              <Sparkles className="w-3 h-3 text-[#FF6EB4]" />
+              <span>COLLECTOR CATALOGUE</span>
+            </div>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-900 tracking-tight">
+              Curated Die-Cut Stickers
+            </h2>
+          </div>
 
-      {/* Top Search & Filter Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-        {/* Search input with sleek rounded pill style */}
-        <div className="w-full md:w-96 relative">
-          <input
-            id="catalogue-search-input"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search stickers (e.g. cat, dev, anime, synth)..."
-            className="w-full rounded-full border border-black/10 bg-white/90 backdrop-blur-sm px-4 py-3 pl-11 text-xs sm:text-sm font-medium shadow-soft-xs focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/40 focus:border-[#FF6EB4] transition-all placeholder:text-slate-400"
-          />
-          <Search className="w-4 h-4 text-slate-400 absolute left-4 top-3.5 pointer-events-none" />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-900 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+          <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
+            <span>Showing <strong className="text-slate-900 font-bold">{filteredStickers.length}</strong> of {totalActiveStickers} stickers</span>
+            <span className="hidden md:inline text-slate-300">•</span>
+            <span className="hidden md:inline text-[11px] text-slate-400">Multi-category themes</span>
+          </div>
         </div>
 
-        {/* Sort by dropdown & result counter */}
-        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-          <span className="text-xs font-mono font-medium text-slate-500">
-            Showing <strong className="text-slate-900 font-bold">{filteredStickers.length}</strong> collectible stickers
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-medium text-slate-400 hidden sm:inline">
-              Sort:
-            </span>
+        {/* Compact Search and Sort Toolbar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          {/* Search field */}
+          <div className="w-full sm:w-80 md:w-96 relative">
+            <input
+              id="catalogue-search-input"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search stickers by title, tag, or theme..."
+              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pl-10 text-xs sm:text-sm font-body font-medium shadow-soft-xs focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/30 focus:border-[#FF6EB4] transition-all placeholder:text-slate-400"
+            />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-900 transition-colors p-0.5"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Sort control */}
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <label htmlFor="catalogue-sort-select" className="text-xs font-mono font-medium text-slate-500 whitespace-nowrap flex items-center gap-1.5">
+              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+              <span>Sort:</span>
+            </label>
             <select
+              id="catalogue-sort-select"
               value={sortBy}
-              onChange={(e: any) => setSortBy(e.target.value)}
-              className="px-3.5 py-2 rounded-full border border-black/10 bg-white text-xs font-bold text-slate-800 shadow-soft-xs focus:outline-none focus:border-black/30 cursor-pointer"
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-display font-bold text-slate-800 shadow-soft-xs focus:outline-none focus:ring-2 focus:ring-[#FF6EB4]/30 focus:border-[#FF6EB4] cursor-pointer"
             >
-              <option value="featured">Popular / Featured</option>
+              <option value="featured">Featured (Default)</option>
+              <option value="popular">Popular</option>
               <option value="newest">Newest Arrivals</option>
-              <option value="name-asc">Name (A–Z)</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
             </select>
           </div>
         </div>
-      </div>
 
-      {/* Horizontal Category Chips Bar with Vector Icons (No emojis) */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 scrollbar-none">
-        <button
-          onClick={() => setSelectedCategorySlug('all')}
-          className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border flex items-center gap-1.5 ${
-            selectedCategorySlug === 'all'
-              ? 'bg-slate-900 text-white border-slate-900 shadow-soft-sm'
-              : 'bg-white text-slate-700 border-black/[0.08] hover:bg-slate-50 hover:border-black/20'
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-          <span>All Stickers</span>
-        </button>
+        {/* Single Unified Category Navigation Bar with Working Dynamic Counts */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none pt-1">
+          <button
+            onClick={() => setSelectedCategorySlug('all')}
+            className={`px-3.5 py-2 rounded-xl font-display font-bold text-xs transition-all whitespace-nowrap border flex items-center gap-2 ${
+              selectedCategorySlug === 'all'
+                ? 'bg-slate-900 text-white border-slate-900 shadow-soft-xs'
+                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+            <span>All Stickers</span>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${selectedCategorySlug === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
+              {totalActiveStickers}
+            </span>
+          </button>
 
-        {categories.map((cat) => {
-          const isActive = selectedCategorySlug === cat.slug;
-          const Icon = getCategoryIcon(cat.slug);
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategorySlug(cat.slug)}
-              className={`px-4 py-2 rounded-full font-display font-bold text-xs transition-all whitespace-nowrap border flex items-center gap-1.5 ${
-                isActive
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-soft-sm'
-                  : 'bg-white text-slate-700 border-black/[0.08] hover:bg-slate-50 hover:border-black/20'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{cat.name}</span>
-            </button>
-          );
-        })}
-      </div>
+          {categories.map((cat) => {
+            const isActive = selectedCategorySlug === cat.slug;
+            const Icon = getCategoryIcon(cat.slug);
+            const count = categoryCounts.get(cat.slug) ?? 0;
 
-      {/* Main Grid: Desktop Category Sidebar (Left) + Stickers Grid (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Desktop Category Sidebar */}
-        <div className="hidden lg:block lg:col-span-3 space-y-4 sticky top-24">
-          <div className="p-4 rounded-3xl bg-white border border-black/[0.07] shadow-soft">
-            <h3 className="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-3 px-2">
-              Categories
-            </h3>
-            <div className="space-y-1">
+            return (
               <button
-                onClick={() => setSelectedCategorySlug('all')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-display font-bold transition-all ${
-                  selectedCategorySlug === 'all'
-                    ? 'bg-slate-900 text-white shadow-soft-xs'
-                    : 'text-slate-700 hover:bg-slate-50'
+                key={cat.id}
+                onClick={() => setSelectedCategorySlug(cat.slug)}
+                className={`px-3.5 py-2 rounded-xl font-display font-bold text-xs transition-all whitespace-nowrap border flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-soft-xs'
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                  <span>All Stickers</span>
-                </div>
-                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${selectedCategorySlug === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                  {stickers.filter((s) => s.status === 'active').length}
+                <Icon className="w-3.5 h-3.5" />
+                <span>{cat.name}</span>
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                  {count}
                 </span>
               </button>
+            );
+          })}
+        </div>
+      </div>
 
-              {categories.map((cat) => {
-                const Icon = getCategoryIcon(cat.slug);
-                const count = stickers.filter(
-                  (s) => s.status === 'active' && s.categories?.some((c) => c.slug === cat.slug)
-                ).length;
-                const isActive = selectedCategorySlug === cat.slug;
-
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategorySlug(cat.slug)}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-display font-bold transition-all ${
-                      isActive
-                        ? 'bg-pink-50 text-pink-700 border border-pink-200 shadow-soft-xs'
-                        : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{cat.name}</span>
-                    </div>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${isActive ? 'bg-pink-200/60 text-pink-800' : 'bg-slate-100 text-slate-600'}`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+      {/* Full-Width Product Grid (No duplicate sidebar) */}
+      <div>
+        {filteredStickers.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4.5">
+            {filteredStickers.map((sticker) => (
+              <StickerCard
+                key={sticker.id}
+                sticker={sticker}
+                isSelectedBase={selection.baseStickerIds.includes(sticker.id)}
+                isSelectedBonus={selection.bonusStickerIds.includes(sticker.id)}
+                isBaseFull={isBaseFull}
+                isBonusFull={isBonusFull}
+                bonusUnlocked={bonusUnlocked}
+                isFavorited={favoriteIds.includes(sticker.id)}
+                onToggleFavorite={handleToggleFavorite}
+                onSelectBase={onSelectBase}
+                onSelectBonus={onSelectBonus}
+                onRemove={onRemove}
+                onInspect={setInspectingSticker}
+              />
+            ))}
           </div>
-
-          {/* Sticky 10+2 Promotional Promo Box with Lucide Gift Icon */}
-          <div className="p-5 rounded-3xl bg-gradient-to-br from-amber-50 via-pink-50 to-purple-50 border border-pink-200/60 text-center shadow-soft">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-2 shadow-soft-xs">
-              <Gift className="w-5 h-5" />
-            </div>
-            <span className="font-display font-black text-sm text-slate-900 block">
-              10 + 2 On Every Pack!
-            </span>
-            <p className="text-[11px] font-medium text-slate-600 mt-1.5 leading-relaxed">
-              Add any 10 base stickers and unlock 2 bonus designs for free at checkout.
+        ) : (
+          <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 shadow-soft max-w-md mx-auto my-8">
+            <AlertCircle className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <h3 className="font-display font-bold text-lg text-slate-900 mb-1">
+              No stickers found
+            </h3>
+            <p className="font-body text-xs text-slate-500 mb-4">
+              Try adjusting your search terms or choose another category.
             </p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategorySlug('all');
+              }}
+              className="px-4 py-2 rounded-xl bg-slate-900 text-white font-display font-bold text-xs hover:bg-slate-800 transition-all shadow-soft-xs"
+            >
+              Reset Filters
+            </button>
           </div>
-        </div>
-
-        {/* Right Area: Sticker Grid (9 cols) */}
-        <div className="lg:col-span-9">
-          {filteredStickers.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-              {filteredStickers.map((sticker) => (
-                <StickerCard
-                  key={sticker.id}
-                  sticker={sticker}
-                  isSelectedBase={selection.baseStickerIds.includes(sticker.id)}
-                  isSelectedBonus={selection.bonusStickerIds.includes(sticker.id)}
-                  isBaseFull={isBaseFull}
-                  isBonusFull={isBonusFull}
-                  bonusUnlocked={bonusUnlocked}
-                  isFavorited={favoriteIds.includes(sticker.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                  onSelectBase={onSelectBase}
-                  onSelectBonus={onSelectBonus}
-                  onRemove={onRemove}
-                  onInspect={setInspectingSticker}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="p-12 text-center bg-white rounded-3xl border border-black/[0.08] shadow-soft max-w-md mx-auto">
-              <AlertCircle className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-              <h3 className="font-display font-bold text-lg text-slate-900 mb-1">
-                No stickers found
-              </h3>
-              <p className="font-body text-xs text-slate-500 mb-4">
-                Try searching for another keyword or select All Stickers.
-              </p>
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategorySlug('all');
-                }}
-                className="btn-neo-dark text-xs py-2 px-5 rounded-full"
-              >
-                Reset Filters
-              </button>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Sticker Detail Modal */}

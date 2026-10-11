@@ -96,66 +96,34 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-3">
-            {/* Build Your Pack Button */}
+          <div className="flex items-center gap-2.5">
+            {/* Build / View Pack Button */}
             <button
               id="open-pack-builder-btn"
               onClick={onOpenPackBuilder}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full font-display font-bold text-xs sm:text-sm transition-all duration-200 ${
+              aria-label={`Open pack summary, currently ${totalBase} of ${rule.base_quantity} base stickers selected`}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-display font-bold text-xs sm:text-sm transition-all duration-200 ${
                 bonusUnlocked
-                  ? 'bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white shadow-glow-pink/40 animate-pulse-subtle'
+                  ? 'bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white shadow-soft hover:shadow-soft-md'
                   : totalBase > 0
-                  ? 'bg-slate-900 text-white hover:bg-slate-800 shadow-soft-md'
-                  : 'bg-white text-slate-800 border border-black/10 hover:border-black/20 hover:bg-slate-50 shadow-soft-xs'
+                  ? 'bg-slate-900 text-white hover:bg-slate-800 shadow-soft-xs'
+                  : 'bg-white text-slate-800 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-soft-xs'
               }`}
             >
               {bonusUnlocked ? (
-                <Gift className="w-4 h-4 text-yellow-300" />
+                <Gift className="w-3.5 h-3.5 text-yellow-300" />
               ) : (
-                <ShoppingBag className="w-4 h-4" />
+                <ShoppingBag className="w-3.5 h-3.5 text-pink-500" />
               )}
               <span>
-                {totalBase === 0 ? 'My Pack (0/10)' : `${totalBase}/${rule.base_quantity}`}
-                {totalBonus > 0 && ` +${totalBonus} Free`}
+                {totalBase === 0 ? 'Pack: 0/10' : `Pack: ${totalBase}/${rule.base_quantity}`}
+                {totalBonus > 0 && ` +${totalBonus} Bonus`}
               </span>
             </button>
           </div>
         </div>
       </header>
-
-      {/* Mobile Bottom Navigation Bar with Vector Icons (No raw emojis) */}
-      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-black/[0.08] px-4 py-2.5 flex items-center justify-around text-[10px] font-display font-bold shadow-soft-lg">
-        <button
-          onClick={() => handleNavClick('home', 'home')}
-          className={`flex flex-col items-center gap-1 ${activeNav === 'home' ? 'text-[#FF6EB4]' : 'text-slate-500'}`}
-        >
-          <Home className="w-4 h-4" />
-          <span>Home</span>
-        </button>
-        <button
-          onClick={() => handleNavClick('catalogue-section', 'shop')}
-          className={`flex flex-col items-center gap-1 ${activeNav === 'shop' ? 'text-[#FF6EB4]' : 'text-slate-500'}`}
-        >
-          <Compass className="w-4 h-4" />
-          <span>Shop</span>
-        </button>
-        <button
-          onClick={onOpenPackBuilder}
-          className="relative flex flex-col items-center gap-1 text-slate-900"
-        >
-          <div className="w-9 h-9 rounded-full bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white flex items-center justify-center -mt-5 shadow-soft-md border-2 border-white">
-            <ShoppingBag className="w-4 h-4" />
-          </div>
-          <span className="font-extrabold text-[10px]">Pack ({totalItems})</span>
-        </button>
-        <button
-          onClick={() => handleNavClick('offer-explainer-section', 'offer')}
-          className={`flex flex-col items-center gap-1 ${activeNav === 'offer' ? 'text-[#FF6EB4]' : 'text-slate-500'}`}
-        >
-          <Info className="w-4 h-4" />
-          <span>How It Works</span>
-        </button>
-      </nav>
     </>
   );
 };
+
