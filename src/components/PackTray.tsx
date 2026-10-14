@@ -34,7 +34,7 @@ export const PackTray: React.FC<PackTrayProps> = ({
       aria-label="Pack status and action dock"
       className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40 w-[calc(100%-1.5rem)] sm:w-auto sm:min-w-[420px] max-w-lg transition-all duration-300"
     >
-      <div className="backdrop-blur-xl bg-slate-900/95 text-white rounded-2xl py-2 px-3.5 sm:px-4 border border-white/20 shadow-[0_12px_36px_rgba(0,0,0,0.35)] flex items-center justify-between gap-3">
+      <div className="backdrop-blur-xl bg-[#111319]/95 text-white rounded-2xl py-2 px-3.5 sm:px-4 border border-white/20 shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex items-center justify-between gap-3">
         {/* Left: Pack Thumbnails & Progress */}
         <div
           onClick={onOpenPackBuilder}
@@ -91,7 +91,7 @@ export const PackTray: React.FC<PackTrayProps> = ({
                 Pack: {totalBase}/{rule.base_quantity} Base
               </span>
               {bonusUnlocked && (
-                <span className="inline-flex items-center gap-1 bg-gradient-to-r from-[#FF6EB4] to-purple-600 text-white text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-md">
+                <span className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 via-pink-500 to-rose-600 text-white text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md">
                   <Gift className="w-2.5 h-2.5 text-yellow-300" />
                   <span>+{totalBonus}/2 BONUS</span>
                 </span>
@@ -101,8 +101,8 @@ export const PackTray: React.FC<PackTrayProps> = ({
               {packComplete
                 ? 'Pack complete (12/12) • Ready to order'
                 : bonusUnlocked
-                ? `Pick ${rule.bonus_quantity - totalBonus} free bonus sticker${rule.bonus_quantity - totalBonus === 1 ? '' : 's'}`
-                : `Add ${rule.base_quantity - totalBase} more for 2 bonus stickers`}
+                  ? `Pick ${rule.bonus_quantity - totalBonus} free bonus sticker${rule.bonus_quantity - totalBonus === 1 ? '' : 's'}`
+                  : `Add ${rule.base_quantity - totalBase} more for 2 bonus stickers`}
             </p>
           </div>
         </div>
@@ -112,15 +112,15 @@ export const PackTray: React.FC<PackTrayProps> = ({
           {packComplete ? (
             <button
               onClick={onProceedToOrder}
-              className="bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-display font-black text-xs py-2 px-3.5 rounded-xl flex items-center gap-1 shadow-soft hover:scale-[1.02] active:scale-95 transition-all"
+              className="bg-[#00F0FF] hover:bg-[#3bf4ff] text-black font-display font-black text-xs py-2.5 px-4 rounded-full flex items-center gap-1.5 shadow-lg shadow-[#00F0FF]/20 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer uppercase"
             >
               <span>Order Pack (12)</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
             </button>
           ) : bonusUnlocked && totalBonus < rule.bonus_quantity ? (
             <button
               onClick={onOpenPackBuilder}
-              className="bg-gradient-to-r from-[#FF6EB4] to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-display font-bold text-xs py-2 px-3.5 rounded-xl flex items-center gap-1 shadow-soft hover:scale-[1.02] active:scale-95 transition-all"
+              className="bg-[#FF2E93] hover:bg-[#ff4fa5] text-white font-display font-black text-xs py-2.5 px-4 rounded-full flex items-center gap-1.5 shadow-lg shadow-[#FF2E93]/25 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer animate-pulse"
             >
               <Gift className="w-3.5 h-3.5" />
               <span>Claim Bonus</span>
@@ -128,9 +128,9 @@ export const PackTray: React.FC<PackTrayProps> = ({
           ) : (
             <button
               onClick={onOpenPackBuilder}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/15 font-display font-semibold text-xs py-2 px-3 rounded-xl flex items-center gap-1.5 transition-all"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/15 font-display font-bold text-xs py-2 px-3.5 rounded-full flex items-center gap-1.5 transition-all cursor-pointer"
             >
-              <ShoppingBag className="w-3.5 h-3.5 text-pink-400" />
+              <ShoppingBag className="w-3.5 h-3.5 text-[#00F0FF]" />
               <span>View ({totalItems})</span>
             </button>
           )}

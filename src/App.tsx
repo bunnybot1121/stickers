@@ -212,7 +212,7 @@ export function App() {
 
   // View: Customer Storefront
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-brand-pink selection:text-white bg-[#FAF9F6]">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-[#FF2E93] selection:text-white bg-[#0A0B0E] text-white">
       <div>
         <Navbar
           selection={selection}
@@ -245,8 +245,6 @@ export function App() {
                 onOpenPackBuilder={() => setIsPackBuilderOpen(true)}
               />
 
-              <OfferExplainer />
-
               <Catalogue
                 stickers={stickers}
                 categories={categories}
@@ -257,6 +255,11 @@ export function App() {
                 onSelectBase={handleSelectBase}
                 onSelectBonus={handleSelectBonus}
                 onRemove={handleRemove}
+              />
+
+              <OfferExplainer
+                onOpenPackBuilder={() => setIsPackBuilderOpen(true)}
+                onExploreClick={scrollToCatalogue}
               />
 
               {/* Floating Pack Tray */}

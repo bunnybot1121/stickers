@@ -78,7 +78,7 @@ export const BonusCelebrationModal: React.FC<BonusCelebrationModalProps> = ({
         </h2>
         <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight leading-tight mb-4">
           +2 FREE STICKERS <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6EB4] to-purple-400">UNLOCKED!</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-400 to-purple-400">UNLOCKED!</span>
         </h3>
 
         {/* Center Illustration: 2 Mystery Cards */}

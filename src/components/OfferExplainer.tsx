@@ -1,118 +1,139 @@
 import React from 'react';
-import { Palette, Gift, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
-interface StepData {
-  title: string;
-  desc: string;
-  icon: React.ComponentType<{ className?: string }>;
-  accentColor: string;
-  lightBg: string;
-  textColor: string;
-  highlightText?: string;
+interface OfferExplainerProps {
+  onOpenPackBuilder?: () => void;
+  onExploreClick?: () => void;
 }
 
-const STEPS: StepData[] = [
-  {
-    title: 'Handpick 10 Base Stickers',
-    desc: 'Browse our curated collection of coding, anime, motorsport, gaming, and meme die-cut designs. Pick any 10 favorites for your pack.',
-    icon: Palette,
-    accentColor: 'from-sky-500 to-cyan-500',
-    lightBg: 'bg-sky-50',
-    textColor: 'text-sky-600',
-    highlightText: 'Base Selection',
-  },
-  {
-    title: 'Unlock +2 Bonus Free Gifts',
-    desc: 'Once your 10th sticker is selected, your 2 free bonus collectible slots unlock instantly. Choose any 2 stickers completely free.',
-    icon: Gift,
-    accentColor: 'from-[#FF6EB4] to-purple-600',
-    lightBg: 'bg-pink-50',
-    textColor: 'text-pink-600',
-    highlightText: 'Unlocked at 10',
-  },
-  {
-    title: 'Confirm & Reserve Your Pack',
-    desc: 'Enter your name and phone number to reserve your 12-sticker custom bundle. Pay upon delivery after inspecting your stickers.',
-    icon: CheckCircle2,
-    accentColor: 'from-emerald-400 to-teal-500',
-    lightBg: 'bg-emerald-50',
-    textColor: 'text-emerald-600',
-    highlightText: 'No Prepayment',
-  },
-];
-
-export const OfferExplainer: React.FC = () => {
+export const OfferExplainer: React.FC<OfferExplainerProps> = ({
+  onOpenPackBuilder,
+  onExploreClick,
+}) => {
   return (
-    <section id="offer-explainer-section" className="py-16 px-4 sm:px-8 bg-white/70 backdrop-blur-md border-y border-black/[0.05] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-100 text-slate-800 border border-slate-200 text-xs font-mono font-bold mb-3 shadow-soft-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#FF6EB4]" />
-            <span>HOW THE 10 + 2 PACK WORKS</span>
-          </div>
-          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
-            Simple, Transparent, and Rewarding
-          </h2>
-          <p className="font-body text-sm sm:text-base text-slate-600 mt-2 font-normal">
-            No subscriptions or hidden fees. Premium matte-laminated vinyl stickers crafted for durability.
-          </p>
+    <div id="offer-explainer-section" className="bg-[#0A0B0E] text-white">
+      {/* 
+        ========================================================================
+        CYAN / NEON PACK BAND: "THE BEST KIND OF MATHS"
+        Matches dark theme with neon cyan & yellow accents, and "10 + 2" watermark
+        ========================================================================
+      */}
+      <section className="mx-4 sm:mx-8 lg:mx-16 my-8 rounded-[24px] bg-gradient-to-r from-[#0F1420] via-[#111624] to-[#151928] border border-[#00F0FF]/25 p-8 sm:p-12 lg:p-16 relative overflow-hidden text-white shadow-2xl">
+        {/* Large "10 + 2" Watermark in Background */}
+        <div
+          className="absolute right-6 sm:right-16 -bottom-10 sm:-bottom-14 font-display font-black text-[120px] sm:text-[180px] lg:text-[230px] text-[#00F0FF]/[0.05] tracking-tighter select-none pointer-events-none leading-none"
+          aria-hidden="true"
+        >
+          10 + 2
         </div>
 
-        {/* 3 Step Connected Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-          {STEPS.map((step, index) => {
-            const Icon = step.icon;
-            // Both decorative step number and label are strictly generated from source index
-            const stepNumber = String(index + 1).padStart(2, '0');
-            const stepLabel = `Step ${index + 1}`;
+        <div className="relative z-10 max-w-2xl">
+          <p className="text-[11px] sm:text-xs font-mono font-black uppercase tracking-[0.22em] text-[#00F0FF] mb-3 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>The best kind of maths</span>
+          </p>
 
-            return (
-              <div
-                key={stepNumber}
-                className="group relative rounded-2xl bg-white p-6 sm:p-7 border border-slate-200/80 shadow-soft hover:shadow-soft-md transition-all duration-300 hover:-translate-y-0.5 overflow-hidden flex flex-col justify-between"
-              >
-                {/* Ambient top border accent */}
-                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${step.accentColor}`} />
+          <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-[1.02] text-white">
+            10 stickers you love. <br />
+            <span className="text-[#FACC15]">2 bonus ones on us.</span>
+          </h2>
 
-                <div>
-                  <div className="flex items-center justify-between mb-5">
-                    <div
-                      className={`w-11 h-11 rounded-xl ${step.lightBg} ${step.textColor} flex items-center justify-center shadow-soft-xs group-hover:scale-105 transition-transform duration-200`}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    {/* Synchronized decorative step number: 01, 02, 03 */}
-                    <span className="font-mono font-black text-3xl text-slate-300 group-hover:text-slate-400 transition-colors select-none">
-                      {stepNumber}
-                    </span>
-                  </div>
+          <p className="mt-3.5 text-sm sm:text-base text-[#94A3B8] leading-relaxed max-w-lg font-normal">
+            Build a bundle that feels like you. Choose your ten favourites, and we’ll throw in two bonus stickers automatically.
+          </p>
 
-                  <div className="mb-2">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <span className={`inline-block text-[11px] font-mono font-bold uppercase tracking-wider ${step.textColor}`}>
-                        {stepLabel}
-                      </span>
-                      {step.highlightText && (
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                          {step.highlightText}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-display font-bold text-lg text-slate-900 leading-snug">
-                      {step.title}
-                    </h3>
-                  </div>
+          <div className="mt-7">
+            <button
+              onClick={onOpenPackBuilder}
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-[#00F0FF] hover:bg-[#38f3ff] text-black font-display font-black text-xs sm:text-sm tracking-wide shadow-lg shadow-[#00F0FF]/20 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer uppercase"
+            >
+              <span>Build my pack</span>
+              <ArrowRight className="w-4 h-4 stroke-[3]" />
+            </button>
+          </div>
+        </div>
+      </section>
 
-                  <p className="font-body text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+      {/* 
+        ========================================================================
+        MARQUEE TICKER TAPE
+        Dark background with neon pink stars
+        ========================================================================
+      */}
+      <div className="bg-[#0E1015] border-y border-white/10 py-4 overflow-hidden whitespace-nowrap text-[11px] font-mono font-black uppercase tracking-[0.2em] text-white/90 select-none">
+        <div className="flex items-center justify-around gap-10">
+          <span>
+            GOOD STICKERS, GOOD MOOD <span className="text-[#FF2E93] mx-2 text-base">✦</span>
+          </span>
+          <span>
+            MAKE THE EVERYDAY YOURS <span className="text-[#FF2E93] mx-2 text-base">✦</span>
+          </span>
+          <span>
+            SMALL ART, BIG ENERGY <span className="text-[#00F0FF] mx-2 text-base">✦</span>
+          </span>
+          <span>
+            STICK A LITTLE JOY ON IT <span className="text-[#FACC15] mx-2 text-base">✦</span>
+          </span>
         </div>
       </div>
-    </section>
+
+      {/* 
+        ========================================================================
+        STORY SECTION: "YOUR LAPTOP CALLED. IT WANTS PERSONALITY."
+        Matches dark theme with desk photography and hot pink accent
+        ========================================================================
+      */}
+      <section className="px-4 sm:px-8 lg:px-16 py-16 sm:py-20 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-20 items-center">
+        {/* Left: Lifestyle Photo with Pink Sticky Note */}
+        <div className="relative rounded-[22px] overflow-hidden min-h-[300px] sm:min-h-[380px] bg-[#141721] border border-white/10 shadow-2xl aspect-[4/3]">
+          <img
+            src="/hero-stickers.webp"
+            alt="Close-up of the Stickerverse sticker collection"
+            className="w-full h-full object-cover object-center select-none"
+            loading="lazy"
+          />
+          <div className="absolute left-5 bottom-5 bg-[#FF2E93] text-white font-display font-black text-xs sm:text-sm px-4 py-3 rounded-lg leading-tight -rotate-3 shadow-lg select-none">
+            A LITTLE <br />
+            MORE YOU.
+          </div>
+        </div>
+
+        {/* Right: Story Copy */}
+        <div className="space-y-4">
+          <p className="text-[11px] font-mono font-black uppercase tracking-[0.22em] text-[#94A3B8]">
+            Not just stickers
+          </p>
+
+          <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-white leading-[0.96] tracking-tight">
+            Your laptop called. <br />
+            It wants <span className="text-[#FF2E93]">personality.</span>
+          </h2>
+
+          <p className="text-[#94A3B8] text-sm sm:text-base leading-relaxed max-w-lg font-normal pt-2">
+            We’re here for the little things that make your stuff feel like yours. The sleepy cat on your laptop. The tiny ghost on your bottle. The inside joke only your friends get.
+          </p>
+
+          <p className="text-[#94A3B8] text-sm sm:text-base leading-relaxed max-w-lg font-normal">
+            Pick what makes you smile, mix your moods, and stick it wherever life happens.
+          </p>
+
+          <div className="pt-2">
+            <button
+              onClick={onExploreClick}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#111319] hover:bg-[#1a1e29] border border-white/20 text-white font-display font-bold text-xs sm:text-sm hover:-translate-y-0.5 active:translate-y-0 transition-transform shadow-md cursor-pointer"
+            >
+              <span>Meet your new favourites</span>
+              <span className="text-[#00F0FF] text-base font-bold">↗</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4 pt-5 text-xs font-mono font-bold text-slate-300">
+            <span className="pl-2 border-l-2 border-[#00F0FF]">Original designs</span>
+            <span className="pl-2 border-l-2 border-[#FF2E93]">Gift-worthy packs</span>
+            <span className="pl-2 border-l-2 border-[#FACC15]">Made for everyday</span>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
