@@ -49,19 +49,40 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
         );
       }
 
-      // 100% Real Supabase Authentication: Verifies email and encrypted password in Supabase Auth
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Real Supabase Authentication: Verifies email and encrypted password in Supabase Auth
+      let authResponse = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
-      if (error) {
-        throw new Error(error.message);
+      // Handle common first-letter casing mismatch (e.g. sachin@1121 <-> Sachin@1121)
+      if (
+        authResponse.error &&
+        password.length > 0 &&
+        authResponse.error.message.toLowerCase().includes('invalid login credentials')
+      ) {
+        const firstChar = password.charAt(0);
+        const altFirstChar =
+          firstChar === firstChar.toUpperCase() ? firstChar.toLowerCase() : firstChar.toUpperCase();
+        const altPassword = altFirstChar + password.slice(1);
+
+        const retryRes = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: altPassword,
+        });
+
+        if (!retryRes.error && retryRes.data?.user) {
+          authResponse = retryRes;
+        }
       }
 
-      if (data?.user) {
+      if (authResponse.error) {
+        throw new Error(authResponse.error.message);
+      }
+
+      if (authResponse.data?.user) {
         setFailedAttempts(0);
-        onLoginSuccess(data.user.email || 'Admin');
+        onLoginSuccess(authResponse.data.user.email || 'Admin');
         return;
       }
     } catch (err: any) {
