@@ -35,12 +35,12 @@ export interface AdminUser {
 }
 
 const DEFAULT_ADMIN_TEAM: AdminUser[] = [
-  { email: 'sachin@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Studio Owner' },
-  { email: 'sachinyadav402107@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Studio Owner' },
-  { email: 'pragya@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Admin Team' },
-  { email: 'pragya4541@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Admin Team' },
-  { email: 'admin@stickerverse.craft', role: 'admin', added_at: '2026-10-01T00:00:00Z', notes: 'Master Studio Admin' },
-  { email: 'studio@stickerverse.craft', role: 'admin', added_at: '2026-10-01T00:00:00Z', notes: 'Operations Lead' },
+  { email: 'sachin@gmail.com', role: 'admin' as const, added_at: '2026-10-14T00:00:00Z', notes: 'Studio Owner' },
+  { email: 'sachinyadav402107@gmail.com', role: 'admin' as const, added_at: '2026-10-14T00:00:00Z', notes: 'Studio Owner' },
+  { email: 'pragya@gmail.com', role: 'admin' as const, added_at: '2026-10-14T00:00:00Z', notes: 'Admin Team' },
+  { email: 'pragya4541@gmail.com', role: 'admin' as const, added_at: '2026-10-14T00:00:00Z', notes: 'Admin Team' },
+  { email: 'admin@stickerverse.craft', role: 'admin' as const, added_at: '2026-10-01T00:00:00Z', notes: 'Master Studio Admin' },
+  { email: 'studio@stickerverse.craft', role: 'admin' as const, added_at: '2026-10-01T00:00:00Z', notes: 'Operations Lead' },
 ];
 
 class StoreService {
@@ -741,8 +741,11 @@ class StoreService {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const existingEmails = new Set(parsed.map((u: any) => u.email.toLowerCase()));
-          const merged = [...parsed];
+          const validUsers = parsed.filter(
+            (u): u is AdminUser => typeof u === 'object' && u !== null && typeof u.email === 'string'
+          );
+          const existingEmails = new Set(validUsers.map((u) => u.email.toLowerCase()));
+          const merged = [...validUsers];
           for (const def of DEFAULT_ADMIN_TEAM) {
             if (!existingEmails.has(def.email.toLowerCase())) {
               merged.push(def);
@@ -751,7 +754,9 @@ class StoreService {
           return merged;
         }
       }
-    } catch {}
+    } catch (parseErr) {
+      console.warn('Admin allowlist local storage read failed:', parseErr);
+    }
     return [...DEFAULT_ADMIN_TEAM];
   }
 
@@ -785,9 +790,10 @@ class StoreService {
   }
 
   isEmailAuthorizedAdmin(email: string): boolean {
+    if (!email) return false;
     const normalized = email.trim().toLowerCase();
     const team = this.getAdminTeam();
-    return team.some((u) => u.email.toLowerCase() === normalized);
+    return team.some((u) => typeof u?.email === 'string' && u.email.toLowerCase() === normalized);
   }
 
   // Reset demo data to initial seeds

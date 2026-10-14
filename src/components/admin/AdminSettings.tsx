@@ -12,7 +12,6 @@ import {
   ExternalLink,
   Shield,
   HelpCircle,
-  KeyRound,
   Check,
 } from 'lucide-react';
 import { PackRule } from '../../types';
@@ -22,6 +21,76 @@ import { isSupabaseConfigured } from '../../lib/supabase';
 interface AdminSettingsProps {
   packRule: PackRule;
   onRuleUpdated: (rule: PackRule) => void;
+}
+
+interface QtyInputProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  help: string;
+  onChange: (val: number) => void;
+}
+
+const QtyInput: React.FC<QtyInputProps> = ({ label, value, min, max, help, onChange }) => (
+  <div>
+    <label className="block font-mono uppercase tracking-wider text-gray-300 font-bold mb-1.5">
+      {label}
+    </label>
+    <input
+      type="number"
+      min={min}
+      max={max}
+      required
+      value={value}
+      onChange={(e) => onChange(parseInt(e.target.value, 10) || min)}
+      className="w-full bg-[#12131A] border border-[#2B2E42] rounded-xl px-4 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-[#00F0FF]"
+    />
+    <span className="text-[11px] text-gray-500 font-mono block mt-1">{help}</span>
+  </div>
+);
+
+interface InstructionStepProps {
+  index: number;
+  badgeBg: string;
+  badgeText: string;
+  title: string;
+  children: React.ReactNode;
+}
+
+const InstructionStep: React.FC<InstructionStepProps> = ({ index, badgeBg, badgeText, title, children }) => (
+  <li className="flex items-start gap-2 bg-[#181A26] p-2.5 rounded-lg border border-[#2B2E42]">
+    <span
+      className={`w-5 h-5 rounded-full ${badgeBg} ${badgeText} flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5`}
+    >
+      {index}
+    </span>
+    <div>
+      <strong className="text-white">{title}: </strong>
+      {children}
+    </div>
+  </li>
+);
+
+const EnvItem: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div className="flex justify-between items-center">
+    <span className="text-gray-500">{label}:</span>
+    <span className="font-bold text-gray-200">{value}</span>
+  </div>
+);
+
+function getRoleBadge(role: string) {
+  const configs: Record<string, { label: string; style: string }> = {
+    admin: { label: 'Administrator', style: 'bg-[#00F0FF]/15 text-[#00F0FF] border-[#00F0FF]/30' },
+    order_manager: { label: 'Order Manager', style: 'bg-[#FF6EB4]/15 text-[#FF6EB4] border-[#FF6EB4]/30' },
+    print_operator: { label: 'Print Operator', style: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  };
+  const current = configs[role] || configs.admin;
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${current.style}`}>
+      {current.label}
+    </span>
+  );
 }
 
 export const AdminSettings: React.FC<AdminSettingsProps> = ({
@@ -63,7 +132,6 @@ ${teamEmailsSqlList}
 )
 ON CONFLICT (id) DO UPDATE SET role = 'admin';
 
--- Verify team admin status:
 SELECT p.id, u.email, p.role
 FROM public.profiles p
 JOIN auth.users u ON p.id = u.id
@@ -82,7 +150,7 @@ BEGIN
     VALUES (
         new.id,
         coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)),
-        'admin' -- Automatically make all Supabase Auth users admins
+        'admin'
     )
     ON CONFLICT (id) DO UPDATE SET role = 'admin';
     RETURN new;
@@ -133,23 +201,29 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
   };
 
   const handleRemoveMember = (emailToRemove: string) => {
-    if (confirm(`Remove ${emailToRemove} from authorized admin team?`)) {
+    if (typeof window !== 'undefined' && window.confirm(`Remove ${emailToRemove} from authorized admin team?`)) {
       const updated = storeService.removeAdminUser(emailToRemove);
       setAdminTeam(updated);
     }
   };
 
   const handleResetDemoData = () => {
-    if (confirm('Reset demo data to initial seeds? This will refresh all 24 stickers, categories, and sample orders.')) {
+    if (typeof window !== 'undefined' && window.confirm('Reset demo data to initial seeds? This will refresh all 24 stickers, categories, and sample orders.')) {
       storeService.resetDemoData();
       window.location.reload();
     }
   };
 
   const handleCopySql = () => {
-    navigator.clipboard.writeText(generatedSql);
-    setHasCopiedSql(true);
-    setTimeout(() => setHasCopiedSql(false), 2500);
+    navigator.clipboard
+      .writeText(generatedSql)
+      .then(() => {
+        setHasCopiedSql(true);
+        setTimeout(() => setHasCopiedSql(false), 2500);
+      })
+      .catch((copyErr) => {
+        console.error('Clipboard copy failed:', copyErr);
+      });
   };
 
   return (
@@ -164,9 +238,7 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
         </p>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 1. Admin Team & Access Management (Primary Request)                      */}
-      {/* ========================================================================= */}
+      {/* 1. Admin Team & Access Management */}
       <div className="bg-[#181A26] rounded-2xl border border-[#2B2E42] p-5 sm:p-7 shadow-lg space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#2B2E42]">
           <div className="flex items-center gap-3">
@@ -188,9 +260,8 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
           </span>
         </div>
 
-        {/* Two-Column: Left (Add Team Member) / Right (How It Works & Supabase Sync) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Form: Add Member */}
+          {/* Add Team Member Form */}
           <div className="lg:col-span-5 bg-[#12131A] rounded-xl border border-[#2B2E42] p-4 sm:p-5 space-y-4">
             <div className="flex items-center gap-2 text-white font-display font-bold text-sm">
               <UserPlus className="w-4 h-4 text-[#FF6EB4]" />
@@ -256,7 +327,7 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
             </form>
           </div>
 
-          {/* Right: Step-by-Step Instructions & Copyable SQL */}
+          {/* Instructions and SQL Generator */}
           <div className="lg:col-span-7 bg-[#12131A] rounded-xl border border-[#2B2E42] p-4 sm:p-5 flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center gap-2 text-white font-display font-bold text-sm mb-2">
@@ -268,39 +339,38 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
               </p>
 
               <ol className="space-y-2.5 text-xs font-mono text-gray-300">
-                <li className="flex items-start gap-2 bg-[#181A26] p-2.5 rounded-lg border border-[#2B2E42]">
-                  <span className="w-5 h-5 rounded-full bg-[#00F0FF]/20 text-[#00F0FF] flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">
-                    1
-                  </span>
-                  <div>
-                    <strong className="text-white">Create Account in Supabase:</strong> Open your{' '}
-                    <a
-                      href="https://supabase.com/dashboard"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#00F0FF] hover:underline inline-flex items-center gap-0.5 font-bold"
-                    >
-                      Supabase Dashboard <ExternalLink className="w-2.5 h-2.5" />
-                    </a>{' '}
-                    &rarr; <em>Authentication</em> &rarr; <em>Users</em> &rarr; click <strong>"Add User"</strong> (create their Gmail &amp; set a password, or send an invite).
-                  </div>
-                </li>
+                <InstructionStep
+                  index={1}
+                  badgeBg="bg-[#00F0FF]/20"
+                  badgeText="text-[#00F0FF]"
+                  title="Create Account in Supabase"
+                >
+                  Open your{' '}
+                  <a
+                    href="https://supabase.com/dashboard"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[#00F0FF] hover:underline inline-flex items-center gap-0.5 font-bold"
+                  >
+                    Supabase Dashboard <ExternalLink className="w-2.5 h-2.5" />
+                  </a>{' '}
+                  &rarr; <em>Authentication</em> &rarr; <em>Users</em> &rarr; click <strong>"Add User"</strong> (create their Gmail &amp; set a password, or send an invite).
+                </InstructionStep>
 
-                <li className="flex items-start gap-2 bg-[#181A26] p-2.5 rounded-lg border border-[#2B2E42]">
-                  <span className="w-5 h-5 rounded-full bg-[#FF6EB4]/20 text-[#FF6EB4] flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">
-                    2
-                  </span>
-                  <div>
-                    <strong className="text-white">Authorize Admin Role:</strong> Add their email to the team list on the left. The app automatically recognizes them and permits login. You can also run the SQL query below in the Supabase SQL editor to directly update their database role.
-                  </div>
-                </li>
+                <InstructionStep
+                  index={2}
+                  badgeBg="bg-[#FF6EB4]/20"
+                  badgeText="text-[#FF6EB4]"
+                  title="Authorize Admin Role"
+                >
+                  Add their email to the team list on the left. The app automatically recognizes them and permits login. You can also run the SQL query below in the Supabase SQL editor to directly update their database role.
+                </InstructionStep>
               </ol>
             </div>
 
             {/* Quick SQL Snippet Generator */}
             <div className="pt-2 border-t border-[#2B2E42] space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                {/* Mode Selector Tabs */}
                 <div className="flex items-center gap-1 bg-[#0A0B0E] p-1 rounded-lg border border-[#2B2E42]">
                   <button
                     type="button"
@@ -394,23 +464,7 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
                           </span>
                         )}
                       </td>
-                      <td className="p-3">
-                        <span
-                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
-                            member.role === 'admin'
-                              ? 'bg-[#00F0FF]/15 text-[#00F0FF] border-[#00F0FF]/30'
-                              : member.role === 'order_manager'
-                              ? 'bg-[#FF6EB4]/15 text-[#FF6EB4] border-[#FF6EB4]/30'
-                              : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                          }`}
-                        >
-                          {member.role === 'admin'
-                            ? 'Administrator'
-                            : member.role === 'order_manager'
-                            ? 'Order Manager'
-                            : 'Print Operator'}
-                        </span>
-                      </td>
+                      <td className="p-3">{getRoleBadge(member.role)}</td>
                       <td className="p-3 text-gray-400 font-mono text-[11px]">
                         {member.notes || '—'}
                       </td>
@@ -441,9 +495,7 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 2. Pack Builder Offer Rules Form                                          */}
-      {/* ========================================================================= */}
+      {/* 2. Pack Builder Offer Rules Form */}
       <div className="bg-[#181A26] rounded-2xl border border-[#2B2E42] p-5 sm:p-7 shadow-lg space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-[#2B2E42]">
           <div className="w-10 h-10 rounded-xl bg-[#FF6EB4]/10 border border-[#FF6EB4]/30 flex items-center justify-center text-[#FF6EB4]">
@@ -461,41 +513,22 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
 
         <form onSubmit={handleSavePackRule} className="space-y-4 text-xs font-body">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-mono uppercase tracking-wider text-gray-300 font-bold mb-1.5">
-                Base Pack Quantity (Default: 10)
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={50}
-                required
-                value={baseQty}
-                onChange={(e) => setBaseQty(parseInt(e.target.value) || 1)}
-                className="w-full bg-[#12131A] border border-[#2B2E42] rounded-xl px-4 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-[#00F0FF]"
-              />
-              <span className="text-[11px] text-gray-500 font-mono block mt-1">
-                Number of base stickers customer must select to qualify for the pack.
-              </span>
-            </div>
-
-            <div>
-              <label className="block font-mono uppercase tracking-wider text-gray-300 font-bold mb-1.5">
-                Bonus Quantity Reward (Default: 2)
-              </label>
-              <input
-                type="number"
-                min={0}
-                max={10}
-                required
-                value={bonusQty}
-                onChange={(e) => setBonusQty(parseInt(e.target.value) || 0)}
-                className="w-full bg-[#12131A] border border-[#2B2E42] rounded-xl px-4 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-[#00F0FF]"
-              />
-              <span className="text-[11px] text-gray-500 font-mono block mt-1">
-                Number of free bonus stickers unlocked once base quota is fulfilled.
-              </span>
-            </div>
+            <QtyInput
+              label="Base Pack Quantity (Default: 10)"
+              value={baseQty}
+              min={1}
+              max={50}
+              help="Number of base stickers customer must select to qualify for the pack."
+              onChange={setBaseQty}
+            />
+            <QtyInput
+              label="Bonus Quantity Reward (Default: 2)"
+              value={bonusQty}
+              min={0}
+              max={10}
+              help="Number of free bonus stickers unlocked once base quota is fulfilled."
+              onChange={setBonusQty}
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
@@ -549,9 +582,7 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
         </form>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 3. Supabase Integration & Database Connectivity                          */}
-      {/* ========================================================================= */}
+      {/* 3. Supabase Integration & Database Connectivity */}
       <div className="bg-[#181A26] rounded-2xl border border-[#2B2E42] p-5 sm:p-7 shadow-lg space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2B2E42]">
           <div className="flex items-center gap-3">
@@ -580,18 +611,14 @@ WHERE email = '${sqlTargetEmail || 'teammate@gmail.com'}';`;
         </div>
 
         <div className="p-4 rounded-xl bg-[#12131A] border border-[#2B2E42] text-xs font-mono space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-500">VITE_SUPABASE_URL:</span>
-            <span className="font-bold text-gray-200">
-              {import.meta.env.VITE_SUPABASE_URL || '(not set - using local storage)'}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-500">VITE_SUPABASE_ANON_KEY:</span>
-            <span className="font-bold text-gray-200">
-              {import.meta.env.VITE_SUPABASE_ANON_KEY ? '••••••••••••••••••••••••' : '(not set)'}
-            </span>
-          </div>
+          <EnvItem
+            label="VITE_SUPABASE_URL"
+            value={import.meta.env.VITE_SUPABASE_URL || '(not set - using local storage)'}
+          />
+          <EnvItem
+            label="VITE_SUPABASE_ANON_KEY"
+            value={import.meta.env.VITE_SUPABASE_ANON_KEY ? '••••••••••••••••••••••••' : '(not set)'}
+          />
         </div>
 
         <p className="text-xs text-gray-400 leading-relaxed font-body">

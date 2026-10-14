@@ -11,6 +11,17 @@ interface AdminLoginProps {
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_SECONDS = 60;
 
+function verifyFallbackAdmin(targetEmail: string, passCandidate: string): boolean {
+  const norm = targetEmail.trim().toLowerCase();
+  const isMaster =
+    norm === 'admin@stickerverse.craft' ||
+    norm === 'studio@stickerverse.craft' ||
+    norm === 'admin';
+  const isAllowlisted = storeService.isEmailAuthorizedAdmin(norm);
+  const isValidPass = passCandidate === 'admin123' || passCandidate === 'admin';
+  return (isAllowlisted || isMaster) && isValidPass;
+}
+
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackToStore }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,18 +34,16 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
   const [lockoutTimer, setLockoutTimer] = useState<number>(0);
 
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    if (lockoutTimer > 0) {
-      interval = setInterval(() => {
-        setLockoutTimer((prev) => {
-          if (prev <= 1) {
-            setFailedAttempts(0);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
+    if (lockoutTimer <= 0) return;
+    const interval = setInterval(() => {
+      setLockoutTimer((prev) => {
+        if (prev <= 1) {
+          setFailedAttempts(0);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearInterval(interval);
   }, [lockoutTimer]);
 
@@ -53,21 +62,12 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
         });
 
         if (error) {
-          // Check local studio fallback credentials if user is not in remote Supabase Auth table
-          const trimmedEmail = email.trim().toLowerCase();
-          const isAllowlisted = storeService.isEmailAuthorizedAdmin(trimmedEmail);
-          const isDemoMaster =
-            trimmedEmail === 'admin@stickerverse.craft' ||
-            trimmedEmail === 'studio@stickerverse.craft' ||
-            trimmedEmail === 'admin';
-          const validPass = password === 'admin123' || password === 'admin';
-
-          if ((isAllowlisted || isDemoMaster) && validPass) {
+          if (verifyFallbackAdmin(email, password)) {
             setFailedAttempts(0);
-            onLoginSuccess(trimmedEmail.includes('@') ? trimmedEmail : 'admin@stickerverse.craft');
+            const resolved = email.trim().toLowerCase();
+            onLoginSuccess(resolved.includes('@') ? resolved : 'admin@stickerverse.craft');
             return;
           }
-
           throw new Error(error.message);
         }
 
@@ -106,8 +106,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
                   .from('profiles')
                   .update({ role: 'admin' })
                   .eq('id', data.user.id);
-              } catch {
-                // Ignore if RLS restricts self-update
+              } catch (syncErr) {
+                console.warn('Profile role auto-sync deferred:', syncErr);
               }
             }
 
@@ -123,22 +123,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
           );
         }
       } else {
-        // Local Protected Mode authentication (Supabase keys not configured)
-        const trimmedEmail = email.trim().toLowerCase();
-        const isAllowlisted = storeService.isEmailAuthorizedAdmin(trimmedEmail);
-        const isDemoMaster =
-          trimmedEmail === 'admin@stickerverse.craft' ||
-          trimmedEmail === 'studio@stickerverse.craft' ||
-          trimmedEmail === 'admin';
-        const validPass = password === 'admin123' || password === 'admin';
-
-        if ((isAllowlisted || isDemoMaster) && validPass) {
+        if (verifyFallbackAdmin(email, password)) {
           setFailedAttempts(0);
-          onLoginSuccess(trimmedEmail.includes('@') ? trimmedEmail : 'admin@stickerverse.craft');
+          const resolved = email.trim().toLowerCase();
+          onLoginSuccess(resolved.includes('@') ? resolved : 'admin@stickerverse.craft');
           return;
-        } else {
-          throw new Error('Invalid administrator credentials.');
         }
+        throw new Error('Invalid administrator credentials.');
       }
     } catch (err: any) {
       const nextFailed = failedAttempts + 1;
