@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Lock, Mail, AlertCircle, ArrowLeft, Eye, EyeOff, KeyRound, Clock } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
-import { storeService } from '../../services/storeService';
 
 interface AdminLoginProps {
   onLoginSuccess: (email: string) => void;
@@ -10,17 +9,6 @@ interface AdminLoginProps {
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_SECONDS = 60;
-
-function verifyFallbackAdmin(targetEmail: string, passCandidate: string): boolean {
-  const norm = targetEmail.trim().toLowerCase();
-  const isMaster =
-    norm === 'admin@stickerverse.craft' ||
-    norm === 'studio@stickerverse.craft' ||
-    norm === 'admin';
-  const isAllowlisted = storeService.isEmailAuthorizedAdmin(norm);
-  const isValidPass = passCandidate === 'admin123' || passCandidate === 'admin';
-  return (isAllowlisted || isMaster) && isValidPass;
-}
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackToStore }) => {
   const [email, setEmail] = useState('');
@@ -55,81 +43,26 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
     setIsLoading(true);
 
     try {
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
+      if (!isSupabaseConfigured) {
+        throw new Error(
+          'Supabase is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.'
+        );
+      }
 
-        if (error) {
-          if (verifyFallbackAdmin(email, password)) {
-            setFailedAttempts(0);
-            const resolved = email.trim().toLowerCase();
-            onLoginSuccess(resolved.includes('@') ? resolved : 'admin@stickerverse.craft');
-            return;
-          }
-          throw new Error(error.message);
-        }
+      // 100% Real Supabase Authentication: Verifies email and encrypted password in Supabase Auth
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
 
-        if (data.user) {
-          const userEmail = (data.user.email || '').toLowerCase().trim();
+      if (error) {
+        throw new Error(error.message);
+      }
 
-          // 1. Verify user's profile role from Supabase DB
-          let isDbAdmin = false;
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('role')
-              .eq('id', data.user.id)
-              .maybeSingle();
-
-            if (
-              profile &&
-              (profile.role === 'admin' ||
-                profile.role === 'print_operator' ||
-                profile.role === 'order_manager')
-            ) {
-              isDbAdmin = true;
-            }
-          } catch (profileErr) {
-            console.warn('Profile role lookup error:', profileErr);
-          }
-
-          // 2. Also check if email is listed in store's team allowlist
-          const isAllowlisted = storeService.isEmailAuthorizedAdmin(userEmail);
-
-          if (isDbAdmin || isAllowlisted) {
-            // If allowlisted in app settings, sync role to 'admin' in profiles table if needed
-            if (!isDbAdmin) {
-              try {
-                await supabase
-                  .from('profiles')
-                  .update({ role: 'admin' })
-                  .eq('id', data.user.id);
-              } catch (syncErr) {
-                console.warn('Profile role auto-sync deferred:', syncErr);
-              }
-            }
-
-            setFailedAttempts(0);
-            onLoginSuccess(data.user.email || userEmail || 'admin@stickerverse.craft');
-            return;
-          }
-
-          // 3. User authenticated with valid password, but does NOT have admin access
-          await supabase.auth.signOut();
-          throw new Error(
-            `Access Denied: "${data.user.email}" does not have administrator privileges. Ask the store owner to add your email to the admin team.`
-          );
-        }
-      } else {
-        if (verifyFallbackAdmin(email, password)) {
-          setFailedAttempts(0);
-          const resolved = email.trim().toLowerCase();
-          onLoginSuccess(resolved.includes('@') ? resolved : 'admin@stickerverse.craft');
-          return;
-        }
-        throw new Error('Invalid administrator credentials.');
+      if (data?.user) {
+        setFailedAttempts(0);
+        onLoginSuccess(data.user.email || 'Admin');
+        return;
       }
     } catch (err: any) {
       const nextFailed = failedAttempts + 1;
