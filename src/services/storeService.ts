@@ -25,6 +25,23 @@ const STORAGE_KEY_ORDERS = 'sticker_verse_orders';
 const STORAGE_KEY_BATCHES = 'sticker_verse_batches';
 const STORAGE_KEY_ALLOCATIONS = 'sticker_verse_allocations';
 const STORAGE_KEY_MOVEMENTS = 'sticker_verse_movements';
+const STORAGE_KEY_ADMIN_ALLOWLIST = 'sticker_verse_admin_allowlist';
+
+export interface AdminUser {
+  email: string;
+  role: 'admin' | 'print_operator' | 'order_manager';
+  added_at: string;
+  notes?: string;
+}
+
+const DEFAULT_ADMIN_TEAM: AdminUser[] = [
+  { email: 'sachin@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Studio Owner' },
+  { email: 'sachinyadav402107@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Studio Owner' },
+  { email: 'pragya@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Admin Team' },
+  { email: 'pragya4541@gmail.com', role: 'admin', added_at: '2026-10-14T00:00:00Z', notes: 'Admin Team' },
+  { email: 'admin@stickerverse.craft', role: 'admin', added_at: '2026-10-01T00:00:00Z', notes: 'Master Studio Admin' },
+  { email: 'studio@stickerverse.craft', role: 'admin', added_at: '2026-10-01T00:00:00Z', notes: 'Operations Lead' },
+];
 
 class StoreService {
   public isConnectedToSupabase: boolean = isSupabaseConfigured;
@@ -713,6 +730,64 @@ class StoreService {
     this.persistLocal(STORAGE_KEY_STICKERS, this.stickers);
     this.persistLocal(STORAGE_KEY_MOVEMENTS, this.movements);
     return true;
+  }
+
+  // --------------------------------------------------------------------------
+  // Admin Team Allowlist Management
+  // --------------------------------------------------------------------------
+  getAdminTeam(): AdminUser[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_ADMIN_ALLOWLIST);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingEmails = new Set(parsed.map((u: any) => u.email.toLowerCase()));
+          const merged = [...parsed];
+          for (const def of DEFAULT_ADMIN_TEAM) {
+            if (!existingEmails.has(def.email.toLowerCase())) {
+              merged.push(def);
+            }
+          }
+          return merged;
+        }
+      }
+    } catch {}
+    return [...DEFAULT_ADMIN_TEAM];
+  }
+
+  addAdminUser(email: string, role: 'admin' | 'print_operator' | 'order_manager' = 'admin', notes?: string): AdminUser[] {
+    const current = this.getAdminTeam();
+    const normalized = email.trim().toLowerCase();
+    if (!current.some((u) => u.email.toLowerCase() === normalized)) {
+      const updated = [
+        ...current,
+        {
+          email: normalized,
+          role,
+          added_at: new Date().toISOString(),
+          notes: notes || 'Authorized Team Member',
+        },
+      ];
+      this.persistLocal(STORAGE_KEY_ADMIN_ALLOWLIST, updated);
+      return updated;
+    }
+    return current;
+  }
+
+  removeAdminUser(email: string): AdminUser[] {
+    const current = this.getAdminTeam();
+    const normalized = email.trim().toLowerCase();
+    // Do not remove default root admin
+    if (normalized === 'admin@stickerverse.craft') return current;
+    const updated = current.filter((u) => u.email.toLowerCase() !== normalized);
+    this.persistLocal(STORAGE_KEY_ADMIN_ALLOWLIST, updated);
+    return updated;
+  }
+
+  isEmailAuthorizedAdmin(email: string): boolean {
+    const normalized = email.trim().toLowerCase();
+    const team = this.getAdminTeam();
+    return team.some((u) => u.email.toLowerCase() === normalized);
   }
 
   // Reset demo data to initial seeds

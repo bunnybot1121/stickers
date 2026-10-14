@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Lock, Mail, AlertCircle, ArrowLeft, Eye, EyeOff, KeyRound, Clock } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { storeService } from '../../services/storeService';
 
 interface AdminLoginProps {
   onLoginSuccess: (email: string) => void;
@@ -54,13 +55,14 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
         if (error) {
           // Check local studio fallback credentials if user is not in remote Supabase Auth table
           const trimmedEmail = email.trim().toLowerCase();
-          const validUser =
+          const isAllowlisted = storeService.isEmailAuthorizedAdmin(trimmedEmail);
+          const isDemoMaster =
             trimmedEmail === 'admin@stickerverse.craft' ||
             trimmedEmail === 'studio@stickerverse.craft' ||
             trimmedEmail === 'admin';
           const validPass = password === 'admin123' || password === 'admin';
 
-          if (validUser && validPass) {
+          if ((isAllowlisted || isDemoMaster) && validPass) {
             setFailedAttempts(0);
             onLoginSuccess(trimmedEmail.includes('@') ? trimmedEmail : 'admin@stickerverse.craft');
             return;
@@ -70,20 +72,67 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
         }
 
         if (data.user) {
-          setFailedAttempts(0);
-          onLoginSuccess(data.user.email || 'admin@stickerverse.craft');
-          return;
+          const userEmail = (data.user.email || '').toLowerCase().trim();
+
+          // 1. Verify user's profile role from Supabase DB
+          let isDbAdmin = false;
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', data.user.id)
+              .maybeSingle();
+
+            if (
+              profile &&
+              (profile.role === 'admin' ||
+                profile.role === 'print_operator' ||
+                profile.role === 'order_manager')
+            ) {
+              isDbAdmin = true;
+            }
+          } catch (profileErr) {
+            console.warn('Profile role lookup error:', profileErr);
+          }
+
+          // 2. Also check if email is listed in store's team allowlist
+          const isAllowlisted = storeService.isEmailAuthorizedAdmin(userEmail);
+
+          if (isDbAdmin || isAllowlisted) {
+            // If allowlisted in app settings, sync role to 'admin' in profiles table if needed
+            if (!isDbAdmin) {
+              try {
+                await supabase
+                  .from('profiles')
+                  .update({ role: 'admin' })
+                  .eq('id', data.user.id);
+              } catch {
+                // Ignore if RLS restricts self-update
+              }
+            }
+
+            setFailedAttempts(0);
+            onLoginSuccess(data.user.email || userEmail || 'admin@stickerverse.craft');
+            return;
+          }
+
+          // 3. User authenticated with valid password, but does NOT have admin access
+          await supabase.auth.signOut();
+          throw new Error(
+            `Access Denied: "${data.user.email}" does not have administrator privileges. Ask the store owner to add your email to the admin team.`
+          );
         }
       } else {
         // Local Protected Mode authentication (Supabase keys not configured)
         const trimmedEmail = email.trim().toLowerCase();
-        const validUser =
+        const isAllowlisted = storeService.isEmailAuthorizedAdmin(trimmedEmail);
+        const isDemoMaster =
           trimmedEmail === 'admin@stickerverse.craft' ||
           trimmedEmail === 'studio@stickerverse.craft' ||
           trimmedEmail === 'admin';
         const validPass = password === 'admin123' || password === 'admin';
 
-        if (validUser && validPass) {
+        if ((isAllowlisted || isDemoMaster) && validPass) {
           setFailedAttempts(0);
           onLoginSuccess(trimmedEmail.includes('@') ? trimmedEmail : 'admin@stickerverse.craft');
           return;
