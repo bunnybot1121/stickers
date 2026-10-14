@@ -23,9 +23,56 @@ import {
 import { isBonusUnlocked, DEFAULT_PACK_RULE } from './lib/packRules';
 
 export function App() {
-  const [currentView, setCurrentView] = useState<'store' | 'admin-login' | 'admin'>('store');
-  const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const [adminEmail, setAdminEmail] = useState<string | null>(() => {
+    return sessionStorage.getItem('stickerverse_admin_email');
+  });
+
+  const [currentView, setCurrentView] = useState<'store' | 'admin-login' | 'admin'>(() => {
+    const saved = sessionStorage.getItem('stickerverse_admin_email');
+    const hash = window.location.hash;
+    const params = new URLSearchParams(window.location.search);
+    if (hash === '#admin' || params.get('admin') === 'true') {
+      return saved ? 'admin' : 'admin-login';
+    }
+    return saved ? 'admin' : 'store';
+  });
+
   const [activeNav, setActiveNav] = useState('home');
+
+  // Listen for hash changes (#admin) and keyboard shortcut (Ctrl+Shift+A) for discrete admin access
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#admin') {
+        const saved = sessionStorage.getItem('stickerverse_admin_email');
+        setCurrentView(saved ? 'admin' : 'admin-login');
+      } else if (window.location.hash === '' && currentView !== 'store') {
+        setCurrentView('store');
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Hotkey: Ctrl+Shift+A or Cmd+Shift+A
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        setCurrentView((prev) => {
+          if (prev === 'admin' || prev === 'admin-login') {
+            window.location.hash = '';
+            return 'store';
+          } else {
+            window.location.hash = '#admin';
+            return adminEmail ? 'admin' : 'admin-login';
+          }
+        });
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [adminEmail, currentView]);
 
   // Sync active navigation state based on user scroll position
   useEffect(() => {
@@ -182,9 +229,16 @@ export function App() {
       <AdminLogin
         onLoginSuccess={(email) => {
           setAdminEmail(email);
+          sessionStorage.setItem('stickerverse_admin_email', email);
+          window.location.hash = '#admin';
           setCurrentView('admin');
         }}
-        onBackToStore={() => setCurrentView('store')}
+        onBackToStore={() => {
+          if (window.location.hash === '#admin') {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+          setCurrentView('store');
+        }}
       />
     );
   }
@@ -201,9 +255,15 @@ export function App() {
         batches={batches}
         onSignOut={() => {
           setAdminEmail(null);
+          sessionStorage.removeItem('stickerverse_admin_email');
+          if (window.location.hash === '#admin') {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
           setCurrentView('store');
         }}
-        onReturnToStore={() => setCurrentView('store')}
+        onReturnToStore={() => {
+          setCurrentView('store');
+        }}
         onRefreshData={loadData}
         onRuleUpdated={setPackRule}
       />

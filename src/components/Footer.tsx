@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { Shield, Lock } from 'lucide-react';
 
 interface FooterProps {
   onOpenAdmin: () => void;
@@ -63,10 +63,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, onNavigateHome }) =
               </span>
               <button
                 onClick={onOpenAdmin}
-                className="hover:text-[#00F0FF] text-left transition-colors flex items-center gap-1.5 cursor-pointer text-slate-400 pt-1"
+                className="hover:text-slate-300 text-left transition-colors flex items-center gap-1.5 cursor-pointer text-slate-500/80 pt-1 text-[11px]"
               >
-                <Shield className="w-3 h-3 text-[#00F0FF]" />
-                <span>Store admin ↗</span>
+                <Lock className="w-3 h-3 text-slate-600" />
+                <span>Staff Portal</span>
               </button>
             </div>
 
