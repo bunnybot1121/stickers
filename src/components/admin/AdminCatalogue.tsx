@@ -18,6 +18,7 @@ import {
 import { Sticker, Category, StickerStyle } from '../../types';
 import { storeService } from '../../services/storeService';
 import { groqService } from '../../services/groqService';
+import { optimizeImageFile, formatFileNameToTitle } from '../../lib/imageUtils';
 
 interface AdminCatalogueProps {
   stickers: Sticker[];
@@ -54,6 +55,8 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
   const [localStickers, setLocalStickers] = useState<Sticker[]>(stickers);
   const [stickerToDelete, setStickerToDelete] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showPurgeConfirm, setShowPurgeConfirm] = useState(false);
+  const [isPurgingAll, setIsPurgingAll] = useState(false);
 
   useEffect(() => {
     setLocalStickers(stickers);
@@ -70,10 +73,16 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
   const [bulkMode, setBulkMode] = useState<'files' | 'text'>('files');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilePreview[]>([]);
   const [isAiSorting, setIsAiSorting] = useState(false);
+  const [isProcessingBulkFiles, setIsProcessingBulkFiles] = useState(false);
   const [sortedBatch, setSortedBatch] = useState<SortedStickerDraft[]>([]);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const [isCommittingBatch, setIsCommittingBatch] = useState(false);
+
+  // Single Sticker Modal Artwork Uploader State
+  const singleFileInputRef = useRef<HTMLInputElement>(null);
+  const [isOptimizingSingle, setIsOptimizingSingle] = useState(false);
+  const [showManualUrlInput, setShowManualUrlInput] = useState(false);
 
   // Raw text dump state
   const [rawBulkText, setRawBulkText] = useState('');
@@ -98,7 +107,7 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
       name: '',
       slug: '',
       description: '',
-      image_path: '/stickers/cat-programmer.jpg',
+      image_path: '',
       style: 'Kawaii',
       status: 'active',
       is_featured: false,
@@ -107,7 +116,8 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
       low_stock_threshold: 10,
       price: 3.5,
     });
-    setSelectedCatIds([]);
+    setSelectedCatIds(categories.length > 0 ? [categories[0].id] : []);
+    setShowManualUrlInput(false);
   };
 
   const handleOpenEdit = (s: Sticker) => {
@@ -142,27 +152,118 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
     }
   };
 
-  // Handle Multi-file selection / drop
-  const handleFilesSelected = (files: FileList | null) => {
+  const handlePurgeAll = async () => {
+    setIsPurgingAll(true);
+    setLocalStickers([]);
+    if (editingSticker) {
+      setEditingSticker(null);
+    }
+
+    try {
+      await storeService.deleteAllStickers();
+      await onStickerUpdated();
+      setShowPurgeConfirm(false);
+    } catch (err: any) {
+      alert(`Failed to delete all stickers: ${err.message}`);
+      setLocalStickers(stickers); // rollback
+    } finally {
+      setIsPurgingAll(false);
+    }
+  };
+
+  // Handle single sticker file selection
+  const handleSingleFileSelect = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    setIsOptimizingSingle(true);
+    try {
+      const optimizedUrl = await optimizeImageFile(file);
+      setEditingSticker((prev) => {
+        if (!prev) return null;
+        const autoName = prev.name?.trim() ? prev.name : formatFileNameToTitle(file.name);
+        return {
+          ...prev,
+          image_path: optimizedUrl,
+          name: autoName,
+        };
+      });
+    } catch (err: any) {
+      alert(`Error reading image: ${err.message}`);
+    } finally {
+      setIsOptimizingSingle(false);
+    }
+  };
+
+  // Handle Multi-file selection / drop with reliable async image optimization
+  const handleFilesSelected = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     setAiError(null);
+    setIsProcessingBulkFiles(true);
 
-    const newPreviews: UploadedFilePreview[] = [];
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        newPreviews.push({
-          file,
-          previewUrl: (e.target?.result as string) || URL.createObjectURL(file),
-          name: file.name,
-          size: file.size,
-        });
-        if (newPreviews.length === files.length) {
-          setUploadedFiles((prev) => [...prev, ...newPreviews]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    try {
+      const fileList = Array.from(files);
+      const newPreviews: UploadedFilePreview[] = await Promise.all(
+        fileList.map(async (file) => {
+          const optimizedUrl = await optimizeImageFile(file);
+          return {
+            file,
+            previewUrl: optimizedUrl,
+            name: file.name,
+            size: file.size,
+          };
+        })
+      );
+      setUploadedFiles((prev) => [...prev, ...newPreviews]);
+    } catch (err: any) {
+      setAiError(`Failed to process images: ${err.message}`);
+    } finally {
+      setIsProcessingBulkFiles(false);
+    }
+  };
+
+  // Direct Publish: Upload all selected stickers immediately without requiring AI
+  const handleDirectPublishBatch = async () => {
+    if (uploadedFiles.length === 0) return;
+    setIsCommittingBatch(true);
+
+    try {
+      const defaultCategory = categories[0];
+      for (const item of uploadedFiles) {
+        const title = formatFileNameToTitle(item.name);
+        const slug = title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+
+        await storeService.saveSticker(
+          {
+            name: title,
+            slug: `${slug}-${Date.now().toString().slice(-4)}`,
+            description: `Official die-cut vinyl sticker design: ${title}.`,
+            image_path: item.previewUrl,
+            style: 'Kawaii',
+            status: 'active',
+            is_featured: false,
+            track_inventory: true,
+            stock_on_hand: 50,
+            low_stock_threshold: 10,
+            price: 3.5,
+          },
+          defaultCategory ? [defaultCategory.id] : []
+        );
+      }
+
+      onStickerUpdated();
+      setIsBulkModalOpen(false);
+      setUploadedFiles([]);
+      setSortedBatch([]);
+      setAiSummary(null);
+      alert(`Successfully published ${uploadedFiles.length} stickers to the store catalogue!`);
+    } catch (err: any) {
+      alert(`Failed to publish stickers: ${err.message}`);
+    } finally {
+      setIsCommittingBatch(false);
+    }
   };
 
   // Run Groq AI Auto-Sort & Labeling on bulk uploaded files
@@ -314,6 +415,17 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
             <span>⚡ Bulk Upload &amp; Groq AI Sort</span>
           </button>
 
+          {/* Delete All Stickers */}
+          <button
+            onClick={() => setShowPurgeConfirm(true)}
+            disabled={localStickers.length === 0}
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-red-500/40 bg-red-950/25 hover:bg-red-600 hover:text-white text-red-400 font-display font-bold text-xs transition-all active:translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Delete all stickers from database and catalogue"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Delete All</span>
+          </button>
+
           {/* Add Single Sticker */}
           <button
             onClick={handleOpenAdd}
@@ -380,7 +492,31 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-[#2B2E42] text-gray-300">
-              {filteredStickers.map((s) => (
+              {filteredStickers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 px-4 text-center">
+                    <div className="max-w-sm mx-auto flex flex-col items-center">
+                      <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 mb-3">
+                        <Trash2 className="w-6 h-6 text-gray-500" />
+                      </div>
+                      <p className="font-display font-bold text-white text-sm mb-1">
+                        Catalogue is empty
+                      </p>
+                      <p className="font-body text-xs text-gray-400 mb-4">
+                        All stickers have been removed from the database and catalogue.
+                      </p>
+                      <button
+                        onClick={handleOpenAdd}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FACC15] text-brand-dark font-display font-bold text-xs hover:bg-yellow-400 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add New Sticker</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredStickers.map((s) => (
                 <tr key={s.id} className="hover:bg-[#1f2233] transition-colors">
                   <td className="py-3 px-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white/10 p-1 flex items-center justify-center flex-shrink-0 border border-white/20">
@@ -449,7 +585,7 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                     </div>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
@@ -574,18 +710,33 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                     ))}
                   </div>
 
-                  {/* Groq AI Trigger Button */}
-                  <div className="pt-2 flex justify-end">
+                  {/* Action Buttons: Direct Upload OR Groq AI */}
+                  <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
                     <button
+                      type="button"
+                      onClick={handleDirectPublishBatch}
+                      disabled={isCommittingBatch || isProcessingBulkFiles}
+                      className="px-5 py-3 rounded-2xl border-2 border-brand-dark bg-[#FACC15] hover:bg-yellow-400 text-brand-dark font-display font-extrabold text-sm shadow-neo flex items-center justify-center gap-2 transition-all active:translate-y-0.5 disabled:opacity-50 cursor-pointer"
+                    >
+                      <CheckCircle className="w-4 h-4 text-brand-dark" />
+                      <span>
+                        {isCommittingBatch
+                          ? 'Publishing Stickers...'
+                          : `Publish All (${uploadedFiles.length}) Directly to Store`}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={handleRunGroqAutoSort}
-                      disabled={isAiSorting}
-                      className="w-full sm:w-auto px-6 py-3 rounded-2xl border-2 border-brand-dark bg-gradient-to-r from-[#A855F7] to-[#EC4899] hover:from-purple-600 hover:to-pink-600 text-white font-display font-extrabold text-sm shadow-neo flex items-center justify-center gap-2.5 transition-all"
+                      disabled={isAiSorting || isProcessingBulkFiles}
+                      className="px-6 py-3 rounded-2xl border-2 border-brand-dark bg-gradient-to-r from-[#A855F7] to-[#EC4899] hover:from-purple-600 hover:to-pink-600 text-white font-display font-extrabold text-sm shadow-neo flex items-center justify-center gap-2.5 transition-all active:translate-y-0.5 disabled:opacity-50 cursor-pointer"
                     >
                       <Sparkles className={`w-4 h-4 ${isAiSorting ? 'animate-spin' : ''}`} />
                       <span>
                         {isAiSorting
-                          ? 'Groq AI is Sorting & Labeling Batch...'
-                          : `⚡ Auto-Sort & Label (${uploadedFiles.length}) Stickers with Groq AI`}
+                          ? 'Groq AI is Sorting...'
+                          : `⚡ Auto-Sort with Groq AI (${uploadedFiles.length})`}
                       </span>
                     </button>
                   </div>
@@ -788,37 +939,106 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-display font-bold uppercase tracking-wider text-gray-300 mb-1">
-                    Image Path or URL *
+              {/* Image Artwork Upload & Preview */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-display font-bold uppercase tracking-wider text-gray-300">
+                    Sticker Artwork *
                   </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowManualUrlInput(!showManualUrlInput)}
+                    className="text-[10px] text-[#00F0FF] hover:underline font-mono"
+                  >
+                    {showManualUrlInput ? '← Switch to File Upload' : 'Enter URL/Path instead →'}
+                  </button>
+                </div>
+
+                {showManualUrlInput ? (
                   <input
                     type="text"
                     required
                     value={editingSticker.image_path || ''}
                     onChange={(e) => setEditingSticker({ ...editingSticker, image_path: e.target.value })}
-                    placeholder="/stickers/cat-programmer.jpg"
-                    className="w-full px-4 py-2 rounded-xl bg-[#12131A] border border-[#2B2E42] text-white focus:outline-none focus:border-[#FF6EB4]"
+                    placeholder="/stickers/cat-programmer.jpg or https://..."
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#12131A] border border-[#2B2E42] text-white focus:outline-none focus:border-[#FF6EB4]"
                   />
-                </div>
+                ) : (
+                  <div>
+                    {editingSticker.image_path ? (
+                      <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-[#12131A] border border-[#2B2E42]">
+                        <div className="w-16 h-16 rounded-xl bg-white/10 p-1 flex items-center justify-center border border-white/20 flex-shrink-0 relative overflow-hidden">
+                          <img
+                            src={editingSticker.image_path}
+                            alt="Sticker Artwork Preview"
+                            className="max-h-full max-w-full object-contain filter drop-shadow-sm"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-xs font-bold truncate">
+                            {editingSticker.name || 'Artwork Loaded'}
+                          </p>
+                          <p className="text-emerald-400 font-mono text-[10px] flex items-center gap-1 mt-0.5">
+                            <Check className="w-3 h-3" />
+                            <span>Artwork Ready for Storefront</span>
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => singleFileInputRef.current?.click()}
+                          className="px-3 py-1.5 rounded-xl bg-[#2B2E42] hover:bg-[#383b54] text-xs font-mono font-bold text-gray-200 transition-colors cursor-pointer"
+                        >
+                          Change File
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          handleSingleFileSelect(e.dataTransfer.files);
+                        }}
+                        onClick={() => singleFileInputRef.current?.click()}
+                        className="border-2 border-dashed border-[#FF6EB4]/40 hover:border-[#FF6EB4] bg-[#12131A] hover:bg-[#1f1a28] rounded-2xl p-6 text-center cursor-pointer transition-all group"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-[#FF6EB4]/15 text-[#FF6EB4] flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-bold text-white mb-0.5">
+                          {isOptimizingSingle ? 'Optimizing Artwork...' : 'Click or Drag Artwork File Here'}
+                        </p>
+                        <p className="font-mono text-[10px] text-gray-400">
+                          PNG, JPG, WebP, SVG • Optimized automatically
+                        </p>
+                      </div>
+                    )}
 
-                <div>
-                  <label className="block font-display font-bold uppercase tracking-wider text-gray-300 mb-1">
-                    Style
-                  </label>
-                  <select
-                    value={editingSticker.style || 'Kawaii'}
-                    onChange={(e) => setEditingSticker({ ...editingSticker, style: e.target.value as StickerStyle })}
-                    className="w-full px-4 py-2 rounded-xl bg-[#12131A] border border-[#2B2E42] text-white focus:outline-none focus:border-[#FF6EB4]"
-                  >
-                    <option value="Kawaii">Kawaii</option>
-                    <option value="Neo-Brutal">Neo-Brutal</option>
-                    <option value="Pixel Art">Pixel Art</option>
-                    <option value="Holographic">Holographic</option>
-                    <option value="Retro">Retro</option>
-                  </select>
-                </div>
+                    <input
+                      ref={singleFileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      onChange={(e) => handleSingleFileSelect(e.target.files)}
+                      className="hidden"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block font-display font-bold uppercase tracking-wider text-gray-300 mb-1">
+                  Style
+                </label>
+                <select
+                  value={editingSticker.style || 'Kawaii'}
+                  onChange={(e) => setEditingSticker({ ...editingSticker, style: e.target.value as StickerStyle })}
+                  className="w-full px-4 py-2 rounded-xl bg-[#12131A] border border-[#2B2E42] text-white focus:outline-none focus:border-[#FF6EB4]"
+                >
+                  <option value="Kawaii">Kawaii</option>
+                  <option value="Neo-Brutal">Neo-Brutal</option>
+                  <option value="Pixel Art">Pixel Art</option>
+                  <option value="Holographic">Holographic</option>
+                  <option value="Retro">Retro</option>
+                </select>
               </div>
 
               <div>
@@ -954,6 +1174,60 @@ export const AdminCatalogue: React.FC<AdminCatalogueProps> = ({
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>{isDeleting ? 'Deleting...' : 'Yes, Delete Sticker'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Purge All Stickers Modal */}
+      {showPurgeConfirm && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in"
+          onClick={() => !isPurgingAll && setShowPurgeConfirm(false)}
+        >
+          <div
+            className="w-full max-w-md bg-[#181A26] rounded-2xl border-2 border-red-500/50 p-6 shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-red-950/80 border border-red-500 flex items-center justify-center text-red-400 flex-shrink-0 animate-pulse">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-base text-white">Delete All Stickers?</h3>
+                <p className="text-xs text-red-400/90 font-mono">Irreversible database purge operation</p>
+              </div>
+            </div>
+
+            <div className="bg-[#12131A] p-4 rounded-xl border border-red-500/20 mb-5 text-xs text-gray-300 font-body space-y-2">
+              <p>
+                Are you sure you want to delete <strong className="text-white">ALL {localStickers.length} stickers</strong> from the database and catalogue?
+              </p>
+              <p className="text-gray-400 text-[11px]">
+                This will wipe all sticker entries from storage and remote database tables. All catalogue items will be removed immediately.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={isPurgingAll}
+                onClick={() => setShowPurgeConfirm(false)}
+                className="px-4 py-2 rounded-xl border border-[#2B2E42] text-gray-300 hover:text-white text-xs font-mono font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isPurgingAll}
+                onClick={handlePurgeAll}
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-mono font-bold flex items-center gap-1.5 shadow-lg shadow-red-600/40 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isPurgingAll ? 'Purging Database...' : 'Yes, Delete All Stickers'}</span>
               </button>
             </div>
           </div>

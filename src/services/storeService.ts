@@ -18,10 +18,10 @@ import {
 import { validatePack, DEFAULT_PACK_RULE } from '../lib/packRules';
 
 // Local storage keys for persistent demo mode
-const STORAGE_KEY_STICKERS = 'sticker_verse_stickers_v6';
+const STORAGE_KEY_STICKERS = 'sticker_verse_stickers_v7';
 const STORAGE_KEY_CATEGORIES = 'sticker_verse_categories_v6';
 const STORAGE_KEY_PACK_RULE = 'sticker_verse_pack_rule';
-const STORAGE_KEY_ORDERS = 'sticker_verse_orders';
+const STORAGE_KEY_ORDERS = 'sticker_verse_orders_v7';
 const STORAGE_KEY_BATCHES = 'sticker_verse_batches';
 const STORAGE_KEY_ALLOCATIONS = 'sticker_verse_allocations';
 const STORAGE_KEY_MOVEMENTS = 'sticker_verse_movements';
@@ -57,10 +57,45 @@ class StoreService {
 
   constructor() {
     this.initLocalData();
+    this.checkSupabaseHealth();
+  }
+
+  private async checkSupabaseHealth() {
+    if (!isSupabaseConfigured) {
+      this.isConnectedToSupabase = false;
+      return;
+    }
+    try {
+      const { error } = await supabase.from('stickers').select('id').limit(1);
+      if (
+        error &&
+        (error.code === 'PGRST205' ||
+          error.message?.includes('schema cache') ||
+          error.message?.includes('not found'))
+      ) {
+        console.warn('Supabase stickers table not detected. Operating in local storage mode.');
+        this.isConnectedToSupabase = false;
+      }
+    } catch {
+      this.isConnectedToSupabase = false;
+    }
   }
 
   private initLocalData() {
+    if (typeof localStorage === 'undefined') {
+      this.stickers = [...SEED_STICKERS];
+      this.categories = [...SEED_CATEGORIES];
+      this.packRule = { ...SEED_PACK_RULE };
+      this.orders = [...SEED_ORDERS];
+      this.printBatches = [];
+      this.allocations = new Map();
+      this.movements = [];
+      return;
+    }
+
     try {
+      localStorage.removeItem('sticker_verse_stickers_v6');
+      localStorage.removeItem('sticker_verse_orders');
       const storedStickers = localStorage.getItem(STORAGE_KEY_STICKERS);
       this.stickers = storedStickers ? JSON.parse(storedStickers) : [...SEED_STICKERS];
 
@@ -95,10 +130,18 @@ class StoreService {
   }
 
   private persistLocal(key: string, data: unknown) {
+    if (typeof localStorage === 'undefined') return;
     try {
       localStorage.setItem(key, JSON.stringify(data));
-    } catch {
-      // Storage full or unavailable
+    } catch (err) {
+      console.warn(`LocalStorage write warning for ${key}:`, err);
+      try {
+        localStorage.removeItem('sticker_verse_stickers_v6');
+        localStorage.removeItem('sticker_verse_orders');
+        localStorage.setItem(key, JSON.stringify(data));
+      } catch (retryErr) {
+        console.error(`Unable to persist ${key} to localStorage:`, retryErr);
+      }
     }
   }
 
@@ -195,6 +238,13 @@ class StoreService {
             ...d,
             categories: d.sticker_categories?.map((sc: any) => sc.category).filter(Boolean) || [],
           }));
+        } else if (
+          error &&
+          (error.code === 'PGRST205' ||
+            error.message?.includes('schema cache') ||
+            error.message?.includes('not found'))
+        ) {
+          this.isConnectedToSupabase = false;
         }
       } catch {
         // fallback to local
@@ -250,60 +300,96 @@ class StoreService {
   }
 
   async saveSticker(sticker: Partial<Sticker>, categoryIds: string[] = []): Promise<Sticker> {
-    if (this.isConnectedToSupabase) {
-      try {
-        const { data, error } = await supabase.from('stickers').upsert(sticker).select().single();
-        if (!error && data) {
-          // Update categories
-          if (categoryIds.length > 0) {
-            await supabase.from('sticker_categories').delete().eq('sticker_id', data.id);
-            await supabase.from('sticker_categories').insert(
-              categoryIds.map((cid) => ({ sticker_id: data.id, category_id: cid }))
-            );
-          }
-          return data;
-        }
-      } catch {
-        // Fall back
-      }
-    }
-
     const assignedCats = this.categories.filter((c) => categoryIds.includes(c.id));
+    const now = new Date().toISOString();
 
-    if (sticker.id) {
-      const idx = this.stickers.findIndex((s) => s.id === sticker.id);
-      if (idx >= 0) {
-        this.stickers[idx] = {
-          ...this.stickers[idx],
-          ...sticker,
-          categories: assignedCats.length > 0 ? assignedCats : this.stickers[idx].categories,
-          updated_at: new Date().toISOString(),
-        };
-        this.persistLocal(STORAGE_KEY_STICKERS, this.stickers);
-        return this.stickers[idx];
-      }
-    }
+    const stickerId = sticker.id || `s-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const stickerName = sticker.name || 'Untitled Sticker';
+    const stickerSlug =
+      sticker.slug ||
+      stickerName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') ||
+      `sticker-${Date.now()}`;
 
-    const newSticker: Sticker = {
-      id: sticker.id || `s-${Date.now()}`,
-      name: sticker.name || 'Untitled Sticker',
-      slug: sticker.slug || `sticker-${Date.now()}`,
+    const completeSticker: Sticker = {
+      id: stickerId,
+      name: stickerName,
+      slug: stickerSlug,
       description: sticker.description || '',
       image_path: sticker.image_path || '/stickers/what-the-duck.jpg',
       status: sticker.status || 'active',
       style: sticker.style || 'Kawaii',
-      is_featured: sticker.is_featured || false,
+      is_featured: sticker.is_featured ?? false,
       track_inventory: sticker.track_inventory ?? true,
       stock_on_hand: sticker.stock_on_hand ?? 50,
       low_stock_threshold: sticker.low_stock_threshold ?? 10,
       price: sticker.price ?? 3.5,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: sticker.created_at || now,
+      updated_at: now,
       categories: assignedCats,
     };
-    this.stickers.push(newSticker);
+
+    if (this.isConnectedToSupabase) {
+      try {
+        const payload: Record<string, any> = {
+          name: completeSticker.name,
+          slug: completeSticker.slug,
+          description: completeSticker.description,
+          image_path: completeSticker.image_path,
+          style: completeSticker.style,
+          status: completeSticker.status,
+          is_featured: completeSticker.is_featured,
+          track_inventory: completeSticker.track_inventory,
+          stock_on_hand: completeSticker.stock_on_hand,
+          low_stock_threshold: completeSticker.low_stock_threshold,
+          price: completeSticker.price,
+          updated_at: now,
+        };
+
+        const isUuid =
+          sticker.id &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sticker.id);
+
+        let savedData: any = null;
+        if (isUuid) {
+          payload.id = sticker.id;
+          const { data, error } = await supabase
+            .from('stickers')
+            .update(payload)
+            .eq('id', sticker.id)
+            .select()
+            .single();
+          if (!error && data) savedData = data;
+        } else {
+          const { data, error } = await supabase.from('stickers').insert(payload).select().single();
+          if (!error && data) savedData = data;
+        }
+
+        if (savedData) {
+          completeSticker.id = savedData.id;
+          if (categoryIds.length > 0) {
+            await supabase.from('sticker_categories').delete().eq('sticker_id', savedData.id);
+            await supabase.from('sticker_categories').insert(
+              categoryIds.map((cid) => ({ sticker_id: savedData.id, category_id: cid }))
+            );
+          }
+        }
+      } catch (err) {
+        console.warn('Supabase sticker sync failed, saving to local state:', err);
+      }
+    }
+
+    // Always update in-memory cache and persist locally
+    const existingIdx = this.stickers.findIndex(
+      (s) => s.id === completeSticker.id || s.slug === completeSticker.slug
+    );
+    if (existingIdx >= 0) {
+      this.stickers[existingIdx] = completeSticker;
+    } else {
+      this.stickers.unshift(completeSticker);
+    }
+
     this.persistLocal(STORAGE_KEY_STICKERS, this.stickers);
-    return newSticker;
+    return completeSticker;
   }
 
   async archiveSticker(stickerId: string): Promise<boolean> {
@@ -333,6 +419,22 @@ class StoreService {
         await supabase.from('stickers').delete().eq('id', stickerId);
       } catch {
         // fallback
+      }
+    }
+    return true;
+  }
+
+  async deleteAllStickers(): Promise<boolean> {
+    this.stickers = [];
+    this.persistLocal(STORAGE_KEY_STICKERS, []);
+
+    if (this.isConnectedToSupabase) {
+      try {
+        await supabase.from('sticker_categories').delete().neq('sticker_id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('order_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase.from('stickers').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      } catch (err) {
+        console.warn('Supabase deleteAllStickers error:', err);
       }
     }
     return true;
@@ -806,9 +908,11 @@ class StoreService {
     this.allocations = new Map();
     this.movements = [];
     localStorage.removeItem(STORAGE_KEY_STICKERS);
+    localStorage.removeItem('sticker_verse_stickers_v6');
     localStorage.removeItem(STORAGE_KEY_CATEGORIES);
     localStorage.removeItem(STORAGE_KEY_PACK_RULE);
     localStorage.removeItem(STORAGE_KEY_ORDERS);
+    localStorage.removeItem('sticker_verse_orders');
     localStorage.removeItem(STORAGE_KEY_BATCHES);
     localStorage.removeItem(STORAGE_KEY_ALLOCATIONS);
     localStorage.removeItem(STORAGE_KEY_MOVEMENTS);
