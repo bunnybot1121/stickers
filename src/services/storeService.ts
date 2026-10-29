@@ -18,7 +18,7 @@ import {
 import { validatePack, DEFAULT_PACK_RULE } from '../lib/packRules';
 
 // Local storage keys for persistent demo mode
-const STORAGE_KEY_STICKERS = 'sticker_verse_stickers_v7';
+const STORAGE_KEY_STICKERS = 'sticker_verse_stickers_v8';
 const STORAGE_KEY_CATEGORIES = 'sticker_verse_categories_v6';
 const STORAGE_KEY_PACK_RULE = 'sticker_verse_pack_rule';
 const STORAGE_KEY_ORDERS = 'sticker_verse_orders_v7';
@@ -95,9 +95,14 @@ class StoreService {
 
     try {
       localStorage.removeItem('sticker_verse_stickers_v6');
+      localStorage.removeItem('sticker_verse_stickers_v7');
       localStorage.removeItem('sticker_verse_orders');
       const storedStickers = localStorage.getItem(STORAGE_KEY_STICKERS);
-      this.stickers = storedStickers ? JSON.parse(storedStickers) : [...SEED_STICKERS];
+      const parsedStickers = storedStickers ? JSON.parse(storedStickers) : null;
+      this.stickers =
+        Array.isArray(parsedStickers) && parsedStickers.length > 0
+          ? parsedStickers
+          : [...SEED_STICKERS];
 
       const storedCategories = localStorage.getItem(STORAGE_KEY_CATEGORIES);
       this.categories = storedCategories ? JSON.parse(storedCategories) : [...SEED_CATEGORIES];
@@ -907,15 +912,18 @@ class StoreService {
     this.printBatches = [];
     this.allocations = new Map();
     this.movements = [];
-    localStorage.removeItem(STORAGE_KEY_STICKERS);
-    localStorage.removeItem('sticker_verse_stickers_v6');
-    localStorage.removeItem(STORAGE_KEY_CATEGORIES);
-    localStorage.removeItem(STORAGE_KEY_PACK_RULE);
-    localStorage.removeItem(STORAGE_KEY_ORDERS);
-    localStorage.removeItem('sticker_verse_orders');
-    localStorage.removeItem(STORAGE_KEY_BATCHES);
-    localStorage.removeItem(STORAGE_KEY_ALLOCATIONS);
-    localStorage.removeItem(STORAGE_KEY_MOVEMENTS);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY_STICKERS);
+      localStorage.removeItem('sticker_verse_stickers_v6');
+      localStorage.removeItem('sticker_verse_stickers_v7');
+      localStorage.removeItem(STORAGE_KEY_CATEGORIES);
+      localStorage.removeItem(STORAGE_KEY_PACK_RULE);
+      localStorage.removeItem(STORAGE_KEY_ORDERS);
+      localStorage.removeItem('sticker_verse_orders');
+      localStorage.removeItem(STORAGE_KEY_BATCHES);
+      localStorage.removeItem(STORAGE_KEY_ALLOCATIONS);
+      localStorage.removeItem(STORAGE_KEY_MOVEMENTS);
+    }
   }
 }
 

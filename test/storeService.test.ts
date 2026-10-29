@@ -1,9 +1,13 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { storeService } from '../src/services/storeService';
 
 describe('StoreService Sticker Upload and Management', () => {
   beforeEach(async () => {
     await storeService.deleteAllStickers();
+  });
+
+  afterAll(() => {
+    storeService.resetDemoData();
   });
 
   it('successfully saves a new sticker with image data URL', async () => {
